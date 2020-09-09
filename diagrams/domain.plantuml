@@ -1,0 +1,26 @@
+@startuml 
+header
+Domain model
+endheader
+
+rectangle Player as "Player"
+rectangle Table as "Pool table"
+rectangle Ball as "Ball"
+rectangle CueBall as "Cue ball"
+rectangle BlackBall as "Black ball"
+rectangle SolidBall as "Solid ball"
+rectangle StripedBall as "Striped ball"
+rectangle Cue as "Cue"
+rectangle Game as "Pool game" 
+
+Game "1" --> "1..2" Player
+Game "1" --> "1" Table
+Game "1" --> "16" Ball
+Ball <|-- "1" CueBall
+Ball <|-- "1" BlackBall
+Ball <|-- "7" SolidBall
+Ball <|-- "7 "StripedBall
+
+Player "1" --> "1" Cue
+
+@enduml
