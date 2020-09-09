@@ -1,0 +1,35 @@
+@startuml
+
+left to right direction
+
+rectangle pool as "Pool aid" {
+    
+    usecase start as "Start system"
+
+    usecase visualize_ball as "Visualize cue ball"
+
+    usecase visualize_trajectory as "Visualize trajectory"
+
+    usecase pool_cue as "Present cue"
+
+    usecase calc_trajectory as "Calculate trajectory"
+
+    usecase stop as "Stop system"
+}
+
+actor Player
+
+Player --> start
+
+Player --> pool_cue
+
+start ..> visualize_ball : "include"
+
+pool_cue ..> calc_trajectory : "include"
+
+pool_cue <..  visualize_trajectory : "extend"
+
+Player --> stop
+
+
+@enduml
