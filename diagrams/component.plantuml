@@ -1,0 +1,51 @@
+@startuml
+
+component ImageCapture
+
+component CueDetector
+
+component UIDetector
+
+component BallDetector
+
+component BoundaryDetector
+
+component DetectorFacade
+
+component UserInterface
+
+component AidController
+
+component ImageDrawer
+
+component TrajectoryCalculator
+
+component CueOrientationCalculator
+
+component Visualizer
+
+interface IVisual
+interface ICapture
+interface IDetector
+interface ITrajectory
+interface IUserInterface
+interface IImageDrawer
+
+AidController --( ITrajectory
+ITrajectory -- TrajectoryCalculator
+
+AidController --( IImageDrawer
+IImageDrawer -- ImageDrawer
+
+
+
+
+AidController -( IVisual
+IVisual - Visualizer
+
+DetectorFacade -- IDetector
+IDetector )-- AidController
+
+ImageCapture - ICapture
+
+@enduml

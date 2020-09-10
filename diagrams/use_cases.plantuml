@@ -4,17 +4,21 @@ left to right direction
 
 rectangle pool as "Pool aid" {
     
-    usecase start as "Start system"
+    usecase start as "1. Start system"
 
-    usecase visualize_ball as "Visualize cue ball"
+    usecase visualize_ball as "5. Visualize cue ball"
 
-    usecase visualize_trajectory as "Visualize trajectory"
+    usecase visualize_trajectory as "6. Visualize trajectory"
 
-    usecase pool_cue as "Present cue"
+    usecase detect_balls as "2. Detect balls"
 
-    usecase calc_trajectory as "Calculate trajectory"
+    usecase pool_cue as "3. Present cue"
 
-    usecase stop as "Stop system"
+    usecase detect_cue as "8. Detect cue"
+
+    usecase calc_trajectory as "7. Calculate trajectory"
+
+    usecase stop as "4. Stop system"
 }
 
 actor Player
@@ -23,11 +27,13 @@ Player --> start
 
 Player --> pool_cue
 
-start ..> visualize_ball : "include"
+detect_cue <. calc_trajectory : "extend"
 
-pool_cue ..> calc_trajectory : "include"
+calc_trajectory <.  visualize_trajectory : "extend"
 
-pool_cue <..  visualize_trajectory : "extend"
+detect_balls <.. visualize_ball : "extend"
+
+pool_cue ..> detect_cue : "include"
 
 Player --> stop
 
