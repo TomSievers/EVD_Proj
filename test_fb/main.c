@@ -54,32 +54,36 @@ int main(int argc, char** argv)
     fbp = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     
     uint32_t color = rgbaToInt(0, 0, 0, 0);
-    bool changed = true;
-    while(!stop)
+    for (uint32_t y = 0; y < vinfo.yres; ++y) 
     {
+        for(uint32_t x = 0; x < vinfo.xres; ++x)
+        {
+            setPixel(x, y, color);
+        }
+    }
+
+    color = rgbaToInt(0, 0, 0, 0);
+    while(!stop)
+    {   
         if(is_pressed('c'))
         {
-            fprintf(stderr, "c is pressed\n");
-            changed = true;
-            if(color == rgbaToInt(0, 0, 0, 0))
+            if(color == rgbaToInt(255, 255, 255, 0))
             {
-                color = rgbaToInt(255, 255, 255, 0);
+                color = rgbaToInt(0, 0, 0, 0);
             } else {
-                color == rgbaToInt(0, 0, 0, 0);
+                color = rgbaToInt(255, 255, 255, 0);
             }
-        }
 
-        if(changed)
-        {
-            for (uint32_t y = 0; y < vinfo.yres; ++y) 
+            for (uint32_t y = vinfo.yres/2-100; y < vinfo.yres/2+100; ++y) 
             {
-                for(uint32_t x = 0; x < vinfo.xres; ++x)
+                for(uint32_t x = vinfo.xres/2-100; x < vinfo.xres/2+100; ++x)
                 {
                     setPixel(x, y, color);
                 }
             }
-            changed = false;
         }
+
+        
     }
 
     return 0;
