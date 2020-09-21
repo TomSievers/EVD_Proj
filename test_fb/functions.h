@@ -14,6 +14,8 @@
 #include <stdbool.h>
 #include <zlib.h>
 #include <stdint.h>
+#include <termios.h>
+#include <signal.h>
 
 static bool set_tty(const char* dev, const int mode)
 {
@@ -43,3 +45,52 @@ static bool set_tty(const char* dev, const int mode)
     close(con_fd);
 	return suc;
 }
+
+bool set_input(struct termios* term, const int mode)
+{
+	switch (mode)
+	{
+	case 0:
+		{
+			tcgetattr( fileno(stdin), term );
+
+			term->c_lflag &= ~ICANON;
+			term->c_lflag &= ~ECHO;
+
+			tcsetattr( fileno(stdin), TCSANOW, term);
+		}
+		break;
+	case 1:
+		{
+			term->c_lflag |= ICANON;
+			term->c_lflag |= ECHO;
+
+			tcsetattr( fileno(stdin), TCSANOW, term);
+		}
+		break;
+	default:
+		fprintf(stderr, "Unsupported mode");
+		return false;
+	}
+	return true;
+}
+
+bool is_pressed(char c)
+{
+	char buf;
+	if(read(fileno(stdin), &buf, 1) == -1)
+	{
+		if(!raise(SIGINT))
+		{
+			raise(SIGTERM);
+		}
+	}
+	if(c == buf)
+	{
+		return true;
+	} else {
+		return false;
+	}
+}
+
+
