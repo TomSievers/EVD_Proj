@@ -45,6 +45,8 @@ void draw_line(point p1, point p2, uint32_t r, uint32_t g, uint32_t b, uint32_t 
 
 void on_sigint(int sig);
 
+void draw_circle(int xc, int yc, int r);
+
 int main(int argc, char** argv) 
 {
     if(signal(SIGINT, on_sigint) == SIG_ERR)
@@ -78,8 +80,52 @@ int main(int argc, char** argv)
 
     draw_line(a, b, 255, 255, 255, 255);
 
+    draw_circle(500, 500, 100);
+
     return pause();
 }
+
+
+void draw_circle(int xc, int yc, int r) 
+{ 
+    uint32_t color = rgba_to_int(255, 0,0,0);
+    int x = 0, y = r; 
+    int d = 3 - 2 * r; 
+    set_pixel(xc+x, yc+y, color); 
+    set_pixel(xc-x, yc+y, color); 
+    set_pixel(xc+x, yc-y, color); 
+    set_pixel(xc-x, yc-y, color); 
+    set_pixel(xc+y, yc+x, color); 
+    set_pixel(xc-y, yc+x, color); 
+    set_pixel(xc+y, yc-x, color); 
+    set_pixel(xc-y, yc-x, color); 
+    while (y >= x) 
+    { 
+        // for each pixel we will 
+        // draw all eight pixels 
+          
+        x++; 
+  
+        // check for decision parameter 
+        // and correspondingly  
+        // update d, x, y 
+        if (d > 0) 
+        { 
+            y--;  
+            d = d + 4 * (x - y) + 10; 
+        } 
+        else
+            d = d + 4 * x + 6; 
+        set_pixel(xc+x, yc+y, color); 
+        set_pixel(xc-x, yc+y, color); 
+        set_pixel(xc+x, yc-y, color); 
+        set_pixel(xc-x, yc-y, color); 
+        set_pixel(xc+y, yc+x, color); 
+        set_pixel(xc-y, yc+x, color); 
+        set_pixel(xc+y, yc-x, color); 
+        set_pixel(xc-y, yc-x, color); 
+    } 
+} 
 
 void on_sigint(int sig)
 {
@@ -95,40 +141,19 @@ void on_sigint(int sig)
 
 void draw_line(point p1, point p2, uint32_t r, uint32_t g, uint32_t b, uint32_t a)
 {
-    bool vert = false;
-    bool horz = false;
-    uint64_t dx = (p2.x-p1.x);
-    if(dx == 0)
-    {
-        horz = true;
-    }
-    uint64_t dy = (p2.y-p1.y);
-    if(dy == 0)
-    {
-        vert = true;
-    }
-    uint64_t slope = 0;
-    if(!vert && !horz)
-    {
-        uint64_t slope = dx/dy;
-    } else 
-    {
-        return;
-    }
+    int dx = abs(int(p2.x - p1.x)); 
+    int sx = p1.x < p2.x ? 1 : -1;
+    int dy = abs(int(p2.y - p1.y)); 
+    int sy = p1.y < p2.y ? 1 : -1;
+    int err = (dx > dy ? dx : -dy) / 2;
 
-    uint64_t start = (slope*(0-p1.x))+p1.y;
+    uint32_t color = rgba_to_int(r, g, b, a); 
 
-    uint32_t color = rgba_to_int(r, g, b, a);
-
-    for(int x = p1.x; x < vinfo.xres; ++x)
+    while (set_pixel(p1.x, p1.y, color), p1.x != p2.x || p1.y != p2.y) 
     {
-        uint64_t y = slope*x+start;
-        if(y >= vinfo.yres)
-        {
-            break;
-        } else {
-            set_pixel(x, y, color);
-        }
+        int e2 = err;
+        if (e2 > -dx) { err -= dy; p1.x += sx; }
+        if (e2 <  dy) { err += dx; p1.y += sy; }
     }
 }
 
