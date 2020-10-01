@@ -86,10 +86,7 @@ int main()
 	cr = cairo_create (surface);
     cairo_set_source_rgb (cr, 0, 0, 0);
     cairo_move_to(cr, 0, 0);
-    cairo_line_to (cr, vinfo.xres-1, 0);
-    cairo_line_to (cr, vinfo.xres-1, vinfo.yres-1);
-    cairo_line_to (cr, 0, vinfo.yres-1);
-    cairo_line_to (cr, 0, 0);
+    cairo_rectangle(cr, 0, 0, vinfo.xres, vinfo.yres);
 
     cairo_fill(cr);
 
