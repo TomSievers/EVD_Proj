@@ -1,29 +1,27 @@
 import cv2 as cv
-import numpy as np
 
-background_color_hsv_min = (77, 216, 180)
-background_color_hsv_max = (113, 255, 255)
+# this function warps the image
+def warp_image(image, width, height, old_corner_points, new_corner_points):
+    matrix = cv.getPerspectiveTransform(old_corner_points, new_corner_points)
+    img_warped = cv.warpPerspective(image, matrix, (width, height))
+    return img_warped
 
-img = cv.imread("image.jpg")
+# this function emoves the background of the table
+def remove_background(image, min_background_colors_hsv, max_background_colors_hsv):
+    img_background = cv.inRange(image, min_background_colors_hsv, max_background_colors_hsv)
+    img_background_reversed = cv.bitwise_not(img_background)
+    return img_background_reversed
 
-scale_x = 0.3
-scale_y = 0.3
-img = cv.resize(img, (0, 0), fx=scale_x, fy=scale_y)
-
-# warp the table
-height, width, channels = img.shape 
-points_old = np.float32([[160 * scale_x, 118 * scale_y],[1706 * scale_x, 118 * scale_y],[1824 * scale_x, 904 * scale_y],[70 * scale_x, 929 * scale_y]])
-point_warped = np.float32([[0, 0],[width, 0],[width, height],[0, height]])
-matrix = cv.getPerspectiveTransform(points_old, point_warped)
-img_warped = cv.warpPerspective(img, matrix, (width, height))
-
-img_noise_removed = cv.fastNlMeansDenoisingColored(img_warped,None,10,10,7,21)
-img_hsv = cv.cvtColor(img_noise_removed, cv.COLOR_BGR2HSV)
-
-# remove the table background
-img_background = cv.inRange(img_hsv, background_color_hsv_min, background_color_hsv_max)
-img_background_reversed = cv.bitwise_not(img_background)
-
-cv.imshow("table warped", img_warped)
-cv.imshow("table with balls", img_background_reversed)
-cv.waitKey(0)
+# function which can be used to get a preprocessed image
+# returns a warped image without noise and a image which has the background removed.
+def preprocess_image(image, width, height, old_corner_points, new_corner_points, min_background_colors_hsv, max_background_colors_hsv):
+    warped_image = warp_image(image, width, height, old_corner_points, new_corner_points)
+    img_noise_removed = cv.fastNlMeansDenoisingColored(warped_image, None, 10, 10, 7, 21)
+    img_hsv = cv.cvtColor(img_noise_removed, cv.COLOR_BGR2HSV)
+    
+    img_background_removed = remove_background(img_hsv, min_background_colors_hsv, max_background_colors_hsv)
+    
+    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
+    img_balls_opened = cv.morphologyEx(img_background_removed, cv.MORPH_OPEN, kernel)
+    
+    return img_hsv, img_balls_opened
