@@ -6,7 +6,6 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 
 find_package(OpenGL REQUIRED)
 
-
 if(NOT ${OpenGL_EGL_FOUND})
     message(SEND_ERROR "EGL NOT FOUND; INSTALL EGL")
 else()
