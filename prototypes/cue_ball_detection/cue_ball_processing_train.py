@@ -41,6 +41,7 @@ warped_image = cv.cvtColor(images_preprocessed[0], cv.COLOR_HSV2BGR)
 cv.imwrite("picture_warped.png", warped_image)
 cv.imwrite("picture_preprocessed.png", images_preprocessed[1])
 
+cv.imshow("image", img)
 cv.imshow("warped image", warped_image)
 cv.imshow("image pre_processed", images_preprocessed[1])
 cv.imshow("image_segmented", image_segmented[0])
