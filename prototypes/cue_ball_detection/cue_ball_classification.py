@@ -11,7 +11,6 @@ def classify_image(image, balls):
                 index_white_ball = index
                 max_value = value[2]
         
-        print("drawing", index)
         image = cv.circle(image_features_extracted, balls[index_white_ball][1], balls[index_white_ball][2], (0, 0, 255), thickness=-1)
     return image_features_extracted
     
