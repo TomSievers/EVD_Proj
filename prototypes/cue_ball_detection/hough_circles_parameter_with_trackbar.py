@@ -9,7 +9,7 @@ import numpy as np
 def nothing(x):
     pass
 
-img = cv.imread('image_preprocessed.jpg')
+img = cv.imread('picture_preprocessed.png')
 img_to_process = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
 cv.namedWindow('trackbars')
