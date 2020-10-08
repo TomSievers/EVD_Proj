@@ -54,12 +54,12 @@ def extract_features_image(preprocessed_images, segmentation_image, white_ball_c
 
     for ball in segmentation_image[1][0, :]:
         for center_point_index in range(len(balls_image_center_points)):
-            distance_between_center_points = math.sqrt(abs(math.pow(ball[0] - balls_image_center_points[center_point_index][0], 2) + math.pow(ball[1] - balls_image_center_points[center_point_index][1], 2)))
+            distance_between_center_points = math.sqrt(math.pow(ball[0] - balls_image_center_points[center_point_index][0], 2) + math.pow(ball[1] - balls_image_center_points[center_point_index][1], 2))
             
             # found the right ball
             if distance_between_center_points < ball[2]:
                 for white_center_point_index in range(len(white_image_center_points)):
-                    distance_between_white_center_points = math.sqrt(abs(math.pow(ball[0] - white_image_center_points[white_center_point_index][0], 2) + math.pow(ball[1] - white_image_center_points[white_center_point_index][1], 2)))
+                    distance_between_white_center_points = math.sqrt(math.pow(ball[0] - white_image_center_points[white_center_point_index][0], 2) + math.pow(ball[1] - white_image_center_points[white_center_point_index][1], 2))
 
                     # found a matching white piece
                     if distance_between_white_center_points < ball[2]:

@@ -16,7 +16,7 @@ def segment_image(preprocessed_images):
             for circle_to_compare in range(len(circles[0, :])):
                 # determine which circles should be removed
                 if circle != circle_to_compare:
-                    distance_between_center_points = math.sqrt(abs(math.pow(circles[0][circle][0] - circles[0][circle_to_compare][0], 2) + math.pow(circles[0][circle][1] - circles[0][circle_to_compare][1], 2)))
+                    distance_between_center_points = math.sqrt(math.pow(circles[0][circle][0] - circles[0][circle_to_compare][0], 2) + math.pow(circles[0][circle][1] - circles[0][circle_to_compare][1], 2))
                     if distance_between_center_points < circles[0][circle][2] and circle not in iters and circle_to_compare not in iters: 
                         iters.append(circle)
 
