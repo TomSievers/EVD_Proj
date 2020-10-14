@@ -66,5 +66,7 @@ def extract_features_image(preprocessed_images, segmentation_image, white_ball_c
                     if distance_between_white_center_points < ball[2]:
                         area = white_image_contour_area[white_center_point_index] / balls_image_contour_area[center_point_index] * 100
                         balls.append((area, (ball[0], ball[1]), ball[2]))
+
+    print(balls)
     
     return image_features_extracted, balls

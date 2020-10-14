@@ -9,7 +9,7 @@ def classify_image(image, balls):
         for index, value in enumerate(balls):
             if value[0] > max_value:
                 index_white_ball = index
-                max_value = value[2]
+                max_value = value[0]
         
         image = cv.circle(image_features_extracted, balls[index_white_ball][1], balls[index_white_ball][2], (0, 0, 255), thickness=-1)
     return image_features_extracted
