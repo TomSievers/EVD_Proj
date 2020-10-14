@@ -27,8 +27,10 @@ def find_contours_center_points(contours):
 def extract_features_image(preprocessed_images, segmentation_image, white_ball_color_min_hsv, white_ball_color_max_hsv): 
     white_parts_image = cv.inRange(preprocessed_images[0], white_ball_color_min_hsv, white_ball_color_max_hsv)
     converted_image = cv.cvtColor(white_parts_image, cv.COLOR_GRAY2BGR)
-    
+
     height, width, channels = converted_image.shape
+    
+    # comment this for loop out to measure the time this script takes to extract features from balls (loop is for visualizing only, to improve speed change to Numpy loop)
     for i in range(height):
         for j in range(width):
             if converted_image[i][j][0] == 255 or converted_image[i][j][1] == 255 or converted_image[i][j][2] == 255:
@@ -39,7 +41,6 @@ def extract_features_image(preprocessed_images, segmentation_image, white_ball_c
     # get a picture with both the segments (balls) and the while ball for visualization
     image_features_extracted = cv.bitwise_xor(segmentation_image[0], converted_image)
 
-    
     # determine by what percentage the balls are white
     white_image_contours, white_image_hierarchy = cv.findContours(white_parts_image, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     white_image_contour_area = find_contours_area(white_image_contours)
@@ -48,7 +49,7 @@ def extract_features_image(preprocessed_images, segmentation_image, white_ball_c
     balls_image_contours, balls_image_hierarchy = cv.findContours(preprocessed_images[1], cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     balls_image_contour_area = find_contours_area(balls_image_contours)
     balls_image_center_points = find_contours_center_points(balls_image_contours)
-
+    
     # list with percentage of white part of ball + center point + radius
     balls = []
 
@@ -65,6 +66,5 @@ def extract_features_image(preprocessed_images, segmentation_image, white_ball_c
                     if distance_between_white_center_points < ball[2]:
                         area = white_image_contour_area[white_center_point_index] / balls_image_contour_area[center_point_index] * 100
                         balls.append((area, (ball[0], ball[1]), ball[2]))
-
-                
+    
     return image_features_extracted, balls

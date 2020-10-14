@@ -16,7 +16,7 @@ def remove_background(image, min_background_colors_hsv, max_background_colors_hs
 # returns a warped image without noise and a image which has the background removed.
 def preprocess_image(image, width, height, old_corner_points, new_corner_points, min_background_colors_hsv, max_background_colors_hsv):
     warped_image = warp_image(image, width, height, old_corner_points, new_corner_points)
-    img_noise_removed = cv.fastNlMeansDenoisingColored(warped_image, None, 10, 10, 7, 21)
+    img_noise_removed = cv.GaussianBlur(warped_image, (5, 5), 0)
     img_hsv = cv.cvtColor(img_noise_removed, cv.COLOR_BGR2HSV)
     
     img_background_removed = remove_background(img_hsv, min_background_colors_hsv, max_background_colors_hsv)
