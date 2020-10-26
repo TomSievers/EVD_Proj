@@ -183,11 +183,11 @@ def update():
 
             #   5.4 Use the angle, center and radius of the cue ball to calculate at which point the line starts.
             #       - The point is: x = (x1 + r + cos(radians)), y = (y1 + r + sin(radians))
-            hit_point = (int(start_point[0] + 2000 * np.cos(trj_angle)), int(start_point[1] + 2000 * np.sin(trj_angle)))
+            end_point = (int(start_point[0] + 2000 * np.cos(trj_angle)), int(start_point[1] + 2000 * np.sin(trj_angle)))
 
             #   5.5 Draw the trajectory.
             #       - When the edge of the image is released then continue on a new angle or stop after 5 collision.
-            line = np.array([start_point, hit_point])
+            line = np.array([start_point, end_point])
 
             # Filter out balls that are possible to hit
             selected_balls = []
@@ -198,7 +198,7 @@ def update():
             # Sort the balls based on distance
 
             def point_distance(pt1, pt2):
-                return math.sqrt(math.pow(pt2[0]-pt1[0], 2)+math.pow(pt2[1]-pt1[0], 2))
+                return math.sqrt(math.pow(pt2[0]-pt1[0], 2)+math.pow(pt2[1]-pt1[1], 2))
 
             def point_by_angle(pt, angle, distance):
                 x = pt[0] + (distance * math.cos(angle))
@@ -211,39 +211,44 @@ def update():
             for ball in selected_balls:
                 if ball in hit_balls:
                     continue
-                if line_circle_collision(start_point, hit_point, ball, cue_ball_radius):
-                    points = line_circle_intersection(start_point, hit_point, ball, cue_ball_radius)
+                if line_circle_collision(start_point, end_point, ball, cue_ball_radius*2):
+                    points = line_circle_intersection(start_point, end_point, ball, cue_ball_radius*2)
                     if len(points) <= 0 or start_point == points[0]:
                         continue
 
-                    hit_point = points[0]
-                    ball_hit = True
-                    trj_angle = points_to_angle(ball, hit_point)
-                    cv.line(shown_image, hit_point, point_by_angle(hit_point, invert_angle(trj_angle), img.shape[1]*2), (255, 100, 255), thickness=3)
+                    end_point = points[0]
+                    cv.circle(shown_image, end_point, cue_ball_radius, (0, 255,255), thickness=2)
 
-                    trj_angle += math.pi / 2
+                    ball_hit = True
+                    trj_angle = invert_angle(points_to_angle(ball, end_point))
+                    cv.line(shown_image, end_point, point_by_angle(end_point, trj_angle, img.shape[1]*2), (255, 100, 255), thickness=3)
+
+                    if cue_angle > points_to_angle(start_point, ball):
+                        trj_angle += math.pi / 2
+                    else:
+                        trj_angle -= math.pi / 2
 
                     hit_balls.append(ball)
                     break
 
             if ball_hit:
-                cv.line(shown_image, start_point, hit_point, (100, 100, 255), thickness=3)
-                start_point = hit_point
+                cv.line(shown_image, start_point, end_point, (100, 100, 255), thickness=3)
+                start_point = end_point
                 continue
 
             # Added check so trajectory stops at pocket
             in_pocket = False
             for pocket in pockets:
-                if line_circle_collision(start_point, hit_point, pocket, 40):  # approximate pocket size in this example
-                    points = line_circle_intersection(start_point, hit_point, pocket, 40)
+                if line_circle_collision(start_point, end_point, pocket, 40):  # approximate pocket size in this example
+                    points = line_circle_intersection(start_point, end_point, pocket, 40)
                     if len(points) <= 0:
                         continue
                     in_pocket = True
-                    hit_point = points[0]
+                    end_point = points[0]
                     break
 
             if in_pocket:
-                cv.line(shown_image, start_point, hit_point, (100, 100, 255), thickness=3)
+                cv.line(shown_image, start_point, end_point, (100, 100, 255), thickness=3)
                 break
 
             sides = [0, 0]
@@ -261,6 +266,9 @@ def update():
             for i in sides:
                 boundary = np.array([table[i], table[0 if i + 1 > 3 else i + 1]], dtype=float)
                 point = line_intersect(line.astype(np.float), boundary)
+                if point is None:
+                    continue
+
                 if 0 <= point[0] <= img.shape[1] and 0 <= point[1] <= img.shape[0]:
                     cv.circle(shown_image, point, 10, (0, 0, 255), thickness=3)
                     cv.line(shown_image, start_point, point, (100, 100, 255), thickness=3)
@@ -281,7 +289,7 @@ def update():
 
                     hit_x = int(start_point[0] + 2000 * np.cos(trj_angle))
                     hit_y = int(start_point[1] + 2000 * np.sin(trj_angle))
-                    hit_point = (hit_x, hit_y)
+                    end_point = (hit_x, hit_y)
                     found = True
                     break
 
@@ -311,7 +319,8 @@ def update():
     cv.namedWindow("img", cv.WINDOW_NORMAL)
     cv.setMouseCallback("img", mouse_event)
     cv.imshow("img", shown_image)
-    cv.waitKey(0)
+    if(cv.waitKey(0) == 27):
+        exit(200)
 
 
 update()

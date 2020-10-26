@@ -121,12 +121,12 @@ def update():
         while collisions <= 5:
             #   5.4 Use the angle, center and radius of the cue ball to calculate at which point the line starts.
             #       - The point is: x = (x1 + r + cos(radians)), y = (y1 + r + sin(radians))
-            hit_point = (int(start_point[0] + 2000 * np.cos(trj_angle)), int(start_point[1] + 2000 * np.sin(trj_angle)))
+            end_point = (int(start_point[0] + 2000 * np.cos(trj_angle)), int(start_point[1] + 2000 * np.sin(trj_angle)))
 
             #   5.5 Draw the trajectory.
             #       - When the edge of the image is released then continue on a new angle or stop after 5 collision.
-            cv.line(shown_image, start_point, hit_point, (100, 100, 255), thickness=3)
-            line = np.array([start_point, hit_point])
+            cv.line(shown_image, start_point, end_point, (100, 100, 255), thickness=3)
+            line = np.array([start_point, end_point])
 
             sides = [0, 0]
             if trj_angle < 0:
@@ -160,9 +160,9 @@ def update():
 
                     hit_x = int(start_point[0] + 2000 * np.cos(trj_angle))
                     hit_y = int(start_point[1] + 2000 * np.sin(trj_angle))
-                    hit_point = (hit_x, hit_y)
+                    end_point = (hit_x, hit_y)
                     cv.circle(shown_image, start_point, 10, (0, 0, 255), thickness=3)
-                    cv.line(shown_image, start_point, hit_point, (0, 0, 255), thickness=3)
+                    cv.line(shown_image, start_point, end_point, (0, 0, 255), thickness=3)
                     found = True
                     break
 
