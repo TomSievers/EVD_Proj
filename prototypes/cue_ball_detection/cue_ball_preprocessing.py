@@ -21,7 +21,7 @@ def preprocess_image(image, width, height, old_corner_points, new_corner_points,
     
     img_background_removed = remove_background(img_hsv, min_background_colors_hsv, max_background_colors_hsv)
     
-    kernel = cv.getStructuringElement(cv.MORPH_RECT, (3, 3))
+    kernel = cv.getStructuringElement(cv.MORPH_ELLIPSE, (3, 3))
     img_balls_opened = cv.morphologyEx(img_background_removed, cv.MORPH_OPEN, kernel)
     
     return img_hsv, img_balls_opened
