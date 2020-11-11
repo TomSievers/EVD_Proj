@@ -1,16 +1,15 @@
-@startuml
+@startuml 
+title Component diagram
 
 component ImageCapture
 
 component CueDetector
 
-component UIDetector
+component GestureDetector
 
 component BallDetector
 
 component BoundaryDetector
-
-component DetectorFacade
 
 component UserInterface
 
@@ -19,8 +18,6 @@ component AidController
 component ImageDrawer
 
 component TrajectoryCalculator
-
-component CueOrientationCalculator
 
 component Visualizer
 
@@ -34,18 +31,28 @@ interface IImageDrawer
 AidController --( ITrajectory
 ITrajectory -- TrajectoryCalculator
 
-AidController --( IImageDrawer
+Visualizer --( IImageDrawer
 IImageDrawer -- ImageDrawer
 
+CueDetector -- IDetector
+GestureDetector -- IDetector
+BallDetector -- IDetector
+BoundaryDetector -- IDetector
 
+ICapture )-- CueDetector
+ICapture )-- BallDetector
+ICapture )-- GestureDetector
+ICapture )-- BoundaryDetector
 
+IUserInterface )- AidController
+UserInterface - IUserInterface
+IDetector )-- UserInterface
 
 AidController -( IVisual
 IVisual - Visualizer
 
-DetectorFacade -- IDetector
 IDetector )-- AidController
 
-ImageCapture - ICapture
+ImageCapture -- ICapture
 
 @enduml

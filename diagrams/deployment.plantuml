@@ -1,0 +1,70 @@
+@startuml
+
+title Deployment Diagram
+
+node Camera as "<<device>>\nRaspberry Pi High Quality Camera"
+
+node Projector as "<<device>>\nBenQ"
+
+node RPi as "<<device>>\nRaspberry Pi 3 Model B+" {
+    node OS as "<<OS>>\nRaspberry Pi OS"{
+        component ImageCapture
+
+        component CueDetector
+
+        component GestureDetector
+
+        component BallDetector
+
+        component BoundaryDetector
+
+        component UserInterface
+
+        component AidController
+
+        component ImageDrawer
+
+        component TrajectoryCalculator
+
+        component Visualizer
+        interface IDetector
+
+        artifact CamDriver as "IMX477 driver"
+
+        artifact FBDev as "Framebuffer device"
+    }   
+}
+
+ImageDrawer ..> FBDev
+
+FBDev ..> Projector
+
+ImageCapture .> CamDriver
+
+CamDriver ..> Camera
+
+AidController ..> TrajectoryCalculator
+
+Visualizer ..> ImageDrawer
+
+CueDetector -- IDetector
+GestureDetector -- IDetector
+BallDetector -- IDetector
+BoundaryDetector -- IDetector
+
+ImageCapture <.. CueDetector
+ImageCapture <.. BallDetector
+ImageCapture <.. GestureDetector
+ImageCapture <.. BoundaryDetector
+
+UserInterface <. AidController
+IDetector <.. UserInterface
+
+AidController .> Visualizer
+
+IDetector <.. AidController
+
+Camera - RPi : "<<protocol>>\nMIPI CSI-2"
+RPi - Projector : "<<protocol>>\nHDMI v1.3"
+
+@enduml
