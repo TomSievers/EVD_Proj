@@ -8,11 +8,11 @@ package ImageCapture
         # active : bool
         # thread : std::thread
         # updateMutex : std::mutex
-        # ROI : cv::Rect
-        + //setRoi(roi : cv::Rect) : void//
+        # ROI : cv::Point[4]
+        + //setRoi(roi : const cv::Point[4]) : void//
         + //getFrame() : cv::Mat//
         + //stop() : void//
-        - //update(active : bool) : void//
+        - //update() : void//
     }
 
     class Capture
@@ -23,12 +23,13 @@ package ImageCapture
 
     class CameraConfig
     {
-        + CameraConfig(filepath : string)
-        + getValue(key : string) : string
+        - file : std::ifstream
+        + CameraConfig(filepath : const string&)
+        + getValue(key : const string&) : string
     }
 }
 
 ICapture <|. Capture
-Capture -> "1" CameraConfig : "- config"
+Capture -> "1" CameraConfig
 
 @enduml
