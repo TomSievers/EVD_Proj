@@ -8,6 +8,7 @@ package ImageCapture
         # active : bool
         # thread : std::thread
         # updateMutex : std::mutex
+        # ROI : cv::Rect
         + //setRoi(roi : cv::Rect) : void//
         + //getFrame() : cv::Mat//
         + //stop() : void//
