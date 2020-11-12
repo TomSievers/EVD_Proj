@@ -1,0 +1,33 @@
+@startuml
+
+package ImageCapture
+{
+    interface ICapture
+    {
+        # curFrame : cv::Mat
+        # active : bool
+        # thread : std::thread
+        # updateMutex : std::mutex
+        + //setRoi(roi : cv::Rect) : void//
+        + //getFrame() : cv::Mat//
+        + //stop() : void//
+        - //update(active : bool) : void//
+    }
+
+    class Capture
+    {
+        - cap : cv::VideoCapture
+        + Capture(device:int)
+    }
+
+    class CameraConfig
+    {
+        + CameraConfig(filepath : string)
+        + getValue(key : string) : string
+    }
+}
+
+ICapture <|. Capture
+Capture -> "1" CameraConfig : "- config"
+
+@enduml
