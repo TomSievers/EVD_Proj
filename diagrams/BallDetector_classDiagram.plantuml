@@ -41,12 +41,12 @@ package Detector {
     }
 
     class BallDetector {
-        - imageProcessor : std::vector<ImageProcessing> 
+        - imageProcessor : std::vector<std::unique_ptr<IImageProcessing>> 
     }
 
     note "The imageProcessor vector contains variables with the following types:\nBallAcquisition,\nBallEnhancement,\nBallSegmentation,\nBallFeatureExtraction,\nBallClassification" as BallDetectorNode
 
-    interface ImageProcessing {
+    interface IImageProcessing {
         + //getImage(image : const cv::Mat&) : cv::Mat//
         + //updateImageData(image : const cv::Mat&, ballData : std::vector<BallData>&) : void//
     }
@@ -88,13 +88,13 @@ Object <|.. BallObject
 BallObject --> Point
 BallObject --> BallType
 BallAcquisition ..> ICapture
-ImageProcessing <|.. BallAcquisition
-ImageProcessing <|.. BallEnhancement
-ImageProcessing <|.. BallSegmentation
-ImageProcessing <|.. BallFeatureExtraction
-ImageProcessing <|.. BallClassification
-ImageProcessing .> BallData
-BallDetector --> ImageProcessing
+IImageProcessing <|.. BallAcquisition
+IImageProcessing <|.. BallEnhancement
+IImageProcessing <|.. BallSegmentation
+IImageProcessing <|.. BallFeatureExtraction
+IImageProcessing <|.. BallClassification
+IImageProcessing .> BallData
+BallDetector --> IImageProcessing
 BallDetector - BallDetectorNode
 BallData -> Point
 BallData -> BallType
