@@ -37,7 +37,7 @@ package Detector {
     }
 
     interface IDetector {
-        + //getObjects() : std::vector<Object>//
+        + //getObjects() : std::vector<std::unique_ptr<Object>>//
     }
 
     class BallDetector {
