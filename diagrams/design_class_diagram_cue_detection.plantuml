@@ -1,0 +1,16 @@
+@startuml 
+header
+Design class diagram CueDetector
+endheader
+
+package Detector{
+    Class CueDetector{
+        - src : cv::Mat
+        - copy_src : cv::Mat
+        - threshold : cv::Mat
+        - hsv : cv::Mat
+        + run() : void
+    }
+}
+
+@enduml
