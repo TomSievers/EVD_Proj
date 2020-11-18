@@ -2,7 +2,7 @@
 #include <iostream>
 #include <regex>
 
-#define LINE_MAX 255
+#define LINE_MAX 500
 
 namespace ImageCapture
 {
@@ -47,17 +47,27 @@ namespace ImageCapture
         std::regex reg("[^:]+");
         char line[LINE_MAX] = "";
         std::string value;
+
+        file.seekg(0);
+        
         while(file.getline(line, LINE_MAX, '\n'))
         {
             std::string sline = line;
             std::sregex_iterator begin(sline.begin(), sline.end(), reg);
             std::sregex_iterator end;
-            std::string fkey = begin->str();
-            if(fkey.find(key) == 0)
+
+            if(begin != end)
             {
-                ++begin;
-                value = trim(begin->str());
-                return value;
+                std::string fkey = trim(begin->str());
+                if(fkey == key)
+                {
+                    ++begin;
+                    if(begin != end)
+                    {
+                        value = trim(begin->str());
+                        return value;
+                    }
+                }
             }
         }
         value.clear();

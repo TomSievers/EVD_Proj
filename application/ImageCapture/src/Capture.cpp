@@ -24,6 +24,35 @@ namespace ImageCapture
             throw std::runtime_error(funName + ": Video capture could not be opened");
         }
 
+        std::map<std::string, cv::VideoCaptureProperties> basic_settings = {
+            {"framerate", cv::CAP_PROP_FPS},
+            {"width", cv::CAP_PROP_FRAME_WIDTH},
+            {"height", cv::CAP_PROP_FRAME_HEIGHT}
+        };
+
+        for(auto& setting : basic_settings)
+        {
+            std::string val = config.getValue(setting.first);
+            if(!val.empty())
+            {
+                try
+                {
+                    double dVal = std::stod(val);
+                    if(!cap.set(setting.second, dVal))
+                    {
+                        std::cout << "Info: unable to set property: " << setting.first << std::endl;
+                    }
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << "Info: unable to convert string to int of key: " << setting.first << " " << e.what() << '\n';
+                }
+
+            } else {
+                std::cout << "Info: " << setting.first << " not found in configuration file" << std::endl;
+            }
+        }
+
         std::string dev_str = "/dev/video";
         dev_str += std::to_string(device);
 
@@ -57,14 +86,13 @@ namespace ImageCapture
                     set.value = std::stoi(val);
                 }
 
-                int ret = ioctl(fd, VIDIOC_S_CTRL, &set);
-                if(ret != 0)
+                if(ioctl(fd, VIDIOC_S_CTRL, &set) != 0)
                 {
                     std::cout << "Info: unable to set setting " << setting.name << "; errno: " << errno << std::endl;
                 }
             } else 
             {
-                std::cout << "Info: " << setting.name << "not found in configuration file" << std::endl;
+                std::cout << "Info: " << setting.name << " not found in configuration file" << std::endl;
             }
         }
 
