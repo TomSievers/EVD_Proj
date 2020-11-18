@@ -16,7 +16,7 @@ set(SRC
 
 add_executable(${PROJECT_NAME}_test src/test.cpp ${SRC})
 
-add_library(${PROJECT_NAME} SHARED ${SRC})
+add_library(${PROJECT_NAME} STATIC ${SRC})
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME}_test ${OpenCV_LIBRARIES})
