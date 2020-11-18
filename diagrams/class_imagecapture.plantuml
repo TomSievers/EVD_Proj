@@ -8,8 +8,7 @@ package ImageCapture
         # active : bool
         # thread : std::thread
         # updateMutex : std::mutex
-        # ROI : cv::Point[4]
-        + //setRoi(roi : const cv::Point[4]) : void//
+        + //setRoi(roi : const cv::Point2f[4], width : float, height : float) : void//
         + //getFrame() : cv::Mat//
         + //stop() : void//
         - //update() : void//
@@ -17,6 +16,7 @@ package ImageCapture
 
     class Capture
     {
+        - targetROI : cv::Point2f[4]
         - cap : cv::VideoCapture
         + Capture(device:int)
     }
@@ -27,9 +27,18 @@ package ImageCapture
         + CameraConfig(filepath : const string&)
         + getValue(key : const string&) : string
     }
+
+    class V4L2Settings <<struct>>
+    {
+        + id : int
+        + name : string
+        + menu_items : map<string, int>
+    }
 }
 
 ICapture <|. Capture
 Capture -> "1" CameraConfig
+
+Capture --> "1" V4L2Settings
 
 @enduml

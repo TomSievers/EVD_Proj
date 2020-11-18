@@ -1,18 +1,5 @@
-#include <ImageCapture/include/Capture.hpp>
+#include <include/Capture.hpp>
 #include <opencv2/highgui.hpp>
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <linux/ioctl.h>
-#include <linux/types.h>
-#include <linux/v4l2-common.h>
-#include <linux/v4l2-controls.h>
-#include <linux/videodev2.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
-#include <errno.h>
 
 int main(int argc, char const *argv[])
 {
@@ -38,7 +25,5 @@ int main(int argc, char const *argv[])
             cap.setROI(roi, 400, 200);
         }
     }
-
-    
     return 0;
 }
