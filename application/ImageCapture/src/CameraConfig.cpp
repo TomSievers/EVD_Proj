@@ -52,8 +52,8 @@ namespace ImageCapture
             std::string sline = line;
             std::sregex_iterator begin(sline.begin(), sline.end(), reg);
             std::sregex_iterator end;
-            std::string fkey = trim(begin->str());
-            if(fkey == key)
+            std::string fkey = begin->str();
+            if(fkey.find(key) == 0)
             {
                 ++begin;
                 value = trim(begin->str());

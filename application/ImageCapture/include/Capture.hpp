@@ -60,7 +60,7 @@ namespace ImageCapture
             }, 
             {
                 "white_balance_auto_preset",
-                V4L2_CID_AUTO_WHITE_BALANCE,
+                V4L2_CID_AUTO_N_PRESET_WHITE_BALANCE,
                 {
                     {"auto", V4L2_WHITE_BALANCE_AUTO},
                     {"manual", V4L2_WHITE_BALANCE_MANUAL},

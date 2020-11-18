@@ -14,8 +14,6 @@
 #include <sys/ioctl.h>
 #include <map>
 
-using namespace std::chrono_literals;
-
 namespace ImageCapture
 {
     Capture::Capture(int device) : cap(cv::VideoCapture(device)), config("../rpi_hq_cam.cfg")
