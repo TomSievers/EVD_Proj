@@ -1,0 +1,15 @@
+@startuml
+
+create "ballDetector : BallDetector" as ballDetector
+main -> ballDetector : <<construct>>
+create "capture : Capture" as capture
+main -> capture : <<construct>>
+
+create "ballAcquisitor : BallAcquisition" as ballAcquisitor
+create "ballEnhancement : BallEnhancement" as ballAcquisitor
+create "ballAcquisitor : BallSegmentation" as ballAcquisitor
+create "ballAcquisitor : BallFeatureExtraction" as ballAcquisitor
+create "ballAcquisitor : BallClassification" as ballAcquisitor
+
+
+@enduml

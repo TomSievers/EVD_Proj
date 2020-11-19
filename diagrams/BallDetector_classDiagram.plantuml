@@ -20,7 +20,10 @@ package Detector {
 
     }
 
+    note "percentageWhite is a variable which should only\nbe used by the IImageProcessing interface" as BallObjectNode
+
     class BallObject <<struct>> {
+        + percentageWhite : uint8_t
         + point : Point
         + radius : uint16_t
         + ballType : BallType
@@ -48,14 +51,7 @@ package Detector {
 
     interface IImageProcessing {
         + //getImage(image : const cv::Mat&) : cv::Mat//
-        + //updateImageData(image : const cv::Mat&, ballData : std::vector<BallData>&) : void//
-    }
-
-    class BallData <<struct>> {
-        + percentageWhite : uint8_t
-        + centerPoint : Point
-        + radius : uint16_t
-        + ballType : BallType
+        + //updateImageData(image : const cv::Mat&, BallObject : std::vector<BallObject>&) : void//
     }
 
     class BallAcquisition {
@@ -72,11 +68,11 @@ package Detector {
     }
 
     class BallFeatureExtraction {
-        - determineWhitePercentage(ballData : std::vector<BallData>&) : void
+        - determineWhitePercentage(BallObject : std::vector<BallObject>&) : void
     }
 
     class BallClassification {
-        - classifyBalls(ballData : std::vector<BallData>&) : void
+        - classifyBalls(BallObject : std::vector<BallObject>&) : void
     }
 }
 
@@ -93,10 +89,9 @@ IImageProcessing <|.. BallEnhancement
 IImageProcessing <|.. BallSegmentation
 IImageProcessing <|.. BallFeatureExtraction
 IImageProcessing <|.. BallClassification
-IImageProcessing .> BallData
+IImageProcessing .> BallObject
 BallDetector --> IImageProcessing
 BallDetector - BallDetectorNode
-BallData -> Point
-BallData -> BallType
+BallObject - BallObjectNode
 
 @enduml
