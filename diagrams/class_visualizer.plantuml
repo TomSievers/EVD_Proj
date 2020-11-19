@@ -1,0 +1,35 @@
+@startuml
+
+package Visualizer
+{
+    class CueBall <<struct>>
+    {
+        + centerPoint : cv::Point
+        + radius : double
+        + thickness : int
+        + CueBall(center : cv::Point)
+    }
+
+    class Trajectories <<struct>>
+    {
+        + cueBallTrajectory : vector<cv::Point>
+        + otherBallTrajectories : vector<vector<cv::Point>>
+    }
+
+    interface IVisual
+    {
+        + update(ball : CueBall, trajectories : Trajectories)
+    }
+
+    class ObjectVisualizer
+    {
+
+    }
+}
+
+CueBall <.. IVisual
+Trajectories <.. IVisual
+
+IVisual <|.. ObjectVisualizer
+
+@enduml
