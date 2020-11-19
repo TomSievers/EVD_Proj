@@ -18,12 +18,12 @@ package Visualizer
 
     interface IVisual
     {
-        + update(ball : CueBall, trajectories : Trajectories)
+        + update(ball : const CueBall&, trajectories : const Trajectories&) : void
     }
 
     class ObjectVisualizer
     {
-        - coordTrans (point : cv::Point) : cv::Point 
+        - coordTrans (point : const cv::Point&) : cv::Point 
     }
 }
 
@@ -31,11 +31,11 @@ package ImageDrawer
 {
     interface IImageDrawer
     {
-        + setDrawColor(color : ColorRGBAInt) : void
-        + setDrawColor(color : ColorRGBInt) : void
-        + setBackground(color : ColorRGBInt) : void
-        + drawCircle(center : cv::Point, radius : double, thickness : int) : void
-        + drawLine(pointA : cv::Point, pointB : cv::Point, thickness : int) : void
+        + setDrawColor(color : const ColorRGBAInt&) : void
+        + setDrawColor(color : const ColorRGBInt&) : void
+        + setBackground(color : const ColorRGBInt&) : void
+        + drawCircle(center : const cv::Point&, radius : double, thickness : int) : void
+        + drawLine(pointA : const cv::Point&, pointB : const cv::Point&, thickness : int) : void
     }
 }
 
