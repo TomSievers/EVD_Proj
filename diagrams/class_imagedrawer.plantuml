@@ -18,6 +18,7 @@ package ImageDrawer
     {
         + setDrawColor(color : ColorRGBAInt) : void
         + setDrawColor(color : ColorRGBInt) : void
+        + setBackground(color : ColorRGBInt) : void
         + drawCircle(center : cv::Point, radius : double, thickness : int) : void
         + drawLine(pointA : cv::Point, pointB : cv::Point, thickness : int) : void
     }
