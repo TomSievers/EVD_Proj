@@ -4,6 +4,7 @@
 #include <opencv2/core.hpp>
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include <array>
 
 namespace ImageCapture
@@ -40,7 +41,7 @@ namespace ImageCapture
         ICapture(){};
         virtual ~ICapture(){};
         cv::Mat curFrame;
-        bool active;
+        std::atomic_bool active;
         std::thread thread;
         std::mutex updateMutex;
         cv::Mat transMat;

@@ -103,20 +103,20 @@ namespace ImageCapture
             throw std::runtime_error(funName + ": Video device could not closed be after settings");
         }
 
-        active = true;
+        active.store(true);
         thread = std::thread(&Capture::update, this);
     }
 
     void Capture::stop()
     {
-        std::lock_guard<std::mutex> guard(updateMutex);
-        active = false;
+        
+        active.store(false);
     }
 
     void Capture::update()
     {
         cv::Mat tmpFrame;
-        if(active)
+        if(active.load())
         {
             cap >> tmpFrame;
 
