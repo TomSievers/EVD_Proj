@@ -24,14 +24,9 @@ package Detector {
 
     class BallObject <<struct>> {
         + percentageWhite : uint8_t
-        + point : Point
+        + point : cv::Point
         + radius : uint16_t
         + ballType : BallType
-    }
-
-    class Point <<struct>> {
-        + x : uint16_t
-        + y : uint16_t
     }
 
     enum BallType {
@@ -81,7 +76,6 @@ package Detector {
 IDetector <|.. BallDetector
 IDetector .> Object
 Object <|.. BallObject
-BallObject --> Point
 BallObject --> BallType
 BallAcquisition ..> ICapture
 IImageProcessing <|.. BallAcquisition
