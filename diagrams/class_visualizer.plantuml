@@ -23,13 +23,27 @@ package Visualizer
 
     class ObjectVisualizer
     {
-
+        - coordTrans (point : cv::Point) : cv::Point 
     }
 }
 
-CueBall <.. IVisual
-Trajectories <.. IVisual
+package ImageDrawer
+{
+    interface IImageDrawer
+    {
+        + setDrawColor(color : ColorRGBAInt) : void
+        + setDrawColor(color : ColorRGBInt) : void
+        + setBackground(color : ColorRGBInt) : void
+        + drawCircle(center : cv::Point, radius : double, thickness : int) : void
+        + drawLine(pointA : cv::Point, pointB : cv::Point, thickness : int) : void
+    }
+}
+
+CueBall "1" <-- IVisual : prevBall
+Trajectories "1" <-- IVisual : prevTrajectory
 
 IVisual <|.. ObjectVisualizer
+
+IVisual -> "1" IImageDrawer : drawer
 
 @enduml
