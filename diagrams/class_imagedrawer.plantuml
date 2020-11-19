@@ -1,0 +1,42 @@
+@startuml
+
+package ImageDrawer
+{
+    class ColorRGBInt <<struct>>
+    {
+        + r : int
+        + b : int
+        + g : int
+    }
+
+    class ColorRGBAInt <<struct>>
+    {
+        + a : int
+    }
+
+    interface IImageDrawer
+    {
+        + setDrawColor(color : ColorRGBAInt) : void
+        + setDrawColor(color : ColorRGBInt) : void
+        + drawCircle(center : cv::Point, radius : double, thickness : int) : void
+        + drawLine(pointA : cv::Point, pointB : cv::Point, thickness : int) : void
+    }
+
+    class CairoDrawer
+    {
+        - fbp : char*
+        - cairoContext : cairo_t*
+        - cairoSurface : cairo_surface_t*
+        - setTty(device : string, mode : int)
+        + CairoDrawer(framebuffer : string, terminal : string, format : cairo_format_t)
+    }
+}
+
+IImageDrawer .> ColorRGBInt
+IImageDrawer .> ColorRGBAInt
+
+IImageDrawer <|.. CairoDrawer
+
+ColorRGBInt <|-- ColorRGBAInt
+
+@enduml
