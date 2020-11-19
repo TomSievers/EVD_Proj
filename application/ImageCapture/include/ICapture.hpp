@@ -30,12 +30,13 @@ namespace ImageCapture
          * 
          */
         virtual void stop() = 0;
+        
+    protected:
         /**
          * @brief Update loop called by internal thread
          * 
          */
         virtual void update() = 0;
-    protected:
         ICapture(){};
         virtual ~ICapture(){};
         cv::Mat curFrame;

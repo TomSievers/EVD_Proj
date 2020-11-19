@@ -11,7 +11,7 @@ package ImageCapture
         + //setRoi(roi : const cv::Point2f[4], width : float, height : float) : void//
         + //getFrame() : cv::Mat//
         + //stop() : void//
-        - //update() : void//
+        # //update() : void//
     }
 
     class Capture
