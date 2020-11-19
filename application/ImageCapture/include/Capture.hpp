@@ -46,12 +46,13 @@ namespace ImageCapture
          * 
          */
         virtual void stop();
-        /**
+        
+    private:
+    /**
          * @brief Update loop called by internal thread
          * 
          */
         virtual void update();
-    private:
         CameraConfig config;
         cv::VideoCapture cap;
         std::array<cv::Point2f, 4> targetROI = {cv::Point2f(0, 0), cv::Point2f(200, 0), cv::Point2f(200, 100), cv::Point2f(0, 100)};
