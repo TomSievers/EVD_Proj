@@ -1,0 +1,39 @@
+@startuml
+
+participant main as "main"
+participant cap as "Capture : cap"
+participant conf as "CameraConfig : config"
+
+create cap
+activate main
+main -> cap : <<construct>>
+activate cap
+
+create conf
+cap -> conf : <<construct>>
+
+cap -> conf : getValue(exposure) : exposure
+activate conf
+conf --> cap
+deactivate conf
+
+cap -> conf !! : <<deconstruct>>
+
+cap -> cap : update()
+activate cap
+
+main -> cap : getFrame() : frame
+cap --> main
+
+cap -> cap : update()
+
+
+main -> cap : stop()
+deactivate cap
+cap --> main
+deactivate cap
+
+main -> cap !! : <<deconstruct>>
+
+
+@enduml
