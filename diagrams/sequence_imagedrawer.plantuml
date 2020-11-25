@@ -1,0 +1,16 @@
+@startuml
+
+participant main as "main"
+participant cairo as "CairoDrawer : drawer"
+
+create cairo
+main -> cairo : <<construct>>
+activate cairo
+cairo -> cairo : (terminal : string, KD_GRAPHICS : int) : void
+activate cairo
+deactivate cairo
+cairo -> : cairo_image_surface_create_for_data(fbp : *unsigned char, )
+deactivate cairo
+
+
+@enduml
