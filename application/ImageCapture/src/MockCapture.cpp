@@ -1,7 +1,6 @@
 #include <include/MockCapture.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
-#include <iostream>
 
 namespace ImageCapture
 {
@@ -25,7 +24,7 @@ namespace ImageCapture
     void MockCapture::update()
     {
         cv::Mat tmpFrame;
-        if(active.load())
+        while(active.load())
         {
             tmpFrame = img.clone();
 
@@ -41,7 +40,6 @@ namespace ImageCapture
                 }
                 updateMutex.unlock();
             }
-            update();
         }
     }
 

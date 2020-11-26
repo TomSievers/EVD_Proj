@@ -1,4 +1,4 @@
-#include <include/BoundarySegmentation.hpp>
+#include <include/Boundary/BoundarySegmentation.hpp>
 #include <opencv2/imgproc.hpp>
 
 namespace Detector

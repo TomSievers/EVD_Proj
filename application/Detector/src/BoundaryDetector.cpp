@@ -1,7 +1,7 @@
-#include <include/BoundaryDetector.hpp>
-#include <include/BoundaryEnhancement.hpp>
-#include <include/BoundaryFeatureExtract.hpp>
-#include <include/BoundarySegmentation.hpp>
+#include <include/Boundary/BoundaryDetector.hpp>
+#include <include/Boundary/BoundaryEnhancement.hpp>
+#include <include/Boundary/BoundaryFeatureExtract.hpp>
+#include <include/Boundary/BoundarySegmentation.hpp>
 #include <opencv2/highgui.hpp>
 
 namespace Detector

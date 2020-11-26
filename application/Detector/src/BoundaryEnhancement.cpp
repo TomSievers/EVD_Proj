@@ -1,4 +1,4 @@
-#include <include/BoundaryEnhancement.hpp>
+#include <include/Boundary/BoundaryEnhancement.hpp>
 #include <opencv2/imgproc.hpp>
 
 namespace Detector
