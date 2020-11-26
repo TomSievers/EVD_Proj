@@ -17,7 +17,7 @@ namespace Detector
     {
         std::clock_t start;
         double duration;
-        src = cv::imread("D:/EVD_Proj/Photos_pool_table/setup9_1.jpg",cv::IMREAD_COLOR);
+        src = cv::imread("../../../Photos_pool_table/setup9_3.jpg",cv::IMREAD_COLOR);
         cv::GaussianBlur(src, src, cv::Size(3,3), 10, 0);
         if( src.empty() )
         {

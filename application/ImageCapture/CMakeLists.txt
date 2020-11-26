@@ -15,6 +15,7 @@ include_directories(./)
 set(SRC 
     src/CameraConfig.cpp 
     src/Capture.cpp
+    src/MockCapture.cpp
 )
 
 add_executable(${PROJECT_NAME}_test src/test.cpp)

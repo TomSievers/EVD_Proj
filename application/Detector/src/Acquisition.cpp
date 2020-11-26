@@ -1,9 +1,16 @@
 #include <include/Acquisition.hpp>
 #include <ImageCapture/include/Capture.hpp>
+#include <ImageCapture/include/MockCapture.hpp>
+#include <iostream>
 
 namespace Detector
 {
-    Acquisition::Acquisition() : cap(std::make_unique<ImageCapture::Capture>(0))
+    Acquisition::Acquisition(int deviceId) : cap(std::make_unique<ImageCapture::Capture>(deviceId))
+    {
+
+    }
+
+    Acquisition::Acquisition(const std::string& mock_img) : cap(std::make_unique<ImageCapture::MockCapture>(mock_img))
     {
 
     }
@@ -20,7 +27,10 @@ namespace Detector
 
     std::shared_ptr<void> Acquisition::process(cv::Mat& img)
     {
-        img = cap->getFrame();
+        do
+        {
+            img = cap->getFrame();
+        } while (img.empty());
         return nullptr;
     }
 

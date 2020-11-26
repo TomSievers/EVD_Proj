@@ -10,6 +10,12 @@ namespace Detector
     public:
         BoundaryEnhancement();
         virtual ~BoundaryEnhancement();
+        /**
+         * @brief Ehance the image using a blur filter
+         * 
+         * @param img image to enhance
+         * @return std::shared_ptr<void> nullptr
+         */
         virtual std::shared_ptr<void> process(cv::Mat& img);
     private:
         //data

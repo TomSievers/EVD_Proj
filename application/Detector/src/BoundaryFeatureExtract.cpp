@@ -22,9 +22,8 @@ namespace Detector
         for(std::size_t i = 0; i < contours.size(); ++i)
         {
             double arcLength = cv::arcLength(contours[i], true);
-            cv::approxPolyDP(cv::Mat(contours[i]), contours_poly[i], arcLength * 0.008, true);
+            cv::approxPolyDP(cv::Mat(contours[i]), contours_poly[i], arcLength * 0.01, true);
             double ctArea = cv::contourArea(contours_poly[i]);
-            std::cout << "ct " << ctArea << std::endl;
             if(ctArea > biggestContourArea)
             {
                 biggestContourArea = ctArea;
@@ -49,7 +48,7 @@ namespace Detector
         lines.push_back(line);
     }
 
-    void BoundaryFeatureExtract::calculateIntersects(const std::vector<Line>& lines, std::vector<cv::Point>& intersects)
+    void BoundaryFeatureExtract::calculateIntersects(const std::vector<Line>& lines, std::vector<cv::Point2f>& intersects)
     {
         for(std::size_t i = 0; i < lines.size(); i++)
         {
@@ -60,7 +59,7 @@ namespace Detector
                 {
                     double x = (lines[i+1].b * lines[i].c - lines[i].b * lines[i+1].c)/determinant;
                     double y = (lines[i].a * lines[i+1].c - lines[i+1].a * lines[i].c)/determinant;
-                    intersects.push_back(cv::Point(static_cast<int>(x),static_cast<int>(y)));
+                    intersects.push_back(cv::Point2f(static_cast<float>(x),static_cast<float>(y)));
                 }
             }
             else
@@ -71,10 +70,48 @@ namespace Detector
                 {
                     double x = (lines[0].b * lines[i].c - lines[i].b * lines[0].c)/determinant;
                     double y = (lines[i].a * lines[0].c - lines[0].a * lines[i].c)/determinant;
-                    intersects.push_back(cv::Point(static_cast<int>(x),static_cast<int>(y)));
+                    intersects.push_back(cv::Point2f(static_cast<float>(x),static_cast<float>(y)));
                 }
             }
         }
+    }
+
+    bool sortXPoint(cv::Point2f a, cv::Point2f b)
+    {
+        return a.x < b.x; 
+    }
+
+    bool sortYPoint(cv::Point2f a, cv::Point2f b)
+    {
+        return a.y < b.y; 
+    }
+
+    void BoundaryFeatureExtract::sortIntersects(std::vector<cv::Point2f>& intersects)
+    {
+        std::sort(intersects.begin(), intersects.end(), sortXPoint);
+
+        std::vector<cv::Point2f> leftMost = {intersects[0], intersects[1]};
+        std::vector<cv::Point2f> rightMost = {intersects[2], intersects[3]};
+
+        std::sort(leftMost.begin(), leftMost.end(), sortYPoint);
+
+        intersects[0] = leftMost[0];
+        intersects[3] = leftMost[1];
+
+        double dist = 0;
+        std::size_t bottomRightIndex = -1;
+        
+        for(std::size_t i = 0; i < rightMost.size(); ++i)
+        {
+            double tempDist = sqrt(pow(rightMost[i].x - intersects[0].x, 2) + pow(rightMost[i].y - intersects[0].y, 2));
+            if(dist < tempDist)
+            {
+                dist = tempDist;
+                bottomRightIndex = i;
+            }
+        }
+        intersects[2] = rightMost[bottomRightIndex];
+        intersects[1] = rightMost[(bottomRightIndex + 1)%2];
     }
 
     std::shared_ptr<void> BoundaryFeatureExtract::process(cv::Mat& img)
@@ -84,39 +121,37 @@ namespace Detector
         auto contour = getBiggestContour(contours);
         std::vector<std::vector<cv::Point>> cont = {contour};
         cv::drawContours(img, cont, -1, cv::Scalar(160), 4);
-        std::vector<cv::Point> intersects;
+        std::shared_ptr<std::vector<cv::Point2f>> intersects = std::make_shared<std::vector<cv::Point2f>>();
         if(!contour.empty())
         {
-            std::cout << "not empty" << std::endl;
             uint8_t iter = 1;
             std::vector<Line> lines;
-            for(std::size_t i = 0; i < contour.size()-iter; i+=iter)
+            cv::Point pointA;
+            cv::Point pointB;
+            for(std::size_t i = 0; i < contour.size(); i++)
             {
-                if(i < contour.size()-iter)
+                if(i == contour.size()-1)
                 {
-                    cv::Point pointA = contour.at(i);
-                    cv::Point pointB = contour.at(i+=iter);
+                    pointA = contour.at(i);
+                    pointB = contour.at(0);
+                } else {
+                    pointA = contour.at(i);
+                    pointB = contour.at(i + 1);
+                }
 
-                    std::cout << "points" << std::endl;
-
-                    if(sqrt(pow(pointB.x - pointA.x, 2) + pow(pointB.y - pointA.y, 2)) > 120)
-                    {
-                        std::cout << "line" << std::endl;
-                        calculateLine(lines, pointA, pointB);
-                    }
+                if(sqrt(pow(pointB.x - pointA.x, 2) + pow(pointB.y - pointA.y, 2)) > 140)
+                {
+                    calculateLine(lines, pointA, pointB);
                 }
             }
-            calculateIntersects(lines, intersects);
+            calculateIntersects(lines, *intersects);
 
-            for(auto intersect : intersects)
+            if(intersects->size() == 4)
             {
-                cv::circle(img, intersect, 4, cv::Scalar(255, 0, 0), 2);
-                std::cout << intersect.x << " " << intersect.y << std::endl;
+                sortIntersects(*intersects);
+
+                return intersects;
             }
-
-            Boundary boundary;
-            //boundary.corners = intersects.data();
-
         }
         return nullptr;
     }

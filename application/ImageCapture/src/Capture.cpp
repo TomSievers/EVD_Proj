@@ -138,9 +138,13 @@ namespace ImageCapture
 
     void Capture::setROI(std::array<cv::Point2f, 4>& roi, cv::Point2f::value_type width, cv::Point2f::value_type height)
     {
+        targetROI[0].x = 0;
+        targetROI[0].y = 0;
         targetROI[1].x = width;
+        targetROI[1].y = 0;
         targetROI[2].x = width;
         targetROI[2].y = height;
+        targetROI[3].x = 0;
         targetROI[3].y = height;
         transMat = cv::getPerspectiveTransform(roi, targetROI);
     }

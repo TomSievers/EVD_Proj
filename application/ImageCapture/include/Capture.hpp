@@ -55,7 +55,7 @@ namespace ImageCapture
         virtual void update();
         CameraConfig config;
         cv::VideoCapture cap;
-        std::array<cv::Point2f, 4> targetROI = {cv::Point2f(0, 0), cv::Point2f(200, 0), cv::Point2f(200, 100), cv::Point2f(0, 100)};
+        std::array<cv::Point2f, 4> targetROI;
         V4L2Settings settings[7] = {
             {
                 "auto_exposure",

@@ -10,6 +10,12 @@ namespace Detector
     public:
         BoundarySegmentation();
         virtual ~BoundarySegmentation();
+        /**
+         * @brief segment the image into needed objects
+         * 
+         * @param img image to segment on
+         * @return std::shared_ptr<void> nullptr
+         */
         virtual std::shared_ptr<void> process(cv::Mat& img);
     private:
         //data

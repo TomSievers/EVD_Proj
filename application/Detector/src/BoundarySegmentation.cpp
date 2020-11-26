@@ -23,6 +23,8 @@ namespace Detector
     std::shared_ptr<void> BoundarySegmentation::process(cv::Mat& img)
     {
         isolateTableBackground(img);
+        auto kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(150, 150));
+        cv::morphologyEx(img, img, cv::MORPH_CLOSE, kernel);
         return nullptr;
     }
 } // namespace Detector

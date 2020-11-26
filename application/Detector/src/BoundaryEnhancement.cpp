@@ -15,7 +15,7 @@ namespace Detector
 
     std::shared_ptr<void> BoundaryEnhancement::process(cv::Mat& img)
     {
-        cv::GaussianBlur(img, img, cv::Size(3,3), 10, 0);
+        cv::GaussianBlur(img, img, cv::Size(11,11), 10, 10);
         return nullptr;
     }
 } // namespace Detector
