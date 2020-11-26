@@ -1,0 +1,108 @@
+@startuml 
+header
+Design class diagram BoundaryDetector
+endheader
+
+package ImageCapture
+{
+    interface ICapture
+    {
+        # curFrame : cv::Mat
+        # active : bool
+        # thread : std::thread
+        # updateMutex : std::mutex
+        + //setRoi(roi : cv::Rect) : void//
+        + //getFrame() : cv::Mat//
+        + //stop() : void//
+        - //update(active : bool) : void//
+    }
+}
+
+package Detector{
+    interface IDetector
+    {
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+    }
+
+    class Object<<struct>>
+    {
+
+    }
+
+    class Boundary<<struct>>
+    {
+        + corners : cv::Point[4]
+        + pocketsLoc : cv::Point[6]
+        + pocketRad : double
+    }
+
+    Class Line<<Struct>>
+    {
+        + a : double
+        + b : double
+        + c : double
+        + Line(a : double, b : double, c : double)
+    }
+
+    Class BoundaryDetector
+    {
+        - img : cv::Mat
+    }
+
+    interface IImageProcessing
+    {
+        + procces(img : cv::Mat&) : void*
+    }
+
+    class Acquisition
+    {
+        + getCapture() : ICapture&
+    }
+
+    class BoundaryEnhancement
+    {
+        - blur(img : cv::Mat&)
+    }
+
+    class BoundarySegmentation
+    {
+        - isolateTableBackground(img : cv::Mat&)
+        - getBiggestContour(contours : const cv::Mat&) : cv::Mat
+    }
+
+    class BoundaryFeatureExtract
+    {
+        - calculateLine(lines : std::vector<Line>&, pointA : const cv::Point&, pointB : const cv::Point&) : void
+        - calculateIntersects(lines : const std::vector<Line>&, intersects : cv::Point[4]) : void
+    }
+
+    class BoundaryClassification
+    {
+        - removeBorderOffset(corners : cv::Point[4])
+        - createPockets(corners : cv::Point[4], pocketsLoc : cv::Point[6], pocketRad : double&)
+    }
+
+    
+}
+
+Object <|-- Boundary
+
+IDetector <|.. BoundaryDetector 
+
+BoundaryDetector .> Line
+
+Boundary <. BoundaryDetector
+
+BoundaryDetector --> IImageProcessing
+
+IImageProcessing <|.. Acquisition
+IImageProcessing <|.. BoundaryEnhancement
+IImageProcessing <|.. BoundaryFeatureExtract
+IImageProcessing <|.. BoundarySegmentation
+IImageProcessing <|.. BoundaryClassification
+
+Acquisition ..> ICapture
+
+
+
+@enduml
