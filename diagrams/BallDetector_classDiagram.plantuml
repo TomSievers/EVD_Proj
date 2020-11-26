@@ -1,0 +1,91 @@
+@startuml
+
+package ImageCapture
+{
+    interface ICapture
+    {
+        # curFrame : cv::Mat
+        # active : bool
+        # thread : std::thread
+        # updateMutex : std::mutex
+        + //setRoi(roi : cv::Rect) : void//
+        + //getFrame() : cv::Mat//
+        + //stop() : void//
+        - //update(active : bool) : void//
+    }
+}
+
+package Detector {
+    class Object <<struct>> {
+
+    }
+
+    note "percentageWhite is a variable which should only\nbe used by the IImageProcessing interface" as BallObjectNode
+
+    class BallObject <<struct>> {
+        + percentageWhite : uint8_t
+        + point : cv::Point
+        + radius : uint16_t
+        + ballType : BallType
+    }
+
+    enum BallType {
+        CUE_BALL
+        NOT_CUE_BALL
+    }
+
+    interface IDetector {
+        + //getObjects() : std::vector<std::unique_ptr<Object>>//
+    }
+
+    class BallDetector {
+        - imageProcessor : std::vector<std::unique_ptr<IImageProcessing>> 
+    }
+
+    note "The imageProcessor vector contains variables with the following types:\nBallAcquisition,\nBallEnhancement,\nBallSegmentation,\nBallFeatureExtraction,\nBallClassification" as BallDetectorNode
+
+    interface IImageProcessing {
+        + //getImage(image : const cv::Mat&) : cv::Mat//
+        + //updateImageData(image : const cv::Mat&, BallObject : std::vector<BallObject>&) : void//
+    }
+
+    class BallAcquisition {
+
+    }
+
+    class BallEnhancement {
+        - blurImage(image : const cv::Mat&) : cv::Mat
+    }
+
+    class BallSegmentation {
+        - findCircles(image : const cv::Mat&) : std::vector<cv::Vec3f>
+        - removeBackground(image : const cv::Mat&) : cv::Mat
+    }
+
+    class BallFeatureExtraction {
+        - determineWhitePercentage(BallObject : std::vector<BallObject>&) : void
+    }
+
+    class BallClassification {
+        - classifyBalls(BallObject : std::vector<BallObject>&) : void
+    }
+}
+
+
+
+IDetector <|.. BallDetector
+IDetector .> Object
+Object <|.. BallObject
+BallObject --> BallType
+BallAcquisition ..> ICapture
+IImageProcessing <|.. BallAcquisition
+IImageProcessing <|.. BallEnhancement
+IImageProcessing <|.. BallSegmentation
+IImageProcessing <|.. BallFeatureExtraction
+IImageProcessing <|.. BallClassification
+IImageProcessing .> BallObject
+BallDetector --> IImageProcessing
+BallDetector - BallDetectorNode
+BallObject - BallObjectNode
+
+@enduml

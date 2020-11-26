@@ -116,7 +116,7 @@ namespace ImageCapture
     void Capture::update()
     {
         cv::Mat tmpFrame;
-        if(active.load())
+        while(active.load())
         {
             cap >> tmpFrame;
 
@@ -132,7 +132,6 @@ namespace ImageCapture
                 }
                 updateMutex.unlock();
             }
-            update();
         }
     }
 
