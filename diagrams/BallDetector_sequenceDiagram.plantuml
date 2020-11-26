@@ -1,15 +1,55 @@
 @startuml
 
-create "ballDetector : BallDetector" as ballDetector
+participant main as "main"
+participant ballDetector as "ballDetector : BallDetector"
+participant ballAcquisitor as "ballAcquisitor : BallAcquisition"
+participant capture as "capture : Capture"
+participant ballEnhancer as "ballEnhancer : BallEnhancement"
+participant ballSegmentor as "ballSegmentor : BallSegmentation"
+participant ballFeatureExtractor as "ballFeatureExtractor : BallFeatureExtraction"
+participant ballClassifier as "ballClassifier : BallClassification"
+
+
 main -> ballDetector : <<construct>>
-create "capture : Capture" as capture
-main -> capture : <<construct>>
+ballDetector -> ballAcquisitor : <<construct>>
+ballDetector -> ballEnhancer : <<construct>>
+ballDetector -> ballSegmentor : <<construct>>
+ballDetector -> ballFeatureExtractor : <<construct>>
+ballDetector -> ballClassifier : <<construct>>
 
-create "ballAcquisitor : BallAcquisition" as ballAcquisitor
-create "ballEnhancement : BallEnhancement" as ballAcquisitor
-create "ballAcquisitor : BallSegmentation" as ballAcquisitor
-create "ballAcquisitor : BallFeatureExtraction" as ballAcquisitor
-create "ballAcquisitor : BallClassification" as ballAcquisitor
+main -> ballDetector : std::vector<Object> = getObjects()
 
+ballDetector -> ballAcquisitor : cv::Mat image = getImage(emptyImage)
+ballAcquisitor -> capture : getFrame()
+ballAcquisitor --> ballDetector
+ballDetector -> ballAcquisitor : updateImageData(ballObjects)
+ballAcquisitor --> ballDetector
+
+ballDetector -> ballEnhancer : cv::Mat image = getImage(image)
+ballEnhancer -> ballEnhancer : cv::Mat blurredImage = blurImage(image)
+ballEnhancer --> ballDetector
+ballDetector -> ballEnhancer : updateImageData(ballObjects)
+ballEnhancer --> ballDetector
+
+ballDetector -> ballSegmentor : cv::Mat image = getImage(image)
+ballSegmentor -> ballSegmentor : cv::Mat imageWithoutBackground = removeBackground(image)
+ballSegmentor --> ballDetector
+ballDetector -> ballSegmentor : updateImageData(ballObjects)
+ballSegmentor -> ballSegmentor : std::vector<cv::Vec3f> circles = findCircles(image)
+ballSegmentor --> ballDetector
+
+ballDetector -> ballFeatureExtractor : cv::Mat image = getImage(image)
+ballFeatureExtractor --> ballDetector
+ballDetector -> ballFeatureExtractor : updateImageData(ballObjects)
+ballFeatureExtractor -> ballFeatureExtractor : determineWhitePercentage(ballObjects)
+ballFeatureExtractor --> ballDetector
+
+ballDetector -> ballClassifier : cv::Mat image = getImage(image)
+ballClassifier --> ballDetector
+ballDetector -> ballClassifier : updateImageData(ballObjects)
+ballClassifier -> ballClassifier : classifyBalls(ballObjects)
+ballClassifier --> ballDetector
+
+ballDetector --> main
 
 @enduml
