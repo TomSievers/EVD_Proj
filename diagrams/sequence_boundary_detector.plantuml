@@ -1,0 +1,83 @@
+@startuml
+
+participant main as "main"
+participant detect as "BoundaryDetector : detect"
+participant acq as "Acquisition : acquisition"
+participant enh as "BoundaryEnhancement : enhance"
+participant seg as "BoundarySegmentation : segment"
+participant fea as "BoundaryFeatureExtract : feature"
+participant cla as "BoundaryClassifier : classifiy"
+participant cap as "ImageCapture : cap"
+
+activate main
+create acq
+main -> acq : <<construct>>
+
+create detect
+main -> detect : <<construct>>
+activate detect
+
+create enh
+detect -> enh : <<construct>>
+
+create seg
+detect -> seg : <<construct>>
+
+create fea
+detect -> fea : <<construct>>
+
+create cla
+detect -> cla : <<construct>>
+deactivate detect
+
+main -> detect : objects = getObjects() : std::vector<std::shared_ptr<Object>>
+activate detect
+
+detect -> acq : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate acq
+deactivate acq
+
+detect -> enh : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate enh
+deactivate enh
+
+detect -> seg : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate seg
+seg -> seg : isolateTableBackground(img : cv::Mat&)
+activate seg
+deactivate seg
+seg -[hidden]> seg 
+deactivate seg
+
+
+detect -> fea : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate fea
+fea -> fea : contour = getBiggestContour(contours : const cv::Mat&) : cv::Mat
+activate fea
+deactivate fea
+loop foreach linepair
+fea -> fea : calculateLine(lines : std::vector<Line>&, pointA : const cv::Point&, pointB : const cv::Point&) : void
+activate fea
+deactivate fea
+end
+fea -> fea : calculateIntersects(lines : const std::vector<Line>&, intersects : std::vector<cv::Point2f>&) : void
+activate fea
+deactivate fea
+fea -> fea : sortIntersects(intersects : std::vector<cv::Point2f>&) : void
+activate fea
+deactivate fea
+deactivate fea
+
+detect -> acq : cap = getCapture() : ICapture&
+activate acq
+deactivate acq
+
+detect -> cap : setROI(data : std::array<cv::Point2f, 4>&, width : float, height : float)
+activate cap
+deactivate cap
+
+detect -> cla : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate cla
+deactivate cla
+
+@enduml
