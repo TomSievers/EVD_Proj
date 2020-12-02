@@ -5,7 +5,8 @@ namespace Detector
 {
     struct Object
     {
-        
+        Object() {};
+        virtual ~Object() {};
     };
 }
 

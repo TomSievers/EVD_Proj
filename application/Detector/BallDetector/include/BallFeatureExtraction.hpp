@@ -1,0 +1,23 @@
+#ifndef BALL_FEATURE_EXTRACTION_HPP
+#define BALL_FEATURE_EXTRACTION_HPP
+
+#include "include/IImageProcessing.hpp"
+#include <opencv2/imgproc.hpp>
+
+namespace Detector
+{
+    class BallFeatureExtraction : public IImageProcessing
+    {
+        public:
+            BallFeatureExtraction();
+            virtual ~BallFeatureExtraction();
+
+            cv::Mat getImage(const cv::Mat& image);
+            void updateImageData(const cv::Mat& image, std::vector<std::unique_ptr<Object>>& ballObjects);
+
+        private:
+            void determineWhitePercentage(const cv::Mat& image, std::vector<std::unique_ptr<Object>>& ballObjects);
+    };
+}
+
+#endif

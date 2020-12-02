@@ -17,7 +17,7 @@ namespace Detector
     {
         uint8_t percentageWhite;
         cv::Point point;
-        uint16_t radius;
+        float radius;
         BallType ballType;
     };
 }
