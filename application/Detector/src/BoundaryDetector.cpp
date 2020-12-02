@@ -35,6 +35,7 @@ namespace Detector
 #ifdef DEBUG
             cv::namedWindow(names[i], cv::WINDOW_KEEPRATIO);
             cv::imshow(names[i], img);
+            ++i;
 #endif
 
             if(data_ptr != nullptr)
@@ -44,7 +45,7 @@ namespace Detector
                     case FEATURE_EXTRACT:
                     {
                         uint64_t width = 1000;
-                        uint64_t height = 500;
+                        uint64_t height = width/2;
                         std::vector<cv::Point2f> cornersVector = *std::static_pointer_cast<std::vector<cv::Point2f>>(data_ptr);
                         std::shared_ptr<Acquisition> capture = std::dynamic_pointer_cast<Acquisition>(processors[ACQUISITION]);
                         std::array<cv::Point2f, 4> corners;
@@ -66,9 +67,6 @@ namespace Detector
                     }
                 }
             }
-#ifdef DEBUG
-            ++i;
-#endif
         }
 
         return boundaries;

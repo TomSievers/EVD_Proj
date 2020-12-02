@@ -119,8 +119,10 @@ namespace Detector
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(img ,contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
         auto contour = getBiggestContour(contours);
+#ifdef DEBUG
         std::vector<std::vector<cv::Point>> cont = {contour};
         cv::drawContours(img, cont, -1, cv::Scalar(160), 4);
+#endif
         std::shared_ptr<std::vector<cv::Point2f>> intersects = std::make_shared<std::vector<cv::Point2f>>();
         if(!contour.empty())
         {
