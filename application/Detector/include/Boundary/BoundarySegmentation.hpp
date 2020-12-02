@@ -14,11 +14,12 @@ namespace Detector
          * @brief segment the image into needed objects
          * 
          * @param img image to segment on
+         * @param data unused
          * @return std::shared_ptr<void> nullptr
          */
-        virtual std::shared_ptr<void> process(cv::Mat& img);
+        virtual std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data);
     private:
-        //data
+        void isolateTableBackground(cv::Mat& img);
     }; //BoundaryEnhancement
 } // namespace Detector
 

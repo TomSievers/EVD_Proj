@@ -25,7 +25,7 @@ namespace Detector
         return *cap;
     }
 
-    std::shared_ptr<void> Acquisition::process(cv::Mat& img)
+    std::shared_ptr<void> Acquisition::process(cv::Mat& img, std::shared_ptr<void> data)
     {
         do
         {

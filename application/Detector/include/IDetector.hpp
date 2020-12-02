@@ -2,9 +2,8 @@
 #define IDETECTOR_HPP
 
 #include <memory>
-#include <vector>
+#include <map>
 #include <include/Acquisition.hpp>
-#include <iostream>
 
 namespace Detector
 {
@@ -19,6 +18,15 @@ namespace Detector
 		std::array<cv::Point, 6> pocketsLoc;
 		double pocketRad;
 	};
+
+	enum VisionStep
+	{
+		ACQUISITION,
+		EHANCEMENT,
+		SEGMENTATION,
+		FEATURE_EXTRACT,
+		CLASSIFICATION
+	};
 	
 	class IDetector
 	{
@@ -30,7 +38,7 @@ namespace Detector
 		 */
 		IDetector(std::shared_ptr<Acquisition> cap)
 		{
-			processors.push_back(cap);
+			processors[ACQUISITION] = cap;
 		}
 		virtual ~IDetector(){}
 		/**
@@ -40,7 +48,7 @@ namespace Detector
 		 */
 		virtual std::vector<std::shared_ptr<Object>> getObjects() = 0;
 	protected:
-		std::vector<std::shared_ptr<IImageProcessing>> processors;
+		std::map<VisionStep, std::shared_ptr<IImageProcessing>> processors;
 		//data
 	}; //IDetector
 

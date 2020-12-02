@@ -12,12 +12,13 @@ namespace Detector
 		IImageProcessing(){}
 		virtual ~IImageProcessing(){}
 		/**
-		 * @brief process provided image
+		 * @brief process provided image with any data provided
 		 * 
-		 * @param img image to be processed
+		 * @param img img image to be processed
+		 * @param data pointer to anything that needs to be processed
 		 * @return std::shared_ptr<void> pointer to anything that possibly needs to be returned
 		 */
-		virtual std::shared_ptr<void> process(cv::Mat& img) = 0;
+		virtual std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data) = 0;
 	private:
 		//data
 	}; //IImageProcessing

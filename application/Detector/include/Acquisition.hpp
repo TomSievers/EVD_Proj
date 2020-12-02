@@ -34,7 +34,7 @@ namespace Detector
          * @param img varaible to put newest image into
          * @return std::shared_ptr<void> nullptr
          */
-        virtual std::shared_ptr<void> process(cv::Mat& img);
+        virtual std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data);
     private:
         std::unique_ptr<ImageCapture::ICapture> cap;
     }; //Acquisition

@@ -19,6 +19,7 @@ set(SRC
     src/BoundaryEnhancement.cpp
     src/BoundaryFeatureExtract.cpp
     src/BoundarySegmentation.cpp
+    src/BoundaryClassifier.cpp
 )
 
 add_executable(${PROJECT_NAME}_test src/test.cpp)

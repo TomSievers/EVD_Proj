@@ -114,7 +114,7 @@ namespace Detector
         intersects[1] = rightMost[(bottomRightIndex + 1)%2];
     }
 
-    std::shared_ptr<void> BoundaryFeatureExtract::process(cv::Mat& img)
+    std::shared_ptr<void> BoundaryFeatureExtract::process(cv::Mat& img, std::shared_ptr<void> data)
     {
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(img ,contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);

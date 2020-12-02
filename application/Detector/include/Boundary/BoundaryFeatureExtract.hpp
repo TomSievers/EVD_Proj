@@ -25,9 +25,10 @@ namespace Detector
          * @brief extract the features of the table
          * 
          * @param img image to extract features from
+         * @param data unused
          * @return std::shared_ptr<void> pointer to vector of float points
          */
-        virtual std::shared_ptr<void> process(cv::Mat& img);
+        virtual std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data);
     private:
         void calculateIntersects(const std::vector<Line>& lines, std::vector<cv::Point2f>& intersects);
         void calculateLine(std::vector<Line>& lines, const cv::Point& pointA, const cv::Point& pointB);
