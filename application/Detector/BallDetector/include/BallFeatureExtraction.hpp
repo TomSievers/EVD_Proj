@@ -6,6 +6,11 @@
 
 namespace Detector
 {
+    struct Contours
+    {
+        
+    };
+
     class BallFeatureExtraction : public IImageProcessing
     {
         public:
@@ -17,6 +22,8 @@ namespace Detector
 
         private:
             void determineWhitePercentage(const cv::Mat& image, std::vector<std::unique_ptr<Object>>& ballObjects);
+            std::vector<Contours> determineContours(const std::vector<std::vector<cv::Point>>& contours, std::vector<std::unique_ptr<Object>>& ballObjects);
+            std::vector<cv::Point> findContourCenterPoints(const std::vector<std::vector<cv::Point>>& contours);
     };
 }
 
