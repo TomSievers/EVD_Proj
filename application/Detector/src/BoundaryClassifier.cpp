@@ -42,6 +42,5 @@ namespace Detector
             return boundary;
         }
         return nullptr;
-        
     }
 } // namespace Detector

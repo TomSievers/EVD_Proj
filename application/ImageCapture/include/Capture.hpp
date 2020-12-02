@@ -5,18 +5,20 @@
 #include "CameraConfig.hpp"
 #include <opencv2/videoio.hpp>
 #include <map>
+#ifdef __linux__
 #include <linux/v4l2-controls.h>
+#endif
 
 namespace ImageCapture
 {
-
+#ifdef __linux__
     struct V4L2Settings
     {
         std::string name;
         int id;
         std::map<std::string, int> menu_items;
     };
-
+#endif
     class Capture : public ICapture
     {
     public:
@@ -56,6 +58,7 @@ namespace ImageCapture
         CameraConfig config;
         cv::VideoCapture cap;
         std::array<cv::Point2f, 4> targetROI;
+#ifdef __linux__
         V4L2Settings settings[7] = {
             {
                 "auto_exposure",
@@ -110,6 +113,7 @@ namespace ImageCapture
                 {}
             }
         };
+#endif
     }; //Capture
 } // namespace ImageCapture
 

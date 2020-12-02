@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef __linux__
 #include <linux/ioctl.h>
 #include <linux/types.h>
 #include <linux/v4l2-common.h>
@@ -12,6 +13,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#endif
 #include <map>
 
 namespace ImageCapture
@@ -52,7 +54,7 @@ namespace ImageCapture
                 std::cout << "Info: " << setting.first << " not found in configuration file" << std::endl;
             }
         }
-
+#ifdef __linux__
         std::string dev_str = "/dev/video";
         dev_str += std::to_string(device);
 
@@ -62,7 +64,7 @@ namespace ImageCapture
             std::string funName = __PRETTY_FUNCTION__;
             throw std::runtime_error(funName + ": Video device could not be opened for settings");
         }
-
+        
         v4l2_control set;
 
         for(auto& setting : settings)
@@ -102,6 +104,7 @@ namespace ImageCapture
             std::string funName = __PRETTY_FUNCTION__;
             throw std::runtime_error(funName + ": Video device could not closed be after settings");
         }
+#endif
 
         active.store(true);
         thread = std::thread(&Capture::update, this);
