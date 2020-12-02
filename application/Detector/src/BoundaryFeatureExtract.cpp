@@ -126,7 +126,6 @@ namespace Detector
         std::shared_ptr<std::vector<cv::Point2f>> intersects = std::make_shared<std::vector<cv::Point2f>>();
         if(!contour.empty())
         {
-            uint8_t iter = 1;
             std::vector<Line> lines;
             cv::Point pointA;
             cv::Point pointB;
