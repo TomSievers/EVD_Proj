@@ -11,6 +11,32 @@ package Detector
     }
 }
 
+package Visualizer
+{
+    interface IVisual
+    {
+        + update(ball : const CueBall&, trajectories : const Trajectories&) : void
+    }
+}
+
+package TrajectoryCalculator {
+
+    interface ITrajectory{
+        # tableCorners : std::array<cv::Point,4>
+        # ballLocations : std::vector<<cv::Point>>
+        # cuePoints: std::array<cv::Point,2>
+        # ballRadius: uint16_t
+        # pocketRadius: uint16_t
+        
+        + //setTable(corners : std::array<cv::Point,4>&) : void//
+        + //setBalls(balls : std::vector<cv::Point>&) : void//
+        + //setCue(cue : std::array<cv::Point,2>&) : void//
+        + //setPocketRadius(radius: uint16_t) : void//
+        + //setBallRadius(radius: uint16_t) : void//
+        + //getTrajectory() : std::vector<cv::Point>//
+    }
+}
+
 package AidController
 {
     enum DetectorType
@@ -40,37 +66,34 @@ package AidController
         + //handleEvent(event : Event&)//
     }
 
-    interface ISubState
+    interface IActiveSubState
 
     class Waiting
 
     class Detecting
 
     class Setup
-    {
-
-    }
 
     class Active
-    {
-        
-    }
 
     class Inactive
-    {
-        
-    }
 
     class Calibrate
-    {
-        
-    }
 
-    enum Event
+    class Event <<struct>>
+
+    enum UIEvent
     {
+        NONE
         START
         STOP
         CALIBRATE
+    }
+
+    enum DetectorEvent
+    {
+        STEADY
+        MOVING
     }
 
     class Context
@@ -83,7 +106,11 @@ package AidController
     }
 }
 
-Context <|-- Controller
+ITrajectory <- Controller
+IVisual <-- Controller
+IDetector <.. Controller
+Controller ..> DetectorType
+Controller -|> Context
 Context --> IState
 Context .> Event
 
@@ -96,11 +123,14 @@ Setup -[hidden]> Inactive
 Inactive -[hidden]> Calibrate
 Calibrate -[hidden]> Active
 
-Active -> ISubState 
+Active -> IActiveSubState 
 
-IState <|-- ISubState
-ISubState <|.. Waiting
-ISubState <|.. Detecting
+IState <|-- IActiveSubState
+IActiveSubState <|.. Waiting
+IActiveSubState <|.. Detecting
+
+Event --> "+ ui" UIEvent
+Event --> "+ detect" DetectorEvent
 
 
 @enduml
