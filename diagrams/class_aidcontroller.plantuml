@@ -37,20 +37,39 @@ package TrajectoryCalculator {
     }
 }
 
+package UserInterface
+{
+    enum Event
+    {
+        START
+        STOP
+        CALIBRATE
+    }
+
+    interface IUserInterface
+    {
+        - active : bool
+        - thread : std::thread
+        - callback : std::function<void(Event&)>
+        # update() : void
+        + IUserInterface(func : std::function<void(Event&)>)
+        + stop() : void
+    }
+}
+
 package AidController
 {
-    enum DetectorType
+    class EventContainer <<struct>>
     {
-        BOUNDARY
-        CUE
-        BALL
+        + ui : Event
+        + detect : DetectorEvent
     }
 
     class Controller
     {
         - detectors : std::map<DetectorType, IDetector>
         - globalAcquisition : std::shared_ptr<Acquisition>
-        - UI : <unknown>
+        - UI : std::shared_ptr<IUserIntreface>
         - trajectoryCalc : std::shared_ptr<ITrajectory>
         - visualizer : std::shared_ptr<IVisual>
         + getDetector(detector : DetectorType) : std::shared_ptr<IDetector>
@@ -63,7 +82,7 @@ package AidController
         + //onEntry(controller : Controller&)//
         + //onDo(controller : Controller&)//
         + //onExit(controller : Controller&)//
-        + //handleEvent(event : Event&)//
+        + //handleEvent(event : EventContainer&)//
     }
 
     interface IActiveSubState
@@ -80,28 +99,26 @@ package AidController
 
     class Calibrate
 
-    class Event <<struct>>
-
-    enum UIEvent
-    {
-        NONE
-        START
-        STOP
-        CALIBRATE
-    }
-
     enum DetectorEvent
     {
         STEADY
         MOVING
     }
 
+    enum DetectorType
+    {
+        BOUNDARY
+        CUE
+        BALL
+    }
+
     class Context
     {
-        - events : std::queue<Event>
+        - events : std::queue<EventContainer>
         - curState : std::shared_ptr<IState>
         - history : std::shared_ptr<IState>
         + scheduleEvent(event : Event&) : void
+        + scheduleEvent(event : DetectorEvent&) : void
         + run() : void
     }
 }
@@ -109,19 +126,20 @@ package AidController
 ITrajectory <- Controller
 IVisual <-- Controller
 IDetector <.. Controller
-Controller ..> DetectorType
+Controller .> DetectorType
 Controller -|> Context
+'Context <|- Controller
 Context --> IState
-Context .> Event
+Context --> EventContainer
 
 IState <|.. Setup
 IState <|.. Active
 IState <|.. Inactive
 IState <|.. Calibrate
 
-Setup -[hidden]> Inactive
-Inactive -[hidden]> Calibrate
-Calibrate -[hidden]> Active
+'Setup -[hidden]> Inactive
+'Inactive -[hidden]> Calibrate
+'Calibrate -[hidden]> Active
 
 Active -> IActiveSubState 
 
@@ -129,8 +147,13 @@ IState <|-- IActiveSubState
 IActiveSubState <|.. Waiting
 IActiveSubState <|.. Detecting
 
-Event --> "+ ui" UIEvent
-Event --> "+ detect" DetectorEvent
+IUserInterface .> Event
 
+EventContainer --> Event
+EventContainer --> DetectorEvent
+
+ITrajectory --> IUserInterface
+
+'Controller --> EventContainer 
 
 @enduml
