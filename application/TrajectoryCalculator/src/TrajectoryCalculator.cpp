@@ -1,6 +1,5 @@
 #include <include/TrajectoryCalculator.hpp>
 #include <numeric>
-#include <iostream>
 
 #define MAX_COLLISIONS 5
 
@@ -94,6 +93,8 @@ namespace TrajectoryCalculator
                     continue;
                 }
 
+                (*hitBalls).push_back(inPlayBalls[i]);
+
                 float nextAngle = invertAngle(ptToAngle(ball, intersections[0]));
                 if (*angle > ptToAngle(*start, ball))
                 {
@@ -102,6 +103,15 @@ namespace TrajectoryCalculator
                 {
                      *angle = nextAngle - (float)(M_PI / 2);
                 }
+                
+                if (*angle > M_PI)
+                {
+                    *angle = (float)(M_PI - *angle);
+                }else if (*angle < -M_PI)
+                {
+                    *angle = (float)(M_PI + *angle);
+                }
+
                 *start = intersections[0];
                 return intersections[0];
             }
@@ -117,7 +127,7 @@ namespace TrajectoryCalculator
                 {
                     continue;
                 }
-                flag = 0;
+                *flag = 0;
                 return intersections[0];
             }
             
@@ -178,7 +188,7 @@ namespace TrajectoryCalculator
             return *start;
         }
         
-        flag = 0;
+        *flag = 0;
         return trjLine.pt2;
     }
 

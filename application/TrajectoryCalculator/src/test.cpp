@@ -1,7 +1,7 @@
 #include <include/TrajectoryCalculator.hpp>
-#include "opencv2/core.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgproc.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 
 int main(int argc, char const *argv[])
 {
@@ -9,8 +9,8 @@ int main(int argc, char const *argv[])
     int width = img.cols; int height = img.rows;
 
     std::array<cv::Point, 4> corners = {cv::Point(0,0), cv::Point(width,0), cv::Point(width, height), cv::Point(0, height)};
-    std::vector<cv::Point> balls = {cv::Point(50, 95), cv::Point(250,50), cv::Point(300,150)};
-    std::array<cv::Point, 2> cue = {cv::Point(6,96), cv::Point(25,95)};
+    std::vector<cv::Point> balls = {cv::Point(324, 133), cv::Point(250,50), cv::Point(300,150)};
+    std::array<cv::Point, 2> cue = {cv::Point(361,40), cv::Point(337,102)};
     uint16_t radius = 8;
     
     TrajectoryCalculator::TrajectoryCalculator calc;
