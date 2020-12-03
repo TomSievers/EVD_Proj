@@ -9,12 +9,13 @@ int main(int argc, char const *argv[])
     int width = img.cols; int height = img.rows;
 
     std::array<cv::Point, 4> corners = {cv::Point(0,0), cv::Point(width,0), cv::Point(width, height), cv::Point(0, height)};
-    std::vector<cv::Point> balls = {cv::Point(50, 95), cv::Point(250,50)};
+    std::vector<cv::Point> balls = {cv::Point(50, 95), cv::Point(250,50), cv::Point(300,150)};
     std::array<cv::Point, 2> cue = {cv::Point(6,96), cv::Point(25,95)};
     uint16_t radius = 8;
     
     Trajectory::TrajectoryCalculator calc;
     calc.setBallRadius(8);
+    calc.setPocketRadius(10);
     calc.setBalls(balls);
     calc.setTableCorners(corners);
     calc.setCue(cue);

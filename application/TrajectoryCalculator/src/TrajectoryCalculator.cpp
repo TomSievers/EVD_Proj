@@ -184,12 +184,12 @@ namespace Trajectory
 
     inline float TrajectoryCalculator::invertAngle(float angle)
     {
-        return fmod(angle + M_PI, 2 * M_PI);
+        return fmodf(angle + (float)M_PI, 2 * (float)M_PI);
     }
 
     inline float TrajectoryCalculator::ptToAngle(cv::Point& pt1, cv::Point& pt2)
     {
-        return atan2(pt2.y - pt1.y, pt2.x - pt1.x);
+        return atan2f((float)(pt2.y - pt1.y), (float)(pt2.x - pt1.x));
     }
          
     inline uint32_t TrajectoryCalculator::euclideanDistance(cv::Point& pt1, cv::Point& pt2)
@@ -199,23 +199,23 @@ namespace Trajectory
          
     inline cv::Point TrajectoryCalculator::predictPoint(cv::Point& pt, float& angle, uint32_t distance)
     {
-        return cv::Point(pt.x + distance * cos(angle), pt.y + distance * sin(angle));
+        return cv::Point(pt.x + (int)((float)distance * cosf(angle)), pt.y + (int)((float)distance * sinf(angle)));
     }
 
     uint8_t TrajectoryCalculator::lineIntersection(Line line1, Line line2, cv::Point *inter)
     {
-        float s1_x = line1.pt2.x -  line1.pt1.x; 
-        float s1_y = line1.pt2.y -  line1.pt1.y;
-        float s2_x = line2.pt2.x -  line2.pt1.x; 
-        float s2_y = line2.pt2.y -  line2.pt1.y;
+        float s1_x = (float)(line1.pt2.x - line1.pt1.x); 
+        float s1_y = (float)(line1.pt2.y - line1.pt1.y);
+        float s2_x = (float)(line2.pt2.x - line2.pt1.x); 
+        float s2_y = (float)(line2.pt2.y - line2.pt1.y);
 
         float s, t;
-        s = (-s1_y * (line1.pt1.x - line2.pt1.x) + s1_x * (line1.pt1.y - line2.pt1.y)) / (-s2_x * s1_y + s1_x * s2_y);
-        t = ( s2_x * (line1.pt1.y - line2.pt1.y) - s2_y * (line1.pt1.x - line2.pt1.x)) / (-s2_x * s1_y + s1_x * s2_y);
+        s = (-s1_y * (float)(line1.pt1.x - line2.pt1.x) + s1_x * (float)(line1.pt1.y - line2.pt1.y)) / (-s2_x * s1_y + s1_x * s2_y);
+        t = ( s2_x * (float)(line1.pt1.y - line2.pt1.y) - s2_y * (float)(line1.pt1.x - line2.pt1.x)) / (-s2_x * s1_y + s1_x * s2_y);
 
         if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
         {
-            *inter = cv::Point(line1.pt1.x + (t * s1_x),  line1.pt1.y + (t * s1_y));
+            *inter = cv::Point((int)((float)line1.pt1.x + (t * s1_x)),  (int)((float)line1.pt1.y + (t * s1_y)));
             return 1;
         }
 
@@ -226,28 +226,28 @@ namespace Trajectory
     {
         std::vector<cv::Point> intersections = {};
 
-        int a = pow(line.pt1.x-line.pt2.x, 2) + pow(line.pt1.y-line.pt2.y, 2);
-        int b = ((line.pt1.x-line.pt2.x) * (circle.x - line.pt1.x)) + ((line.pt1.y-line.pt2.y) * (circle.y - line.pt1.y));
-        int c = pow(circle.x - line.pt1.x, 2) + pow(circle.y - line.pt1.y, 2) - pow(circleRadius, 2);
+        uint32_t a = (uint32_t)(pow(line.pt1.x-line.pt2.x, 2) + pow(line.pt1.y-line.pt2.y, 2));
+        int32_t b = ((line.pt1.x-line.pt2.x) * (circle.x - line.pt1.x)) + ((line.pt1.y-line.pt2.y) * (circle.y - line.pt1.y));
+        uint32_t c = (uint32_t)(pow(circle.x - line.pt1.x, 2) + pow(circle.y - line.pt1.y, 2) - pow(circleRadius, 2));
         
-        int d = b * b - a * c;
+        int32_t d = b * b - a * c;
         if(d < 0)
         {
             return intersections;
         }
 
-        float s = sqrt(d);
-        float t1 = (-b - s) / a;
-        float t2 = (-b + s) / a;
+        float s = sqrtf((float)d);
+        float t1 = ((float)-b - s) / (float)a;
+        float t2 = ((float)-b + s) / (float)a;
 
         if(0 <= t1 <= 1)
         {
-            intersections.push_back(cv::Point((int)((1-t1) * line.pt1.x + t1 * line.pt2.x), (int)((1-t1) * line.pt1.y + t1 * line.pt2.y)));
+            intersections.push_back(cv::Point((int)((1-t1) * (float)line.pt1.x + t1 * (float)line.pt2.x), (int)((1-t1) * (float)line.pt1.y + t1 * (float)line.pt2.y)));
         }
 
         if(0 <= t2 <= 1)
         {
-            intersections.push_back(cv::Point((int)((1-t2) * line.pt1.x + t2 * line.pt2.x), (int)((1-t2) * line.pt1.y + t2 * line.pt2.y)));
+            intersections.push_back(cv::Point((int)((1-t2) * (float)line.pt1.x + t2 * (float)line.pt2.x), (int)((1-t2) * (float)line.pt1.y + t2 * (float)line.pt2.y)));
         }
 
         return intersections;
@@ -265,24 +265,24 @@ namespace Trajectory
         float f = -1;
         if (len != 0)
         {
-            f = (float)dot/len;
+            f = (float)dot/(float)len;
         }
 
         float xx; float yy;
         if (f < 0)
         {
-            xx = pt1.x;
-            yy = pt1.y;
+            xx = (float)pt1.x;
+            yy = (float)pt1.y;
         }else if (f < 0)
         {
-            xx = pt2.x;
-            yy = pt2.y;
+            xx = (float)pt2.x;
+            yy = (float)pt2.y;
         }else
         {
-            xx = pt1.x + f * c;
-            yy = pt1.y + f * d;
+            xx = (float)pt1.x + f * (float)c;
+            yy = (float)pt1.y + f * (float)d;
         }
         
-        return sqrt(pow(pt.x - xx,2)+pow(pt.y - yy,2));
+        return (uint32_t)sqrtf(powf((float)pt.x - xx,2)+powf((float)pt.y - yy,2));
     }
 } // namespace Trajectory

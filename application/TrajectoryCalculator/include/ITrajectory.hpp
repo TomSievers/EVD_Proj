@@ -30,20 +30,19 @@ namespace Trajectory
          */ 
         virtual void setCue(std::array<cv::Point, 2>& cue) = 0;
 
+        /**
+         * @brief Set the radius of the pocket.
+         * 
+         * @param radius Distance representing the ball radius.
+         */ 
+        virtual void setPocketRadius(uint16_t radius) = 0;
+
          /**
          * @brief Set the radius of the balls.
          * 
          * @param radius Distance representing the ball radius.
          */ 
         virtual void setBallRadius(uint16_t radius) = 0;
-
-        /**
-         * @brief Set the radius of the pocket.
-         * 
-         * @param radius Distance representing the ball radius.
-         */ 
-        virtual void setPocketRadius(uint16_t radius);
-
 
          /**
          * @brief Get the trajectory based on the set variables.
