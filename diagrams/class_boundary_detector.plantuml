@@ -1,0 +1,126 @@
+@startuml 
+header
+Design class diagram BoundaryDetector
+endheader
+
+package ImageCapture
+{
+    interface ICapture
+    {
+        # curFrame : cv::Mat
+        # active : bool
+        # thread : std::thread
+        # updateMutex : std::mutex
+        + //setRoi(roi : std::array<cv::Point2f, 4>&, width : float, height : float) : void//
+        + //getFrame() : cv::Mat//
+        + //stop() : void//
+        - //update(active : bool) : void//
+    }
+}
+
+package Detector
+{
+    enum VisionStep
+    {
+        ACQUISITION
+		EHANCEMENT
+		SEGMENTATION
+		FEATURE_EXTRACT
+		CLASSIFICATION
+    }
+
+    interface IDetector
+    {
+        + IDetector(cap : std::shared_ptr<Acquisition>)
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+
+        # processors : std::vector<std::shared_ptr<IImageProcessing>>
+    }
+
+    class Object<<struct>>
+    {
+    }
+
+    class Boundary<<struct>>
+    {
+        + corners : cv::Point[4]
+        + pocketsLoc : cv::Point[6]
+        + pocketRad : double
+    }
+
+    class BoundaryDetector
+    {
+        + BoundaryDetector(cap : std::shared_ptr<Acquisition>)
+        - img : cv::Mat
+    }
+
+    interface IImageProcessing
+    {
+        + procces(img : cv::Mat&, data : std::shared_ptr<void>) : std::shared_ptr<void>
+    }
+
+    class Acquisition
+    {
+        + Acquisition(deviceId : int)
+        + Acquisition(mock_img : const std::string&)
+        + getCapture() : ICapture&
+    }
+
+    class BoundaryEnhancement
+    {
+    }
+
+    class BoundarySegmentation
+    {
+        - isolateTableBackground(img : cv::Mat&)
+    }
+
+    class BoundaryFeatureExtract
+    {
+        - getBiggestContour(contours : const cv::Mat&) : cv::Mat
+        - calculateLine(lines : std::vector<Line>&, pointA : const cv::Point&, pointB : const cv::Point&) : void
+        - calculateIntersects(lines : const std::vector<Line>&, intersects : std::vector<cv::Point2f>&) : void
+        - sortIntersects(intersects : std::vector<cv::Point2f>&) : void
+    }
+
+    class BoundaryClassifier
+    {
+
+    }
+
+    class Line<<Struct>>
+    {
+        + a : double
+        + b : double
+        + c : double
+        + Line(a : double, b : double, c : double)
+    }
+}
+
+Object <. IDetector
+
+Object <|-- Boundary
+
+IDetector <|.. BoundaryDetector 
+
+Line <.. BoundaryFeatureExtract
+
+Boundary <. BoundaryDetector 
+
+IDetector --> IImageProcessing
+
+IImageProcessing <|.. Acquisition
+IImageProcessing <|.. BoundaryEnhancement
+IImageProcessing <|.. BoundaryFeatureExtract
+IImageProcessing <|.. BoundarySegmentation
+IImageProcessing <|.. BoundaryClassifier
+
+ICapture <-- Acquisition
+
+BoundaryDetector -[hidden]> IImageProcessing
+
+IDetector .> VisionStep
+
+
+
+@enduml
