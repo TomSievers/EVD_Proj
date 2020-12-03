@@ -1,0 +1,69 @@
+@startuml
+
+package Detector
+{
+
+}
+
+package AidController
+{
+    class Controller
+    {
+        std::vector<<>>
+    }
+
+    interface IState
+    {
+        + //onEntry(context : Controller&)//
+        + //onDo(context : Controller&)//
+        + //onExit(context : Controller&)//
+    }
+
+    class Setup
+    {
+
+    }
+
+    class Active
+    {
+        
+    }
+
+    class Inactive
+    {
+        
+    }
+
+    class Calibrate
+    {
+        
+    }
+
+    enum Event
+    {
+        START
+        STOP
+        CALIBRATE
+    }
+
+    class Context
+    {
+        - events : std::queue<Event>
+        - curState : std::shared_ptr<<IState>>
+        - history : std::shared_ptr<<IState>>
+        + scheduleEvent(event Event&) : void
+        + run() : void
+    }
+}
+
+Context <|-- Controller
+Context --> IState
+Context .> Event
+
+IState <|.. Setup
+IState <|.. Active
+IState <|.. Inactive
+IState <|.. Calibrate
+
+
+@enduml
