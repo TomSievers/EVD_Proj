@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef __linux__
 #include <linux/ioctl.h>
 #include <linux/types.h>
 #include <linux/v4l2-common.h>
@@ -12,6 +13,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#endif
 #include <map>
 
 namespace ImageCapture
@@ -52,7 +54,7 @@ namespace ImageCapture
                 std::cout << "Info: " << setting.first << " not found in configuration file" << std::endl;
             }
         }
-
+#ifdef __linux__
         std::string dev_str = "/dev/video";
         dev_str += std::to_string(device);
 
@@ -62,7 +64,7 @@ namespace ImageCapture
             std::string funName = __PRETTY_FUNCTION__;
             throw std::runtime_error(funName + ": Video device could not be opened for settings");
         }
-
+        
         v4l2_control set;
 
         for(auto& setting : settings)
@@ -102,6 +104,7 @@ namespace ImageCapture
             std::string funName = __PRETTY_FUNCTION__;
             throw std::runtime_error(funName + ": Video device could not closed be after settings");
         }
+#endif
 
         active.store(true);
         thread = std::thread(&Capture::update, this);
@@ -116,7 +119,7 @@ namespace ImageCapture
     void Capture::update()
     {
         cv::Mat tmpFrame;
-        if(active.load())
+        while(active.load())
         {
             cap >> tmpFrame;
 
@@ -132,15 +135,18 @@ namespace ImageCapture
                 }
                 updateMutex.unlock();
             }
-            update();
         }
     }
 
     void Capture::setROI(std::array<cv::Point2f, 4>& roi, cv::Point2f::value_type width, cv::Point2f::value_type height)
     {
+        targetROI[0].x = 0;
+        targetROI[0].y = 0;
         targetROI[1].x = width;
+        targetROI[1].y = 0;
         targetROI[2].x = width;
         targetROI[2].y = height;
+        targetROI[3].x = 0;
         targetROI[3].y = height;
         transMat = cv::getPerspectiveTransform(roi, targetROI);
     }
