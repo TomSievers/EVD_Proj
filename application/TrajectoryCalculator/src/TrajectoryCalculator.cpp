@@ -74,7 +74,7 @@ namespace TrajectoryCalculator
             if (std::find((*hitBalls).begin(), (*hitBalls).end(), ballLocations[i]) == (*hitBalls).end())
             {
                 inPlayBalls.push_back(ballLocations[i]);
-                distances.push_back(euclideanDistance(*start, ballLocations[i]));
+                distances.push_back((int) sqrt(pow(ballLocations[i].x - (*start).x, 2) + pow(ballLocations[i].y - (*start).y, 2)));
             }
         }
 
@@ -95,7 +95,7 @@ namespace TrajectoryCalculator
 
                 (*hitBalls).push_back(inPlayBalls[i]);
 
-                float nextAngle = invertAngle(ptToAngle(ball, intersections[0]));
+                float nextAngle = ptToAngle(intersections[0], ball);
                 if (*angle > ptToAngle(*start, ball))
                 {
                     *angle = nextAngle + (float)(M_PI / 2);
@@ -192,19 +192,9 @@ namespace TrajectoryCalculator
         return trjLine.pt2;
     }
 
-    inline float TrajectoryCalculator::invertAngle(float angle)
-    {
-        return fmodf(angle + (float)M_PI, 2 * (float)M_PI);
-    }
-
     inline float TrajectoryCalculator::ptToAngle(cv::Point& pt1, cv::Point& pt2)
     {
         return atan2f((float)(pt2.y - pt1.y), (float)(pt2.x - pt1.x));
-    }
-         
-    inline uint32_t TrajectoryCalculator::euclideanDistance(cv::Point& pt1, cv::Point& pt2)
-    {
-        return (int) sqrt(pow(pt2.x - pt1.x, 2) + pow(pt2.y - pt1.y, 2));
     }
          
     inline cv::Point TrajectoryCalculator::predictPoint(cv::Point& pt, float& angle, uint32_t distance)

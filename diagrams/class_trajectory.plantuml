@@ -22,9 +22,7 @@ package TrajectoryCalculator {
     }
     
     class TrajectoryCalculator{
-      - invertAngle(angle : float): float
       - ptToAngle(pt1 : cv::Point&, pt2 : cv::Point&) : float
-      - euclideanDistance(pt1 : cv::Point&, pt2: cv::Point&) : uint32_t
       - predictPoint(pt: cv::Point&, angle: float&, distance: uint32_t) : uint8_t
       - lineCircleIntersection(line: Line&, circle : cv::Point&, circleRadius: uint16_t): std::vector<cv::Point>
       - linePointDistance(pnt1: cv::Point&, pnt1: cv::Point&, pnt: cv::Point&) : uint32_t

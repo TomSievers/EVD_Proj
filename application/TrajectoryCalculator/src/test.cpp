@@ -10,7 +10,7 @@ int main(int argc, char const *argv[])
 
     std::array<cv::Point, 4> corners = {cv::Point(0,0), cv::Point(width,0), cv::Point(width, height), cv::Point(0, height)};
     std::vector<cv::Point> balls = {cv::Point(324, 133), cv::Point(250,50), cv::Point(300,150)};
-    std::array<cv::Point, 2> cue = {cv::Point(361,40), cv::Point(337,102)};
+    std::array<cv::Point, 2> cue = {cv::Point(355,42), cv::Point(337,102)};
     uint16_t radius = 8;
     
     TrajectoryCalculator::TrajectoryCalculator calc;

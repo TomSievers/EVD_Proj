@@ -75,13 +75,6 @@ namespace TrajectoryCalculator
          */ 
         virtual cv::Point nextPoint(cv::Point *start, float *angle, std::vector<cv::Point> *hitBalls, uint8_t *flag);
     private:
-        /**
-         * @brief Invert the given angle.
-         * 
-         * @param angle Angle in radians.
-         * @return Inverted angle in radians.
-         */ 
-        virtual float invertAngle(float angle);
          /**
          * @brief Calculate the angle between 2 points.
          * 
@@ -90,14 +83,6 @@ namespace TrajectoryCalculator
          * @return Calculated angle in Radians.
          */ 
         virtual float ptToAngle(cv::Point& pt1, cv::Point& pt2);
-         /**
-         * @brief Calculate the Euclidean distance between 2 points.
-         * 
-         * @param pt1 First point.
-         * @param pt2 Second point.
-         * @return Calculated distance
-         */ 
-        virtual uint32_t euclideanDistance(cv::Point& pt1, cv::Point& pt2);
          /**
          * @brief Predict a future point based on start and angle.
          * 
