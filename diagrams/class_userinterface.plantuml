@@ -22,9 +22,9 @@ package UserInterface
 
     interface IUserInterface
     {
-        - active : bool
-        - thread : std::thread
-        - callback : std::function<void(Event&)>
+        # active : bool
+        # thread : std::thread
+        # callback : std::function<void(Event&)>
         # update() : void
         + IUserInterface(func : std::function<void(Event&)>)
         + stop() : void
