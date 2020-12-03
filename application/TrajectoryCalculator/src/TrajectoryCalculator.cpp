@@ -118,11 +118,23 @@ namespace TrajectoryCalculator
             
         }
 
-        for (uint8_t i = 0; i < tableCorners.size(); i++)
+        for (uint8_t i = 0; i < 6; i++)
         {
-            if (linePointDistance(trjLine.pt1, trjLine.pt2, tableCorners[i]) <= pocketRadius)
+            cv::Point pocket;
+            if(i == 4)
             {
-                std::vector<cv::Point> intersections = lineCircleIntersection(trjLine, tableCorners[i], pocketRadius); 
+                pocket = cv::Point((tableCorners[1].x - tableCorners[0].x)/2, ((tableCorners[1].y + tableCorners[0].y)/2)-(pocketRadius/2));
+            }else if(i == 5)
+            {
+                pocket = cv::Point((tableCorners[2].x - tableCorners[3].x)/2, ((tableCorners[2].y + tableCorners[3].y)/2)+(pocketRadius/2));
+            }else
+            {
+                pocket = tableCorners[i];
+            }
+
+            if (linePointDistance(trjLine.pt1, trjLine.pt2, pocket) <= pocketRadius)
+            {
+                std::vector<cv::Point> intersections = lineCircleIntersection(trjLine, pocket, pocketRadius); 
                 if (intersections.size() <= 0 || intersections[0] == *start)
                 {
                     continue;
