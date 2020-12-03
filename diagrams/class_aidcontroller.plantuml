@@ -2,22 +2,49 @@
 
 package Detector
 {
+    interface IDetector
+    {
+        + IDetector(cap : std::shared_ptr<Acquisition>)
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
 
+        # processors : std::vector<std::shared_ptr<IImageProcessing>>
+    }
 }
 
 package AidController
 {
+    enum DetectorType
+    {
+        BOUNDARY
+        CUE
+        BALL
+    }
+
     class Controller
     {
-        std::vector<<>>
+        - detectors : std::map<DetectorType, IDetector>
+        - globalAcquisition : std::shared_ptr<Acquisition>
+        - UI : <unknown>
+        - trajectoryCalc : std::shared_ptr<ITrajectory>
+        - visualizer : std::shared_ptr<IVisual>
+        + getDetector(detector : DetectorType) : std::shared_ptr<IDetector>
+        + getTrajectoryCalculator() : std::shared_ptr<ITrajectory>
+        + getVisualizer() : std::shared_ptr<IVisual>
     }
 
     interface IState
     {
-        + //onEntry(context : Controller&)//
-        + //onDo(context : Controller&)//
-        + //onExit(context : Controller&)//
+        + //onEntry(controller : Controller&)//
+        + //onDo(controller : Controller&)//
+        + //onExit(controller : Controller&)//
+        + //handleEvent(event : Event&)//
     }
+
+    interface ISubState
+
+    class Waiting
+
+    class Detecting
 
     class Setup
     {
@@ -49,9 +76,9 @@ package AidController
     class Context
     {
         - events : std::queue<Event>
-        - curState : std::shared_ptr<<IState>>
-        - history : std::shared_ptr<<IState>>
-        + scheduleEvent(event Event&) : void
+        - curState : std::shared_ptr<IState>
+        - history : std::shared_ptr<IState>
+        + scheduleEvent(event : Event&) : void
         + run() : void
     }
 }
@@ -64,6 +91,16 @@ IState <|.. Setup
 IState <|.. Active
 IState <|.. Inactive
 IState <|.. Calibrate
+
+Setup -[hidden]> Inactive
+Inactive -[hidden]> Calibrate
+Calibrate -[hidden]> Active
+
+Active -> ISubState 
+
+IState <|-- ISubState
+ISubState <|.. Waiting
+ISubState <|.. Detecting
 
 
 @enduml
