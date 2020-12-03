@@ -25,9 +25,9 @@ package UserInterface
         # active : bool
         # thread : std::thread
         # callback : std::function<void(Event&)>
-        # update() : void
+        # //update() : void//
         + IUserInterface(func : std::function<void(Event&)>)
-        + stop() : void
+        + //stop() : void//
     }
 
     class GestureInterface
