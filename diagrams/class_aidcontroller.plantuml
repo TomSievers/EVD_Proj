@@ -48,9 +48,9 @@ package UserInterface
 
     interface IUserInterface
     {
-        - active : bool
-        - thread : std::thread
-        - callback : std::function<void(Event&)>
+        # active : bool
+        # thread : std::thread
+        # callback : std::function<void(Event&)>
         # update() : void
         + IUserInterface(func : std::function<void(Event&)>)
         + stop() : void
@@ -126,8 +126,9 @@ package AidController
 ITrajectory <- Controller
 IVisual <-- Controller
 IDetector <.. Controller
-Controller .> DetectorType
+Controller ..> DetectorType
 Controller -|> Context
+Controller --> IUserInterface
 'Context <|- Controller
 Context --> IState
 Context --> EventContainer
@@ -153,6 +154,8 @@ EventContainer --> Event
 EventContainer --> DetectorEvent
 
 ITrajectory --> IUserInterface
+
+DetectorType -[hidden]-> EventContainer
 
 'Controller --> EventContainer 
 
