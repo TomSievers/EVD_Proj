@@ -4,7 +4,7 @@
 #include <opencv2/core.hpp>
 #include <array>
 
-namespace Trajectory
+namespace TrajectoryCalculator
 {
     class ITrajectory
     {
@@ -61,7 +61,7 @@ namespace Trajectory
         std::array<cv::Point, 2> cuePoints;
     }; //ITrajectory
 
-} // namespace Trajectory
+} // namespace TrajectoryCalculator
 
 
 #endif //ITRAJECTORY_HPP

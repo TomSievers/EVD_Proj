@@ -4,7 +4,7 @@
 
 #define MAX_COLLISIONS 5
 
-namespace Trajectory
+namespace TrajectoryCalculator
 {
 
     void TrajectoryCalculator::setTableCorners(std::array<cv::Point, 4>& corners)
@@ -285,4 +285,4 @@ namespace Trajectory
         
         return (uint32_t)sqrtf(powf((float)pt.x - xx,2)+powf((float)pt.y - yy,2));
     }
-} // namespace Trajectory
+} // namespace TrajectoryCalculator

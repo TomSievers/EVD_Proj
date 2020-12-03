@@ -4,7 +4,7 @@
 #include <opencv2/core.hpp>
 #include "ITrajectory.hpp"
 
-namespace Trajectory
+namespace TrajectoryCalculator
 {
     struct Line
     {
@@ -136,6 +136,6 @@ namespace Trajectory
          */ 
         virtual uint32_t linePointDistance(cv::Point& pt1, cv::Point& pt2, cv::Point& pt);
     }; //TrajectoryCalculator
-} // namespace Trajectory
+} // namespace TrajectoryCalculator
 
 #endif //TRAJECTORYCALCULATOR_HPP

@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
     std::array<cv::Point, 2> cue = {cv::Point(6,96), cv::Point(25,95)};
     uint16_t radius = 8;
     
-    Trajectory::TrajectoryCalculator calc;
+    TrajectoryCalculator::TrajectoryCalculator calc;
     calc.setBallRadius(8);
     calc.setPocketRadius(10);
     calc.setBalls(balls);
