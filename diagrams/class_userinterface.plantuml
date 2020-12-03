@@ -1,0 +1,52 @@
+@startuml
+
+package Detector
+{
+    interface IDetector
+    {
+        + IDetector(cap : std::shared_ptr<Acquisition>)
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+
+        # processors : std::vector<std::shared_ptr<IImageProcessing>>
+    }
+}
+
+package UserInterface
+{
+    enum Event
+    {
+        START
+        STOP
+        CALIBRATE
+    }
+
+    interface IUserInterface
+    {
+        - active : bool
+        - thread : std::thread
+        - callback : std::function<void(Event&)>
+        # update() : void
+        + IUserInterface(func : std::function<void(Event&)>)
+        + stop() : void
+    }
+
+    class GestureInterface
+    {
+        - gestureDetector : std::shared_ptr<IDetector>
+        + GestureInterface(func : std::function<void(Event&)>, detector : std::shared_ptr<IDetector>)
+    }
+
+    class KeyboardInterface
+    {
+        + KeyboardInterface(func : std::function<void(Event&)>)
+    }
+}
+
+IUserInterface .> Event
+IUserInterface <|.. GestureInterface
+IUserInterface <|.. KeyboardInterface
+
+GestureInterface --> IDetector
+
+
+@enduml
