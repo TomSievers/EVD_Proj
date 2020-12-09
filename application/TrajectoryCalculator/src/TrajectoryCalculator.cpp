@@ -38,8 +38,8 @@ namespace TrajectoryCalculator
         if (ballLocations.size() > 0)
         {
             float angle = ptToAngle(cuePoints[0], cuePoints[1]);
-            cv::Point fp = predictPoint(cuePoints[1], angle, tableCorners[2].x);
-            if (linePointDistance(cuePoints[0], fp, ballLocations[0]) <= ballRadius)
+            cv::Point pointOnLine = predictPoint(cuePoints[1], angle, tableCorners[2].x);
+            if (linePointDistance(cuePoints[0], pointOnLine, ballLocations[0]) <= ballRadius)
             {
                 uint8_t collisions = 0;
 
@@ -47,11 +47,11 @@ namespace TrajectoryCalculator
                 trajectory.push_back(start);
 
                 std::vector<cv::Point> hitBalls = {};
-                uint8_t flag = 1;
+                bool flag = true;
 
-                while (collisions < MAX_COLLISIONS && flag == 1)
+                while (collisions < MAX_COLLISIONS && flag)
                 {
-                    trajectory.push_back(nextPoint(&start, &angle, &hitBalls, &flag));
+                    trajectory.push_back(nextPoint(start, angle, hitBalls, flag));
                     ++collisions;
                 }
             }
@@ -60,21 +60,21 @@ namespace TrajectoryCalculator
         return trajectory;
     }
 
-    cv::Point TrajectoryCalculator::nextPoint(cv::Point *start, float *angle, std::vector<cv::Point> *hitBalls, uint8_t *flag)
+    cv::Point TrajectoryCalculator::nextPoint(cv::Point& start, float& angle, std::vector<cv::Point>& hitBalls, bool& flag)
     {
         Line trjLine;
-        trjLine.pt1 = *start;
-        trjLine.pt2 = predictPoint(*start, *angle, tableCorners[2].x+tableCorners[2].y);
+        trjLine.pt1 = start;
+        trjLine.pt2 = predictPoint(start, angle, tableCorners[2].x+tableCorners[2].y);
 
         std::vector<cv::Point> inPlayBalls = {};
         std::vector<uint32_t> distances = {};
         std::vector<std::vector<cv::Point>::size_type> ballOrder = {};
         for (uint8_t i = 1; i < ballLocations.size(); i++)
         {
-            if (std::find((*hitBalls).begin(), (*hitBalls).end(), ballLocations[i]) == (*hitBalls).end())
+            if (std::find(hitBalls.begin(), hitBalls.end(), ballLocations[i]) == hitBalls.end())
             {
                 inPlayBalls.push_back(ballLocations[i]);
-                distances.push_back((int) sqrt(pow(ballLocations[i].x - (*start).x, 2) + pow(ballLocations[i].y - (*start).y, 2)));
+                distances.push_back((int) sqrt(pow(ballLocations[i].x - start.x, 2) + pow(ballLocations[i].y - start.y, 2)));
             }
         }
 
@@ -88,31 +88,31 @@ namespace TrajectoryCalculator
             if (linePointDistance(trjLine.pt1, trjLine.pt2, ball) <= ballRadius * 2)
             {
                 std::vector<cv::Point> intersections = lineCircleIntersection(trjLine, ball, (uint16_t)(ballRadius*2)); 
-                if (intersections.size() <= 0 || intersections[0] == *start)
+                if (intersections.size() <= 0 || intersections[0] == start)
                 {
                     continue;
                 }
 
-                (*hitBalls).push_back(inPlayBalls[i]);
+                hitBalls.push_back(inPlayBalls[i]);
 
                 float nextAngle = ptToAngle(intersections[0], ball);
-                if (*angle > ptToAngle(*start, ball))
+                if (angle > ptToAngle(start, ball))
                 {
-                    *angle = nextAngle + (float)(M_PI / 2);
+                    angle = nextAngle + (float)(M_PI / 2);
                 }else
                 {
-                     *angle = nextAngle - (float)(M_PI / 2);
+                     angle = nextAngle - (float)(M_PI / 2);
                 }
                 
-                if (*angle > M_PI)
+                if (angle > M_PI)
                 {
-                    *angle = (float)(M_PI - *angle);
-                }else if (*angle < -M_PI)
+                    angle = (float)(M_PI - angle);
+                }else if (angle < -M_PI)
                 {
-                    *angle = (float)(M_PI + *angle);
+                    angle = (float)(M_PI + angle);
                 }
 
-                *start = intersections[0];
+                start = intersections[0];
                 return intersections[0];
             }
             
@@ -135,11 +135,11 @@ namespace TrajectoryCalculator
             if (linePointDistance(trjLine.pt1, trjLine.pt2, pocket) <= pocketRadius)
             {
                 std::vector<cv::Point> intersections = lineCircleIntersection(trjLine, pocket, pocketRadius); 
-                if (intersections.size() <= 0 || intersections[0] == *start)
+                if (intersections.size() <= 0 || intersections[0] == start)
                 {
                     continue;
                 }
-                *flag = 0;
+                flag = false;
                 return intersections[0];
             }
             
@@ -147,12 +147,12 @@ namespace TrajectoryCalculator
         
 
         std::array<uint8_t, 2> sides = {0,1};
-        if (*angle >= 0)
+        if (angle >= 0)
         {
             sides[0] = 2;
         }
 
-        if (abs(*angle) >= (M_PI / 2))
+        if (abs(angle) >= (M_PI / 2))
         {
             sides[1] = 3;
         }
@@ -168,39 +168,60 @@ namespace TrajectoryCalculator
                 boundary.pt2 = tableCorners[side + 1];
             }
 
+            // Add ball Radius so the point of impact is in the right place.
+            switch (side)
+            {
+            case 1:
+                boundary.pt1.x -= ballRadius;
+                boundary.pt2.x -= ballRadius;
+                break;
+            case 2:
+                boundary.pt1.y -= ballRadius;
+                boundary.pt2.y -= ballRadius;
+                break;
+            case 3:
+                boundary.pt1.x += ballRadius;
+                boundary.pt2.x += ballRadius;
+                break;
+            default: // 0
+                boundary.pt1.y += ballRadius;
+                boundary.pt2.y += ballRadius;
+                break;
+            }
+
             cv::Point inter;
-            char found = lineIntersection(trjLine, boundary, &inter);
+            char found = lineIntersection(trjLine, boundary, inter);
             
             if(!found){
                 continue;
             }
-            
+
             if (side == 1 || side == 3)
             {
-                if (*angle > 0)
+                if (angle > 0)
                 {
-                   *angle = (float)(M_PI - *angle);
+                   angle = (float)(M_PI - angle);
                 }else
                 {
-                    *angle = (float)(-(*angle + M_PI));
+                    angle = (float)(-(angle + M_PI));
                 }
             }else{
-                *angle = -*angle;
+                angle = -angle;
             }
 
-            if (*angle > M_PI)
+            if (angle > M_PI)
             {
-                *angle = (float)(M_PI - *angle);
-            }else if (*angle < -M_PI)
+                angle = (float)(M_PI - angle);
+            }else if (angle < -M_PI)
             {
-                *angle = (float)(M_PI + *angle);
+                angle = (float)(M_PI + angle);
             }
             
-            *start = inter;
-            return *start;
+            start = inter;
+            return start;
         }
         
-        *flag = 0;
+        flag = false;
         return trjLine.pt2;
     }
 
@@ -214,7 +235,7 @@ namespace TrajectoryCalculator
         return cv::Point(pt.x + (int)((float)distance * cosf(angle)), pt.y + (int)((float)distance * sinf(angle)));
     }
 
-    uint8_t TrajectoryCalculator::lineIntersection(Line line1, Line line2, cv::Point *inter)
+    uint8_t TrajectoryCalculator::lineIntersection(Line line1, Line line2, cv::Point& inter)
     {
         float s1_x = (float)(line1.pt2.x - line1.pt1.x); 
         float s1_y = (float)(line1.pt2.y - line1.pt1.y);
@@ -227,7 +248,7 @@ namespace TrajectoryCalculator
 
         if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
         {
-            *inter = cv::Point((int)((float)line1.pt1.x + (t * s1_x)),  (int)((float)line1.pt1.y + (t * s1_y)));
+            inter = cv::Point((int)((float)line1.pt1.x + (t * s1_x)),  (int)((float)line1.pt1.y + (t * s1_y)));
             return 1;
         }
 

@@ -73,7 +73,7 @@ namespace TrajectoryCalculator
          * @param flag Should the calculation continue;
          * @return Inverted angle in radians.
          */ 
-        virtual cv::Point nextPoint(cv::Point *start, float *angle, std::vector<cv::Point> *hitBalls, uint8_t *flag);
+        virtual cv::Point nextPoint(cv::Point& start, float& angle, std::vector<cv::Point>& hitBalls, bool& flag);
     private:
          /**
          * @brief Calculate the angle between 2 points.
@@ -100,7 +100,7 @@ namespace TrajectoryCalculator
          * @param inter Point of intersection
          * @return Point of intersection.
          */ 
-        uint8_t lineIntersection(Line line1, Line line2, cv::Point *inter);
+        uint8_t lineIntersection(Line line1, Line line2, cv::Point &inter);
 
          /**
          * @brief Calculate at which point the circle intersects with the line.
