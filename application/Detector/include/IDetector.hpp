@@ -19,6 +19,11 @@ namespace Detector
 		double pocketRad;
 	};
 
+	struct CueObject : public Object
+	{
+		cv::Point center;
+	};
+
 	enum VisionStep
 	{
 		ACQUISITION,
