@@ -3,14 +3,112 @@ header
 Design class diagram CueDetector
 endheader
 
-package Detector{
-    Class CueDetector{
-        - src : cv::Mat
-        - copy_src : cv::Mat
-        - threshold : cv::Mat
-        - hsv : cv::Mat
-        + run() : void
+package ImageCapture
+{
+    interface ICapture
+    {
+        # curFrame : cv::Mat
+        # active : bool
+        # thread : std::thread
+        # updateMutex : std::mutex
+        + //setRoi(roi : std::array<cv::Point2f, 4>&, width : float, height : float) : void//
+        + //getFrame() : cv::Mat//
+        + //stop() : void//
+        - //update(active : bool) : void//
     }
 }
+
+package Detector
+{
+    enum VisionStep
+    {
+        ACQUISITION
+		EHANCEMENT
+		SEGMENTATION
+		FEATURE_EXTRACT
+		CLASSIFICATION
+    }
+
+    interface IDetector
+    {
+        + IDetector(cap : std::shared_ptr<Acquisition>)
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+
+        # processors : std::vector<std::shared_ptr<IImageProcessing>>
+    }
+
+    class Object<<struct>>
+    {
+    }
+
+    class CueObject<<struct>>
+    {
+        + center : cv::Point
+    }
+
+    class CueDetector
+    {
+        + CueDetector(cap : std::shared_ptr<Acquisition>)
+        - img : cv::Mat
+    }
+
+    interface IImageProcessing
+    {
+        + procces(img : cv::Mat&, data : std::shared_ptr<void>) : std::shared_ptr<void>
+    }
+
+    class Acquisition
+    {
+        + Acquisition(deviceId : int)
+        + Acquisition(mock_img : const std::string&)
+        + getCapture() : ICapture&
+    }
+
+    class CueEnhancement
+    {
+        - blurImage(image : cv::Mat&) : void
+    }
+
+    class CueSegmentation
+    {
+        - thresholdImage(image : cv::Mat&) : void
+        - openImage(image : cv::Mat&) : void
+        - findCueContours(image : const cv::Mat&) : std::vector<std::vector<cv::Point>>
+    }
+
+    class CueFeatureExtraction
+    {
+        - findCornerPoints(contours : const std::vector<std::vector<cv::Point>>&) : std::vector<cv::Point>
+    }
+
+    class CueClassification
+    {
+        - classifyCue(cornerPoints : const std::vector<cv::Point>&) cv::Point
+    }
+}
+
+Object <. IDetector
+
+Object <|-- CueObject
+
+IDetector <|.. CueDetector 
+
+CueObject <. CueDetector 
+
+IDetector --> IImageProcessing
+
+IImageProcessing <|.. Acquisition
+IImageProcessing <|.. CueEnhancement
+IImageProcessing <|.. CueFeatureExtraction
+IImageProcessing <|.. CueSegmentation
+IImageProcessing <|.. CueClassification
+
+ICapture <-- Acquisition
+
+CueDetector -[hidden]> IImageProcessing
+
+IDetector .> VisionStep
+
+
 
 @enduml
