@@ -4,6 +4,8 @@
 #include <include/IImageDrawer.hpp>
 #include <cairo.h>
 
+#include <linux/fb.h>
+
 namespace ImageDrawer
 {
     enum TTY_MODE
@@ -16,6 +18,7 @@ namespace ImageDrawer
     {
     public:
         virtual void setDrawColor(const ColorRGBInt& color);
+        virtual void setDrawColor(const ColorRGBAInt& color);
         virtual void setBackground(const ColorRGBInt& color);
         virtual void drawCircle(const cv::Point& center, double radius);
         virtual void drawLine(const cv::Point& pointA, const cv::Point& pointB);
@@ -24,12 +27,18 @@ namespace ImageDrawer
         CairoDrawer(const std::string& framebuffer, const std::string& terminal, cairo_format_t format);
         virtual ~CairoDrawer();
     private:
-        bool setTty(const std::string& device, TTY_MODE mode);
-        char* fbp;
+        void setTty(const std::string& device, TTY_MODE mode);
+        unsigned char* fbp;
+        int fbfd;
         cairo_t* cairoContext;
         cairo_surface_t *cairoSurface;
+        const std::string terminal;
         uint32_t screenWidth;
         uint32_t screenHeight;
+        fb_var_screeninfo vinfo;
+        fb_fix_screeninfo finfo;
+        unsigned long screensize;
+        ColorRGBAInt curColor;
     }; //CairoDrawer
 
 } // namespace ImageDrawer

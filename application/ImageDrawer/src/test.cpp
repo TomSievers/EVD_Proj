@@ -1,29 +1,21 @@
-#include <include/Capture.hpp>
-#include <opencv2/highgui.hpp>
+#include <include/CairoDrawer.hpp>
+#include <thread>
+
+using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    ImageCapture::Capture cap(0);
+    ImageDrawer::CairoDrawer drawer("/dev/fb0", "/dev/tty1", CAIRO_FORMAT_RGB16_565);
 
-    std::array<cv::Point2f, 4> roi = {cv::Point2f(10, 100), cv::Point2f(200, 100), cv::Point2f(200, 200), cv::Point2f(10, 200)};
+    drawer.setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
 
-    while(true)
-    {
-        cv::Mat frame = cap.getFrame();
-        if(!frame.empty())
-        {
-            cv::imshow("test", frame);
-        }
+    drawer.setDrawColor(ImageDrawer::ColorRGBInt(255, 255, 255));
 
-        int key = cv::waitKey(1);
+    drawer.drawLine(cv::Point(200, 200), cv::Point(400, 400));
 
-        if(key == 27)
-        {
-            cap.stop();
-            break;
-        } else if(key == 114) {
-            cap.setROI(roi, 400, 200);
-        }
-    }
+    drawer.draw();
+
+    std::this_thread::sleep_for(10s);
+
     return 0;
 }
