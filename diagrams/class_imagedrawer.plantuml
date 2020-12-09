@@ -19,12 +19,15 @@ package ImageDrawer
         + setDrawColor(color : const ColorRGBAInt&) : void
         + setDrawColor(color : const ColorRGBInt&) : void
         + setBackground(color : const ColorRGBInt&) : void
-        + drawCircle(center : const cv::Point&, radius : double, thickness : int) : void
-        + drawLine(pointA : const cv::Poin&t, pointB : const cv::Point&, thickness : int) : void
+        + drawCircle(center : const cv::Point&, radius : double) : void
+        + drawLine(pointA : const cv::Poin&t, pointB : const cv::Point&) : void
+        + setLineWidth(thickness : int) : void
+        + draw() : void
     }
 
     class CairoDrawer
     {
+        - cursorPos : cv::Point2f
         - fbp : char*
         - cairoContext : cairo_t*
         - cairoSurface : cairo_surface_t*
