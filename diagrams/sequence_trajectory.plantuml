@@ -1,0 +1,24 @@
+@startuml
+participant main as "main"
+participant calc as "calculator: TrajectoryCalculator"
+
+
+main -> calc : <<construct>>
+
+main -> calc : setTableCorners(corners)
+main -> calc : setPocketRadius(radius)
+main -> calc : setBallRadius(radius)
+main -> calc : setBalls(balls)
+main -> calc : setCue(cue)
+
+main -> calc : getTrajectory()
+
+alt cue coincides with cue ball
+loop whilst collisions <= MAX_COLLISIONS and flag = 1
+calc -> calc : nextPoint(start, angle, hitBalls, flag)
+
+end
+end
+
+calc --> main
+@enduml

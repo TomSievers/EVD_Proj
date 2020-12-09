@@ -17,7 +17,7 @@ namespace Detector
     {
         cv::Mat hsv;
         cv::cvtColor(img, hsv, cv::COLOR_BGR2HSV);
-        cv::inRange(hsv, cv::Scalar(86, 119, 0), cv::Scalar(114, 255, 255), img);
+        cv::inRange(hsv, cv::Scalar(86, 80, 0), cv::Scalar(114, 255, 255), img);
     }
 
     std::shared_ptr<void> BoundarySegmentation::process(cv::Mat& img, std::shared_ptr<void> data)
