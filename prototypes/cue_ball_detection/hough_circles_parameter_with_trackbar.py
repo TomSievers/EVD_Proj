@@ -9,16 +9,16 @@ import numpy as np
 def nothing(x):
     pass
 
-img = cv.imread('picture_preprocessed.png')
+img = cv.imread('background.png')
 img_to_process = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
 cv.namedWindow('trackbars')
-cv.createTrackbar('dp', 'trackbars', 1, 100, nothing)
+cv.createTrackbar('dp', 'trackbars', 23, 100, nothing)
 cv.createTrackbar('minDist', 'trackbars', 1, 100, nothing)
-cv.createTrackbar('param1', 'trackbars', 1, 300, nothing)
-cv.createTrackbar('param2', 'trackbars', 1, 300, nothing)
+cv.createTrackbar('param1', 'trackbars', 50, 300, nothing)
+cv.createTrackbar('param2', 'trackbars', 39, 300, nothing)
 cv.createTrackbar('minRadius', 'trackbars', 0, 300, nothing)
-cv.createTrackbar('maxRadius', 'trackbars', 0, 300, nothing)
+cv.createTrackbar('maxRadius', 'trackbars', 20, 300, nothing)
 
 while 1:
     dp = cv.getTrackbarPos('dp', 'trackbars') / 10 + 0.9
@@ -27,7 +27,6 @@ while 1:
     param2 = cv.getTrackbarPos('param2', 'trackbars')
     minRadius = cv.getTrackbarPos('minRadius', 'trackbars')
     maxRadius = cv.getTrackbarPos('maxRadius', 'trackbars')
-    
     circle_image = img.copy()
     
     circles = cv.HoughCircles(img_to_process, cv.HOUGH_GRADIENT, dp, minDist, param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)

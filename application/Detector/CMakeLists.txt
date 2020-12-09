@@ -5,12 +5,38 @@ project(detector)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
+find_package(OpenCV REQUIRED)
 
-foreach(child ${children})
-    if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${child})
-        if(NOT ${child} STREQUAL "build" AND NOT ${child} STREQUAL "common")
-            add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${child})
-        endif()
-    endif()
-endforeach()
+add_definitions("-Wextra -Wconversion")
+
+include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS})
+include_directories(./)
+include_directories(../)
+
+set(SRC 
+    src/Acquisition.cpp 
+    src/BoundaryDetector.cpp
+    src/BoundaryEnhancement.cpp
+    src/BoundaryFeatureExtract.cpp
+    src/BoundarySegmentation.cpp
+    src/BoundaryClassifier.cpp
+    src/BallClassification.cpp
+    src/BallDetector.cpp
+    src/BallEnhancement.cpp
+    src/BallFeatureExtraction.cpp
+    src/BallSegmentation.cpp
+)
+
+add_definitions(-DDEBUG)
+
+add_executable(${PROJECT_NAME}_test src/BallDetectorTest.cpp)
+
+add_library(${PROJECT_NAME} SHARED ${SRC})
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME}_test ${OpenCV_LIBRARIES} ${PROJECT_NAME} image_cap)
+    target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} image_cap)
+elseif(UNIX)
+    target_link_libraries(${PROJECT_NAME}_test ${OpenCV_LIBRARIES} ${PROJECT_NAME} image_cap pthread)
+    target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} image_cap pthread)
+endif()
