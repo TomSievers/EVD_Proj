@@ -10,7 +10,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("D:/EVD_Proj/Photos_pool_table/setup2_1.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup2_1.jpg");
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
 
