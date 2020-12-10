@@ -35,6 +35,6 @@ namespace Detector
             totalX += cornerPoints[i].x;
             totalY += cornerPoints[i].y;
         }
-        return cv::Point(totalX/cornerPoints.size(), totalY/cornerPoints.size());
+        return cv::Point((int)(totalX/cornerPoints.size()), (int)(totalY/cornerPoints.size()));
     }
 }

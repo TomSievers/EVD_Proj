@@ -43,6 +43,7 @@ std::vector<std::shared_ptr<Object>> CueDetector::getObjects()
             {
                 std::vector<std::vector<cv::Point>> contours = *std::static_pointer_cast<std::vector<std::vector<cv::Point>>>(data_ptr);
                 data = std::make_shared<std::vector<std::vector<cv::Point>>>(contours);
+                break;
             }
             case FEATURE_EXTRACT:
             {
