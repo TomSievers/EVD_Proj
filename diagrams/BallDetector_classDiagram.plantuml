@@ -8,10 +8,10 @@ package ImageCapture
         # active : bool
         # thread : std::thread
         # updateMutex : std::mutex
-        + //setRoi(roi : cv::Rect) : void//
+        + //setRoi(roi : const cv::Point2f[4], width : float, height : float) : void//
         + //getFrame() : cv::Mat//
         + //stop() : void//
-        - //update(active : bool) : void//
+        # //update() : void//
     }
 }
 
@@ -20,12 +20,14 @@ package Detector {
 
     }
 
-    note "percentageWhite is a variable which should only\nbe used by the IImageProcessing interface" as BallObjectNode
+    note "percentageWhite, ballContourPoints and whiteContourPoints are variables which should only\nbe used by the IImageProcessing interface" as BallObjectNode
 
     class BallObject <<struct>> {
         + percentageWhite : uint8_t
+        + ballContourPoints : std::vector<cv::Point>
+        + whiteContourPoints : std::vector<cv::Point>
         + point : cv::Point
-        + radius : uint16_t
+        + radius : float
         + ballType : BallType
     }
 
@@ -34,23 +36,34 @@ package Detector {
         NOT_CUE_BALL
     }
 
+    enum VisionStep {
+        ACQUISITION,
+        ENHANCEMENT,
+        SEGMENTATION,
+        FEATURE_EXTRACT,
+        CLASSIFICATION
+    }
+
     interface IDetector {
-        + //getObjects() : std::vector<std::unique_ptr<Object>>//
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+        - processors : std::map<VisionStep, std::shared_ptr<IImageProcessing>> 
     }
 
     class BallDetector {
-        - imageProcessor : std::vector<std::unique_ptr<IImageProcessing>> 
+
     }
 
-    note "The imageProcessor vector contains variables with the following types:\nBallAcquisition,\nBallEnhancement,\nBallSegmentation,\nBallFeatureExtraction,\nBallClassification" as BallDetectorNode
+    note "The processors map contains variables with the following types:\nBallAcquisition,\nBallEnhancement,\nBallSegmentation,\nBallFeatureExtraction,\nBallClassification" as BallDetectorNode
 
     interface IImageProcessing {
-        + //getImage(image : const cv::Mat&) : cv::Mat//
-        + //updateImageData(image : const cv::Mat&, BallObject : std::vector<BallObject>&) : void//
+        + //process(image : cv::Mat&, data : std::shared_ptr<void>) : cv::Mat//
     }
 
-    class BallAcquisition {
-
+    class Acquisition {
+        + Acquisition(deviceID : int)
+        + Acquisition(mock_img : const std::string&)
+        + getCapture() : ImageCapture::ICapture&
+        - cap : std::unique_ptr<ImageCapture::ICapture>
     }
 
     class BallEnhancement {
@@ -63,11 +76,13 @@ package Detector {
     }
 
     class BallFeatureExtraction {
-        - determineWhitePercentage(BallObject : std::vector<BallObject>&) : void
+        + setEnhancementImage(img : const cv::Mat&)
+        - determineWhitePercentage(image : const cv::Mat&, ballObjects : std::vector<std::shared_ptr<BallObject>>) : void
+        - enhancementImg : std::shared_ptr<cv::Mat>
     }
 
     class BallClassification {
-        - classifyBalls(BallObject : std::vector<BallObject>&) : void
+        - classifyBalls(ballObjects : std::vector<std::shared_ptr<BallObject>>&) : void
     }
 }
 
@@ -77,15 +92,17 @@ IDetector <|.. BallDetector
 IDetector .> Object
 Object <|.. BallObject
 BallObject --> BallType
-BallAcquisition ..> ICapture
-IImageProcessing <|.. BallAcquisition
+Acquisition ..> ICapture
+IImageProcessing <|.. Acquisition
 IImageProcessing <|.. BallEnhancement
 IImageProcessing <|.. BallSegmentation
 IImageProcessing <|.. BallFeatureExtraction
 IImageProcessing <|.. BallClassification
 IImageProcessing .> BallObject
+IImageProcessing .> VisionStep
 BallDetector --> IImageProcessing
 BallDetector - BallDetectorNode
 BallObject - BallObjectNode
+BallType <. BallClassification
 
 @enduml
