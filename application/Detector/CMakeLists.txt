@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(boundary_detect)
+project(detector)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,9 +20,16 @@ set(SRC
     src/BoundaryFeatureExtract.cpp
     src/BoundarySegmentation.cpp
     src/BoundaryClassifier.cpp
+    src/BallClassification.cpp
+    src/BallDetector.cpp
+    src/BallEnhancement.cpp
+    src/BallFeatureExtraction.cpp
+    src/BallSegmentation.cpp
 )
 
-add_executable(${PROJECT_NAME}_test src/test.cpp)
+add_definitions(-DDEBUG)
+
+add_executable(${PROJECT_NAME}_test src/BallDetectorTest.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
 
