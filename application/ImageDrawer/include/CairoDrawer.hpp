@@ -2,9 +2,10 @@
 #define CAIRODRAWER_HPP
 
 #include <include/IImageDrawer.hpp>
+#ifdef __linux__
 #include <cairo.h>
-
 #include <linux/fb.h>
+#endif
 
 namespace ImageDrawer
 {
@@ -30,15 +31,19 @@ namespace ImageDrawer
         void setTty(const std::string& device, TTY_MODE mode);
         unsigned char* fbp;
         int fbfd;
-        cairo_t* cairoContext;
-        cairo_surface_t *cairoSurface;
         const std::string terminal;
-        uint32_t screenWidth;
-        uint32_t screenHeight;
-        fb_var_screeninfo vinfo;
-        fb_fix_screeninfo finfo;
         unsigned long screensize;
         ColorRGBAInt curColor;
+        cv::Point cursorPos;
+        uint32_t screenWidth;
+        uint32_t screenHeight;
+#ifdef __linux__
+        fb_var_screeninfo vinfo;
+        fb_fix_screeninfo finfo;
+        cairo_t* cairoContext;
+        cairo_surface_t *cairoSurface;
+#endif
+        
     }; //CairoDrawer
 
 } // namespace ImageDrawer

@@ -13,7 +13,7 @@
 
 namespace ImageDrawer
 {
-    CairoDrawer::CairoDrawer(const std::string& framebuffer, const std::string& terminal, cairo_format_t format) : terminal(terminal), screensize(0), curColor(0, 0, 0, 0)
+    CairoDrawer::CairoDrawer(const std::string& framebuffer, const std::string& terminal, cairo_format_t format) : terminal(terminal), screensize(0), curColor(0, 0, 0, 0), cursorPos(0, 0)
     {
 #ifdef __linux__
         setTty(terminal, GRAPHICS);
@@ -99,12 +99,14 @@ namespace ImageDrawer
         cairo_rectangle(cairoContext, 0, 0, vinfo.xres, vinfo.yres);
         cairo_fill(cairoContext);
         cairo_set_source_rgba(cairoContext, curColor.r/255.0F, curColor.b/255.0F, curColor.g/255.0F, curColor.a/255.0F);
+        cairo_move_to(cairoContext, cursorPos.x, cursorPos.y);
 #endif
     }
 
     void CairoDrawer::drawCircle(const cv::Point& center, double radius)
     {
 #ifdef __linux__
+        cursorPos = center;
         cairo_move_to(cairoContext, center.x+radius, center.y);
         cairo_arc(cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
 #endif
@@ -113,6 +115,7 @@ namespace ImageDrawer
     void CairoDrawer::drawLine(const cv::Point& pointA, const cv::Point& pointB)
     {
 #ifdef __linux__
+        cursorPos = pointB;
         cairo_move_to(cairoContext, pointA.x, pointA.y);
         cairo_line_to(cairoContext, pointB.x, pointB.y);
 #endif

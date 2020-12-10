@@ -11,7 +11,15 @@ int main(int argc, char const *argv[])
 
     drawer.setDrawColor(ImageDrawer::ColorRGBInt(255, 255, 255));
 
+    drawer.drawLine(cv::Point(0, 0), cv::Point(200, 200));
+
+    drawer.setLineWidth(2);
+
     drawer.drawLine(cv::Point(200, 200), cv::Point(400, 400));
+
+    drawer.setDrawColor(ImageDrawer::ColorRGBInt(255, 0, 0));
+
+    drawer.drawCircle(cv::Point(500, 500), 100);
 
     drawer.draw();
 
