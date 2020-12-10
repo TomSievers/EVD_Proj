@@ -42,10 +42,10 @@ package ImageDrawer
         - screensize : unsigned long
         - curColor : ColorRGBAInt
         - cursorPos : cv::Point
-        - screenWidth uint32_t
-        - screenHeight uint32_t
-        - vinfo fb_var_screeninfo
-        - finfo fb_fix_screeninfo
+        - screenWidth : uint32_t
+        - screenHeight : uint32_t
+        - vinfo : fb_var_screeninfo
+        - finfo : fb_fix_screeninfo
         - cairoContext : cairo_t*
         - cairoSurface : cairo_surface_t*
         - setTty(device : string, mode : int) : bool

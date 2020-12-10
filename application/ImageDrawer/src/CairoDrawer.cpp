@@ -63,7 +63,7 @@ namespace ImageDrawer
         cairo_surface_destroy(cairoSurface);
         if(munmap(fbp, screensize) == -1)
         {
-            throw(std::runtime_error("Failed to unmap framebuffer from memory. errno: " + std::to_string(errno)));
+            std::cerr << "Failed to unmap framebuffer from memory. errno: " << std::to_string(errno) << std::endl;
         }
         close(fbfd);
 #endif
@@ -98,6 +98,7 @@ namespace ImageDrawer
         cairo_move_to(cairoContext, 0, 0);
         cairo_rectangle(cairoContext, 0, 0, vinfo.xres, vinfo.yres);
         cairo_fill(cairoContext);
+        draw();
         cairo_set_source_rgba(cairoContext, curColor.r/255.0F, curColor.b/255.0F, curColor.g/255.0F, curColor.a/255.0F);
         cairo_move_to(cairoContext, cursorPos.x, cursorPos.y);
 #endif
