@@ -48,7 +48,7 @@ package ImageDrawer
         - finfo : fb_fix_screeninfo
         - cairoContext : cairo_t*
         - cairoSurface : cairo_surface_t*
-        - setTty(device : string, mode : int) : bool
+        - setTty(device : string, mode : TTY_MODE) : void
         + CairoDrawer(framebuffer : string, terminal : string, format : cairo_format_t)
     }
 }

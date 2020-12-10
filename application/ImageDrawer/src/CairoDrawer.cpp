@@ -107,18 +107,32 @@ namespace ImageDrawer
     void CairoDrawer::drawCircle(const cv::Point& center, double radius)
     {
 #ifdef __linux__
-        cursorPos = center;
-        cairo_move_to(cairoContext, center.x+radius, center.y);
-        cairo_arc(cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
+        if(center.x+radius < screenWidth 
+            && center.y+radius < screenHeight 
+            && center.y-radius > 0 
+            && center.x-radius > 0)
+        {
+            cursorPos = center;
+            cairo_move_to(cairoContext, center.x+radius, center.y);
+            cairo_arc(cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
+        } else {
+            
+        }
+        
 #endif
     }
 
     void CairoDrawer::drawLine(const cv::Point& pointA, const cv::Point& pointB)
     {
 #ifdef __linux__
-        cursorPos = pointB;
-        cairo_move_to(cairoContext, pointA.x, pointA.y);
-        cairo_line_to(cairoContext, pointB.x, pointB.y);
+        if(pointA.x < screenWidth && pointA.y < screenHeight && 
+            pointB.x < screenWidth && pointB.y < screenHeight &&
+            pointA.x < 0 && pointA.y < 0 && pointB.x < 0 && pointB.y < 0)
+        {
+            cursorPos = pointB;
+            cairo_move_to(cairoContext, pointA.x, pointA.y);
+            cairo_line_to(cairoContext, pointB.x, pointB.y);
+        }
 #endif
     }
 
