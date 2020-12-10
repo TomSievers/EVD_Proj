@@ -25,9 +25,16 @@ int main(int argc, char const *argv[])
 
     drawer.draw();
 
-    std::this_thread::sleep_for(5s);
+    std::this_thread::sleep_for(2s);
 
     drawer.setBackground(ImageDrawer::ColorRGBInt(0, 125, 125));
+
+    drawer.setDrawColor(ImageDrawer::ColorRGBInt(255, 0, 0));
+    drawer.drawCircle(cv::Point(500, 1000), 100);
+
+    drawer.drawLine(cv::Point(500, 1000), cv::Point(500, 1200));
+
+    drawer.draw();
 
     std::this_thread::sleep_for(2s);
 

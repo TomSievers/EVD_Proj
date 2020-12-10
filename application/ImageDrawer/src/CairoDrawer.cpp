@@ -33,6 +33,8 @@ namespace ImageDrawer
         }
 
         screensize = vinfo.xres * vinfo.yres * vinfo.bits_per_pixel / 8;
+        screenWidth = vinfo.xres;
+        screenHeight = vinfo.yres;
 #ifdef DEBUG
         std::cout << "Info: Screen format bpp: " << vinfo.bits_per_pixel << std::endl;
         std::cout << "\t red:" << vinfo.red.length << std::endl;
@@ -107,17 +109,9 @@ namespace ImageDrawer
     void CairoDrawer::drawCircle(const cv::Point& center, double radius)
     {
 #ifdef __linux__
-        if(center.x+radius < screenWidth 
-            && center.y+radius < screenHeight 
-            && center.y-radius > 0 
-            && center.x-radius > 0)
-        {
-            cursorPos = center;
-            cairo_move_to(cairoContext, center.x+radius, center.y);
-            cairo_arc(cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
-        } else {
-            
-        }
+        cursorPos = center;
+        cairo_move_to(cairoContext, center.x+radius, center.y);
+        cairo_arc(cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
         
 #endif
     }
@@ -125,14 +119,9 @@ namespace ImageDrawer
     void CairoDrawer::drawLine(const cv::Point& pointA, const cv::Point& pointB)
     {
 #ifdef __linux__
-        if(pointA.x < screenWidth && pointA.y < screenHeight && 
-            pointB.x < screenWidth && pointB.y < screenHeight &&
-            pointA.x < 0 && pointA.y < 0 && pointB.x < 0 && pointB.y < 0)
-        {
-            cursorPos = pointB;
-            cairo_move_to(cairoContext, pointA.x, pointA.y);
-            cairo_line_to(cairoContext, pointB.x, pointB.y);
-        }
+        cursorPos = pointB;
+        cairo_move_to(cairoContext, pointA.x, pointA.y);
+        cairo_line_to(cairoContext, pointB.x, pointB.y);
 #endif
     }
 
