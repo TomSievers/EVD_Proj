@@ -2,7 +2,7 @@
 
 participant main as "main"
 participant ballDetector as "ballDetector : BallDetector"
-participant ballAcquisitor as "ballAcquisitor : BallAcquisition"
+participant ballAcquisitor as "ballAcquisitor : Acquisition"
 participant capture as "capture : Capture"
 participant ballEnhancer as "ballEnhancer : BallEnhancement"
 participant ballSegmentor as "ballSegmentor : BallSegmentation"
@@ -17,36 +17,27 @@ ballDetector -> ballSegmentor : <<construct>>
 ballDetector -> ballFeatureExtractor : <<construct>>
 ballDetector -> ballClassifier : <<construct>>
 
-main -> ballDetector : std::vector<Object> = getObjects()
+main -> ballDetector : std::vector<std::shared_ptr<Object>> = getObjects()
 
-ballDetector -> ballAcquisitor : cv::Mat image = getImage(emptyImage)
+ballDetector -> ballAcquisitor : process(image, data)
 ballAcquisitor -> capture : getFrame()
 ballAcquisitor --> ballDetector
-ballDetector -> ballAcquisitor : updateImageData(ballObjects)
-ballAcquisitor --> ballDetector
 
-ballDetector -> ballEnhancer : cv::Mat image = getImage(image)
+ballDetector -> ballEnhancer : process(image, data)
 ballEnhancer -> ballEnhancer : cv::Mat blurredImage = blurImage(image)
 ballEnhancer --> ballDetector
-ballDetector -> ballEnhancer : updateImageData(ballObjects)
-ballEnhancer --> ballDetector
 
-ballDetector -> ballSegmentor : cv::Mat image = getImage(image)
+ballDetector -> ballSegmentor : process(image, data)
 ballSegmentor -> ballSegmentor : cv::Mat imageWithoutBackground = removeBackground(image)
-ballSegmentor --> ballDetector
-ballDetector -> ballSegmentor : updateImageData(ballObjects)
 ballSegmentor -> ballSegmentor : std::vector<cv::Vec3f> circles = findCircles(image)
 ballSegmentor --> ballDetector
 
-ballDetector -> ballFeatureExtractor : cv::Mat image = getImage(image)
-ballFeatureExtractor --> ballDetector
-ballDetector -> ballFeatureExtractor : updateImageData(ballObjects)
-ballFeatureExtractor -> ballFeatureExtractor : determineWhitePercentage(ballObjects)
+ballDetector -> ballFeatureExtractor : setEnhancementImage(enhancedImage)
+ballDetector -> ballFeatureExtractor : process(image, data)
+ballFeatureExtractor -> ballFeatureExtractor : determineWhitePercentage(image, ballObjects)
 ballFeatureExtractor --> ballDetector
 
-ballDetector -> ballClassifier : cv::Mat image = getImage(image)
-ballClassifier --> ballDetector
-ballDetector -> ballClassifier : updateImageData(ballObjects)
+ballDetector -> ballClassifier : process(image, data)
 ballClassifier -> ballClassifier : classifyBalls(ballObjects)
 ballClassifier --> ballDetector
 

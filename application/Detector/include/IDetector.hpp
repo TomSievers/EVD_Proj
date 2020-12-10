@@ -9,7 +9,8 @@ namespace Detector
 {
 	struct Object
 	{
-		/* data */
+		Object() {};
+		virtual ~Object() {}
 	};
 
 	struct Boundary : public Object
@@ -18,6 +19,22 @@ namespace Detector
 		std::array<cv::Point, 6> pocketsLoc;
 		double pocketRad;
 	};
+
+	enum BallType
+    {
+		NOT_CUE_BALL,
+        CUE_BALL
+    };
+
+    struct BallObject : public Object
+    {
+        uint8_t percentageWhite;
+		std::vector<cv::Point> ballContourPoints;
+		std::vector<cv::Point> whiteContourPoints;
+		cv::Point point;
+        float radius;
+        BallType ballType;
+    };
 
 	enum VisionStep
 	{
