@@ -37,7 +37,7 @@ namespace Detector
 
     void CueSegmentation::openImage(cv::Mat& image)
     {
-        cv::Mat element = cv::getStructuringElement(0, cv::Size(7,7), cv::Point(1,1));
+        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9,9));
         cv::morphologyEx(image, image, cv::MORPH_OPEN, element);
     }
 

@@ -21,19 +21,23 @@ CueDetector::~CueDetector()
 
 std::vector<std::shared_ptr<Object>> CueDetector::getObjects()
 {
-
-        std::string names[5] = {"acquisition", "ehance", "segment", "extract", "classify"};
-        int i = 0;
+#ifdef DEBUG
+    std::string names[5] = {"acquisition", "ehance", "segment", "extract", "classify"};
+    int i = 0;
+#endif
 
     std::vector<std::shared_ptr<Object>> cues;
     std::shared_ptr<void> data = nullptr;
     for(auto& processor : processors)
     {
         auto data_ptr = processor.second->process(img, data);
-
+        data = nullptr;
+#ifdef DEBUG
         cv::namedWindow(names[i], cv::WINDOW_KEEPRATIO);
         cv::imshow(names[i], img);
+
         ++i;
+#endif
 
         if(data_ptr != nullptr)
         {

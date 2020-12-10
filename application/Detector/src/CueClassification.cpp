@@ -22,6 +22,7 @@ namespace Detector
             std::vector<cv::Point> cornerPoints = *std::static_pointer_cast<std::vector<cv::Point>>(data);
             cv::Point center = classifyCue(cornerPoints);
             cue->center = center;
+            std::cout << "test" << std::endl;
             return cue;
         }
         return nullptr;

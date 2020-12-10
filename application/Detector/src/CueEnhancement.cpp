@@ -16,6 +16,9 @@ namespace Detector
 
     std::shared_ptr<void> CueEnhancement::process(cv::Mat& image, std::shared_ptr<void> data)
     {
+        cv::Mat temp;
+        cv::bilateralFilter(image, temp, 7, 90 ,90);
+        image = temp;
         blurImage(image);
         (void) data;
         return nullptr;

@@ -1,6 +1,7 @@
 #include <include/IDetector.hpp>
 #include <include/Cue/CueProcessing.hpp>
 #include "opencv2/imgproc.hpp"
+#include <iostream>
 
 namespace Detector
 {
@@ -54,6 +55,25 @@ namespace Detector
         {
             cornerPoints.push_back(cv::Point(approxPolyContours[biggestContourId][i].x, approxPolyContours[biggestContourId][i].y));
         }
+
+        for(auto& c : cornerPoints)
+        {
+            int i = 0;
+            for(auto& c2 : cornerPoints)
+            {
+                if(c2 != c && sqrt(pow(c2.x - c.x, 2) + pow(c2.y - c.y, 2)) < 5)
+                {
+                    cornerPoints.erase(cornerPoints.begin()+i);
+                }
+                ++i;
+            }
+        }
+
+        for(auto c : cornerPoints)
+        {
+            std::cout << "(" << c.x << "," << c.y << ")" << std::endl;
+        }
+
         return cornerPoints;
     }
 }
