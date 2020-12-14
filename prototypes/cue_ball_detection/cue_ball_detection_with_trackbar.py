@@ -1,8 +1,8 @@
 import cv2 as cv
 import numpy as np
 
-img = cv.imread("setup_picture_warped.png")
-#img = cv.resize(img, (0, 0), fx=0.3, fy=0.3)
+img = cv.imread("enhancedIMG.png")
+img = cv.resize(img, (0, 0), fx=0.3, fy=0.3)
 
 def nothing(x):
     pass
