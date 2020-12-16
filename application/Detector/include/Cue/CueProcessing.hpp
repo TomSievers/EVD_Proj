@@ -2,9 +2,24 @@
 #define CUEPROCESSING_HPP
 
 #include <include/IImageProcessing.hpp>
-
+#include <iostream>
 namespace Detector
 {
+
+    struct cueClassificationData
+    {
+        std::vector<cv::Point> cornerPoints;
+        cv::Mat& image;
+        cueClassificationData(std::vector<cv::Point> corners, cv::Mat& img) :
+        cornerPoints(corners), image(img)
+        {
+        }
+        ~cueClassificationData()
+        {
+
+        }
+    };
+
     class CueEnhancement : public IImageProcessing
     {
     public:
@@ -45,6 +60,9 @@ namespace Detector
         virtual std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data);
     private:
         cv::Point classifyCue(const std::vector<cv::Point>& cornerPoints);
+        std::vector<cv::Point> determineEndPoints(const std::vector<cv::Point> & cornerPoints);
+        Line calculateLine(const std::vector<cv::Point>& cornerPoints);
+        void determineFront(std::vector<cv::Point>&, cv::Mat& image, const Line& line);
     };
 
 }

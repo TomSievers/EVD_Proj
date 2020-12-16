@@ -28,10 +28,18 @@ std::vector<std::shared_ptr<Object>> CueDetector::getObjects()
 
     std::vector<std::shared_ptr<Object>> cues;
     std::shared_ptr<void> data = nullptr;
+    cv::Mat copy;
+
     for(auto& processor : processors)
     {
+        
         auto data_ptr = processor.second->process(img, data);
         data = nullptr;
+if(processor.first == ACQUISITION)
+        {
+            img.copyTo(copy);
+            cv::imshow("copy", copy);
+        }
 #ifdef DEBUG
         cv::namedWindow(names[i], cv::WINDOW_KEEPRATIO);
         cv::imshow(names[i], img);
@@ -52,7 +60,7 @@ std::vector<std::shared_ptr<Object>> CueDetector::getObjects()
             case FEATURE_EXTRACT:
             {
                 std::vector<cv::Point> cornerPoints = *std::static_pointer_cast<std::vector<cv::Point>>(data_ptr);
-                data = std::make_shared<std::vector<cv::Point>>(cornerPoints);
+                data = std::make_shared<cueClassificationData>(cornerPoints, copy);
                 break;
             }
 

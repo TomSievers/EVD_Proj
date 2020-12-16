@@ -7,6 +7,15 @@
 
 namespace Detector
 {
+    struct Line
+    {
+        double a, b, c;
+		Line(){};
+        Line(double a, double b, double c) :
+               a(a), b(b), c(c)
+        {};
+        ~Line(){};
+    };
 	struct Object
 	{
 		/* data */
@@ -22,6 +31,8 @@ namespace Detector
 	struct CueObject : public Object
 	{
 		cv::Point center;
+		std::vector<cv::Point> endPoints;
+		Line line;
 	};
 
 	enum VisionStep

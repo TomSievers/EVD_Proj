@@ -11,12 +11,12 @@
 
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup4_3.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("D:/EVD_Proj/Photos_pool_table/setup1_1.jpg");
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
 
     auto bounds = detect->getObjects();
-    std::this_thread::sleep_for (std::chrono::milliseconds(100));  
+    std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
     auto cues = cueDetect->getObjects();
 
     std::shared_ptr<Detector::Boundary> bound;

@@ -39,18 +39,19 @@ namespace Detector
             double epsilon = cv::arcLength(contours[i], true);
             cv::approxPolyDP(contours[i], approxPolyContours[i], epsilon*0.03, true);
         }
-        uint8_t biggestContourId = 0;
+        int16_t biggestContourId = -1;
         for(uint8_t i = 0; i < approxPolyContours.size(); i++)
         {
             if(approxPolyContours[i].size() == 4)
             {
-                if(cv::contourArea(approxPolyContours[i]) > cv::contourArea(approxPolyContours[biggestContourId]))
+                if(cv::contourArea(approxPolyContours[i]) >= cv::contourArea(approxPolyContours[(biggestContourId == -1) ? i : biggestContourId]))
                 {
                     biggestContourId = i;
                 }
             }
         }
-
+        if(biggestContourId != -1)
+        {
         for(std::size_t i = 0; i < approxPolyContours[biggestContourId].size(); i++)
         {
             cornerPoints.push_back(cv::Point(approxPolyContours[biggestContourId][i].x, approxPolyContours[biggestContourId][i].y));
@@ -73,7 +74,7 @@ namespace Detector
         {
             std::cout << "(" << c.x << "," << c.y << ")" << std::endl;
         }
-
+        }
         return cornerPoints;
     }
 }
