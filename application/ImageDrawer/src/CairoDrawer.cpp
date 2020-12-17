@@ -15,7 +15,7 @@ namespace ImageDrawer
 {
     CairoDrawer::CairoDrawer(const std::string& framebuffer, const std::string& terminal, cairo_format_t format) : terminal(terminal), screensize(0), curColor(0, 0, 0, 0), cursorPos(0, 0)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         setTty(terminal, GRAPHICS);
         fbfd = open (framebuffer.c_str(), O_RDWR );
         if (fbfd == -1) {
@@ -58,7 +58,7 @@ namespace ImageDrawer
 
     CairoDrawer::~CairoDrawer()
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         setTty(terminal, TEXT);
         cairo_destroy(cairoContext);
         cairo_surface_finish(cairoSurface);
@@ -73,7 +73,7 @@ namespace ImageDrawer
 
     void CairoDrawer::setDrawColor(const ColorRGBInt& color)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         curColor.r = color.r;
         curColor.b = color.b;
         curColor.g = color.g;
@@ -84,7 +84,7 @@ namespace ImageDrawer
 
     void CairoDrawer::setDrawColor(const ColorRGBAInt& color)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         curColor.r = color.r;
         curColor.b = color.b;
         curColor.g = color.g;
@@ -95,7 +95,7 @@ namespace ImageDrawer
 
     void CairoDrawer::setBackground(const ColorRGBInt& color)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         cairo_set_source_rgb(cairoContext, color.r, color.b, color.g);
         cairo_move_to(cairoContext, 0, 0);
         cairo_rectangle(cairoContext, 0, 0, vinfo.xres, vinfo.yres);
@@ -108,7 +108,7 @@ namespace ImageDrawer
 
     void CairoDrawer::drawCircle(const cv::Point& center, double radius)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         cursorPos = center;
         cairo_move_to(cairoContext, center.x+radius, center.y);
         cairo_arc(cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
@@ -118,7 +118,7 @@ namespace ImageDrawer
 
     void CairoDrawer::drawLine(const cv::Point& pointA, const cv::Point& pointB)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         cursorPos = pointB;
         cairo_move_to(cairoContext, pointA.x, pointA.y);
         cairo_line_to(cairoContext, pointB.x, pointB.y);
@@ -127,14 +127,14 @@ namespace ImageDrawer
 
     void CairoDrawer::setLineWidth(int thickness)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         cairo_set_line_width(cairoContext, thickness);
 #endif
     }
 
     void CairoDrawer::draw()
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         cairo_stroke(cairoContext);
 #endif
     }
@@ -142,7 +142,7 @@ namespace ImageDrawer
 
     void CairoDrawer::setTty(const std::string& device, TTY_MODE mode)
     {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         int fd = open(device.c_str(), O_RDWR);
 
         if (fd == -1) {
