@@ -1,5 +1,6 @@
 #include <opencv2/highgui.hpp>
 #include <include/Boundary/BoundaryDetector.hpp>
+#include <include/Ball/BallDetector.hpp>
 #include <include/Cue/CueDetector.hpp>
 #include <include/Acquisition.hpp>
 #include <opencv2/highgui.hpp>
@@ -24,6 +25,7 @@ int main(int argc, char const *argv[])
     
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
+    std::unique_ptr<Detector::IDetector> ballDetector = std::make_unique<Detector::BallDetector>(cap);
 
     auto bounds = detect->getObjects();
     std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
@@ -39,15 +41,24 @@ int main(int argc, char const *argv[])
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << "error: " << e.what() << '\n';
     }
     
-        while(true)
+    while(true)
     {
         
         cv::Mat frame =  cap->getCapture().getFrame();
         if(!frame.empty())
         {
+            std::vector<std::shared_ptr<Detector::Object>> objects = ballDetector->getObjects();
+
+            /*for(std::shared_ptr<Detector::Object> objectPtr : objects)
+            {
+                std::cout << std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->point << " is of type  " 
+                            << std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->ballType << " and has a white percentage of " 
+                            << (uint16_t) std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->percentageWhite << std::endl;
+            }*/
+
             if(bound != nullptr)
             {
                 for(auto pocket : bound->pocketsLoc)

@@ -43,10 +43,64 @@ namespace Detector
 
         // 2: do a closing operation to remove black holes in balls
         cv::Mat closedBackground;
+         
         cv::morphologyEx(imageNoBackground, closedBackground, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
+        //
+        
+        //remove border blobs
+        for(int x = 0; x < closedBackground.cols; ++x)
+        {
+            cv::floodFill(closedBackground, cv::Point(x, 0), cv::Scalar(0));
+            cv::floodFill(closedBackground, cv::Point(x, closedBackground.rows-1), cv::Scalar(0));
+        }
+
+        for(int y = 0; y < closedBackground.rows; ++y)
+        {
+            cv::floodFill(closedBackground, cv::Point(0, y), cv::Scalar(0));
+            cv::floodFill(closedBackground, cv::Point(closedBackground.cols-1, y), cv::Scalar(0));
+        }
+
+        cv::Mat dist;
+        cv::Mat test;
+        double min, max;
+        cv::distanceTransform(closedBackground, dist, cv::DIST_FAIR, cv::DIST_MASK_PRECISE);
+        // Normalize the distance image for range = {0.0, 1.0}
+        // so we can visualize and threshold it
+        cv::normalize(dist, dist, 0, 1.0, cv::NORM_MINMAX);
+        cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+
+        int borderSize = 20;
+        cv::Mat distborder(dist.rows + 2*borderSize, dist.cols + 2*borderSize, dist.depth());
+        cv::copyMakeBorder(dist, distborder, 
+                borderSize, borderSize, borderSize, borderSize, 
+                cv::BORDER_CONSTANT | cv::BORDER_ISOLATED, cv::Scalar(0, 0, 0));
+        // create a template. from the sizes of the circles in the image, 
+        // a ~75 radius disk looks reasonable, so the borderSize was selected as 75
+        cv::Mat distTempl;
+        cv::Mat kernel2 = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(2*borderSize+1, 2*borderSize+1));
+        // erode the ~75 radius disk a bit
+        cv::erode(kernel2, kernel2, kernel, cv::Point(-1, -1), 10);
+        // take its distance transform. this is the template
+        cv::distanceTransform(kernel2, distTempl, cv::DIST_L2, cv::DIST_MASK_PRECISE);
+        // match template
+        cv::Mat nxcor;
+        cv::matchTemplate(distborder, distTempl, nxcor, cv::TM_CCOEFF_NORMED);
+        cv::minMaxLoc(nxcor, &min, &max);
+
+        cv::Mat peaks, peaks8u;
+        cv::threshold(nxcor, peaks, max*.5, 255, cv::THRESH_BINARY);
+        cv::convertScaleAbs(peaks, peaks8u);
+        /*cv::cvtColor(img, dist, cv::COLOR_BGR2GRAY);
+        cv::threshold(dist, test, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
+        cv::threshold(dist, dist, 0, 80, cv::THRESH_BINARY);
+        cv::bitwise_and(dist, test, dist);*/
+        cv::imshow("Distance", dist);
+        cv::morphologyEx(peaks8u, peaks8u, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)), cv::Point(-1, -1), 1);
+        cv::imshow("Distance Transform Image", peaks8u);
+
 
         // 3: find the balls (circles)
-        std::vector<cv::Vec3f> circles = findCircles(closedBackground);
+        std::vector<cv::Vec3f> circles = findCircles(peaks8u);
 
         // 4: add the found balls to the data
         for(const cv::Vec3f circle : circles)

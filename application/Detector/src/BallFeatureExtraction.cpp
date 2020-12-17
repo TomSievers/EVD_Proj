@@ -1,6 +1,7 @@
 #include "include/Ball/BallFeatureExtraction.hpp"
 
 #include <opencv2/highgui.hpp>
+#include <iostream>
 
 #define BALL_WHITE_H_MIN 9 // old: 15
 #define BALL_WHITE_S_MIN 13 // old 23
@@ -41,8 +42,8 @@ namespace Detector
         if(enhancementImg)
         {
             // get the contours of the balls
-            std::vector<std::vector<cv::Point>> ballContours;
-            cv::findContours(image, ballContours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+            /*std::vector<std::vector<cv::Point>> ballContours;
+            cv::findContours(image, ballContours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);*/
 
             // convert enhanced image to hsv
             cv::Mat enhancedImageHsv;
@@ -55,11 +56,37 @@ namespace Detector
             
             cv::Mat imageWhitePartsClosed;
             cv::morphologyEx(imageWhiteParts, imageWhitePartsClosed, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
+
+            for(auto ball : ballObjects)
+            {
+                uint64_t whiteCount = 0;
+                uint64_t blackCount = 0;
+                uint64_t count = 0;
+                for(int x = (int)round((double)ball->point.x - ball->radius); x < (int)round((double)ball->point.x + ball->radius); ++x)
+                {
+                    for(int y = (int)round((double)ball->point.y - ball->radius); y < (int)round((double)ball->point.y + ball->radius); ++y)
+                    {
+                        if(sqrt(pow((double)(x - ball->point.x), 2) +  pow((double)(y - ball->point.y), 2)) <= ball->radius)
+                        {
+                            ++count;
+                            if(imageWhitePartsClosed.at<uint8_t>(y, x) == 255)
+                            {
+                                ++whiteCount;
+                            } else {
+                                ++blackCount;
+                            }   
+                        }
+                    }
+                }
+
+                ball->percentageWhite = (uint8_t)round(((float)whiteCount/(float)count)*100.0F);
+            }
             
-            std::vector<std::vector<cv::Point>> whiteContours;
+            /*std::vector<std::vector<cv::Point>> whiteContours;
             cv::findContours(imageWhitePartsClosed, whiteContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
             // check for every ball which ball contour points and white parts are in his region
+
             for(std::size_t i = 0; i < ballObjects.size(); ++i)
             {
                 double radiusSquared = std::pow(ballObjects.at(i)->radius, 2);
@@ -86,7 +113,7 @@ namespace Detector
                         double distanceBetweenPoints = std::pow(whiteContours.at(k).at(y).x - ballObjects.at(i)->point.x, 2) +
                                                         std::pow(whiteContours.at(k).at(y).y - ballObjects.at(i)->point.y, 2);
                         
-                        if(distanceBetweenPoints <= (radiusSquared + radiusSquared / 2)) // since the found circles are not always perfect, add some value to the max distance
+                        if(distanceBetweenPoints <= (radiusSquared)) // since the found circles are not always perfect, add some value to the max distance
                         {
                             ballObjects.at(i)->whiteContourPoints.push_back(whiteContours.at(k).at(y));
                         }
@@ -98,19 +125,22 @@ namespace Detector
                 {
                     double ballContourArea = cv::contourArea(ballObjects.at(i)->ballContourPoints);
                     double whiteContourArea = 0;
-
+                    
                     if(ballObjects.at(i)->whiteContourPoints.size() != 0)
                     {
                         whiteContourArea = cv::contourArea(ballObjects.at(i)->whiteContourPoints);
+                        std::cout << whiteContourArea << " " << ballContourArea << " " << i << std::endl;
                     }
 
                     ballObjects.at(i)->percentageWhite = (uint8_t) std::round(whiteContourArea / ballContourArea * 100);
                 } else {
                     ballObjects.at(i)->percentageWhite = 0;
                 }
-            }
+            }*/
 
 #ifdef DEBUG
+            cv::Mat bitwised_xor_image;
+            cv::bitwise_xor(image, imageWhitePartsClosed, bitwised_xor_image);
             for(std::size_t i = 0; i < ballObjects.size(); ++i)
             {
 
@@ -121,14 +151,10 @@ namespace Detector
                             1.0,
                             CV_RGB(118, 185, 0), //font color
                             2);
+
             }
-
-            cv::Mat bitwised_xor_image;
-            cv::bitwise_xor(image, imageWhitePartsClosed, bitwised_xor_image);
-
             cv::imshow("enhanced image", *enhancementImg);
-            cv::imshow("image white parts", bitwised_xor_image);
-            cv::waitKey(0);
+            cv::imshow("image white parts", imageWhitePartsClosed);
 #endif
         }
     }

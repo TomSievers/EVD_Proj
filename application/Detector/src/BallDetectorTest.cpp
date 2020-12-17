@@ -4,14 +4,18 @@
 #include <memory>
 #include <iostream>
 #include <chrono>
+#include <opencv2/highgui.hpp>
 
 int main(int argc, char** argv)
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup9_2.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup3_1.jpg");
     std::unique_ptr<Detector::IDetector> boundaryDetector = std::make_unique<Detector::BoundaryDetector>(cap);
     std::unique_ptr<Detector::IDetector> ballDetector = std::make_unique<Detector::BallDetector>(cap);
-
+    auto start =  std::chrono::high_resolution_clock::now();
     boundaryDetector->getObjects(); // needed for setting ROI
+    auto end =  std::chrono::high_resolution_clock::now();
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << std::endl;
+    
 
     auto timePoint = std::chrono::system_clock::now();
 
@@ -24,8 +28,10 @@ int main(int argc, char** argv)
 
     for(std::shared_ptr<Detector::Object> objectPtr : objects)
     {
-        std::cout << std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->point << " is of type  " 
+        /*std::cout << std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->point << " is of type  " 
                     << std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->ballType << " and has a white percentage of " 
-                    << (uint16_t) std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->percentageWhite << std::endl;
+                    << (uint16_t) std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->percentageWhite << std::endl;*/
     }
+
+    cv::waitKey(0);
 }
