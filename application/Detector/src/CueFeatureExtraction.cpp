@@ -52,28 +52,29 @@ namespace Detector
         }
         if(biggestContourId != -1)
         {
-        for(std::size_t i = 0; i < approxPolyContours[biggestContourId].size(); i++)
-        {
-            cornerPoints.push_back(cv::Point(approxPolyContours[biggestContourId][i].x, approxPolyContours[biggestContourId][i].y));
-        }
-
-        for(auto& c : cornerPoints)
-        {
-            int i = 0;
-            for(auto& c2 : cornerPoints)
+            for(std::size_t i = 0; i < approxPolyContours[biggestContourId].size(); i++)
             {
-                if(c2 != c && sqrt(pow(c2.x - c.x, 2) + pow(c2.y - c.y, 2)) < 5)
-                {
-                    cornerPoints.erase(cornerPoints.begin()+i);
-                }
-                ++i;
+                cornerPoints.push_back(cv::Point(approxPolyContours[biggestContourId][i].x, approxPolyContours[biggestContourId][i].y));
             }
-        }
 
-        for(auto c : cornerPoints)
-        {
-            std::cout << "(" << c.x << "," << c.y << ")" << std::endl;
-        }
+            for(auto& c : cornerPoints)
+            {
+                int i = 0;
+                for(auto& c2 : cornerPoints)
+                {
+                    if(c2 != c && sqrt(pow(c2.x - c.x, 2) + pow(c2.y - c.y, 2)) < 5)
+                    {
+                        cornerPoints.erase(cornerPoints.begin()+i);
+                    }
+                    ++i;
+                }
+            }
+#ifdef DEBUG
+            for(auto c : cornerPoints)
+            {
+                std::cout << "(" << c.x << "," << c.y << ")" << std::endl;
+            }
+#endif
         }
         return cornerPoints;
     }

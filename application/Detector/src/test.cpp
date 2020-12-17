@@ -11,7 +11,7 @@
 
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("D:/EVD_Proj/Photos_pool_table/setup1_1.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup2_1.jpg");
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
 
@@ -50,10 +50,9 @@ int main(int argc, char const *argv[])
                     cv::line(frame, bound->corners[i], bound->corners[i + 1], cv::Scalar(0, 0, 255), 2);
                 }
             }
-            
             if(cue != nullptr)
             {
-                cv::circle(frame, cv::Point(cue->center.x, cue->center.y), 8, cv::Scalar(255,0,0), cv::FILLED, cv::LINE_8);
+                cv::circle(frame, cv::Point(cue->endPoints[0].x, cue->endPoints[0].y), 8, cv::Scalar(255,0,0), cv::FILLED, cv::LINE_8);
                 cv::imshow("test", frame);
             }
         }

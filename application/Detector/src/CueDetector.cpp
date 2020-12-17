@@ -35,10 +35,9 @@ std::vector<std::shared_ptr<Object>> CueDetector::getObjects()
         
         auto data_ptr = processor.second->process(img, data);
         data = nullptr;
-if(processor.first == ACQUISITION)
+        if(processor.first == ACQUISITION)
         {
             img.copyTo(copy);
-            cv::imshow("copy", copy);
         }
 #ifdef DEBUG
         cv::namedWindow(names[i], cv::WINDOW_KEEPRATIO);
