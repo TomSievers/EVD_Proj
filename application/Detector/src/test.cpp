@@ -9,9 +9,19 @@
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
 
+using namespace std::chrono_literals;
+
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup2_1.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/balls1.h264");
+    cv::Mat img;
+    // skip first frames because a lot darker
+    for(auto i = 0; i < 30; ++i)
+    {
+        cap->process(img, nullptr);
+        std::this_thread::sleep_for(100ms);
+    }
+    
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
 
