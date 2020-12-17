@@ -14,7 +14,7 @@ include_directories(./)
 include_directories(../)
 
 set(SRC 
-    src/TrajectoryCalculator.cpp 
+    src/ObjectVisualizer.cpp 
 )
 
 add_executable(${PROJECT_NAME}_test src/test.cpp ${SRC})

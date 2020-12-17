@@ -11,7 +11,8 @@ namespace Visualizer
         virtual ~ObjectVisualizer();
         virtual void update(const std::vector<cv::Point>& trajectory, const CueBall& ball);
     private:
-        //data
+        std::vector<cv::Point> prevTrajectory;
+        CueBall prevBall;
     }; //ObjectVisualizer
 } // namespace Visualizer
 

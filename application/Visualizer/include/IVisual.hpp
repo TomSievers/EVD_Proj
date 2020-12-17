@@ -1,6 +1,8 @@
 #ifndef IVISUAL_HPP
 #define IVISUAL_HPP
 #include <opencv2/core.hpp>
+#include <ImageDrawer/include/IImageDrawer.hpp>
+#include <memory>
 
 namespace Visualizer
 {
@@ -15,10 +17,11 @@ namespace Visualizer
     class IVisual
     {
     public:
-        IVisual();
-        virtual ~IVisual();
+        IVisual(std::shared_ptr<ImageDrawer::IImageDrawer> drawer) : drawer(drawer){};
+        virtual ~IVisual(){};
         virtual void update(const std::vector<cv::Point>& trajectory, const CueBall& ball) = 0;
-    private:
+    protected:
+        std::shared_ptr<ImageDrawer::IImageDrawer> drawer;
     }; //IVisual
 
 } // namespace Visualizer
