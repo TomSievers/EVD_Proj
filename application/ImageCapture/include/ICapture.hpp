@@ -31,6 +31,8 @@ namespace ImageCapture
          * 
          */
         virtual void stop() = 0;
+        ICapture(){};
+        virtual ~ICapture(){};
         
     protected:
         /**
@@ -38,8 +40,6 @@ namespace ImageCapture
          * 
          */
         virtual void update() = 0;
-        ICapture(){};
-        virtual ~ICapture(){};
         cv::Mat curFrame;
         std::atomic_bool active;
         std::thread thread;

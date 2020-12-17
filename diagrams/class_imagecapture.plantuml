@@ -21,6 +21,13 @@ package ImageCapture
         + Capture(device:int)
     }
 
+    class MockCapture
+    {
+        - img : cv::Mat
+        - targetROI : std::array<cv::Point2f, 4>
+        + MockCapture(imgPath : const std::string&)
+    }
+
     class CameraConfig
     {
         - file : std::ifstream
@@ -37,6 +44,7 @@ package ImageCapture
 }
 
 ICapture <|. Capture
+ICapture <|.. MockCapture
 Capture -> "1" CameraConfig
 
 Capture --> "1" V4L2Settings
