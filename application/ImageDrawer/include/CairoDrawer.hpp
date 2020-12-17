@@ -5,6 +5,11 @@
 #ifdef __linux__
 #include <cairo.h>
 #include <linux/fb.h>
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+struct cairo_format_t
+{
+    int STUB = 0;
+}
 #endif
 
 namespace ImageDrawer
