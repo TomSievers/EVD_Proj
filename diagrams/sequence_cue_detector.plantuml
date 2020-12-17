@@ -1,0 +1,69 @@
+@startuml
+
+participant main as "main"
+participant detect as "CueDetector : detect"
+participant acq as "Acquisition : acquisition"
+participant enh as "CueEnhancement : enhance"
+participant seg as "CueSegmentation : segment"
+participant fea as "CueFeatureExtraction : feature"
+participant cla as "CueClassification : classifiy"
+
+activate main
+create acq
+main -> acq : <<construct>>
+
+create detect
+main -> detect : <<construct>>
+activate detect
+
+create enh
+detect -> enh : <<construct>>
+
+create seg
+detect -> seg : <<construct>>
+
+create fea
+detect -> fea : <<construct>>
+
+create cla
+detect -> cla : <<construct>>
+deactivate detect
+
+main -> detect : objects = getObjects() : std::vector<std::shared_ptr<Object>>
+activate detect
+
+detect -> acq : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate acq
+deactivate acq
+
+detect -> enh : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate enh
+enh -> enh : blurImage(img : cv::Mat&) : void
+enh -[hidden]> enh
+deactivate enh
+
+detect -> seg : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate seg
+seg -> seg : thresholdImage(image : cv::Mat&) : void
+seg -> seg : openImage(image : cv::Mat&) : void
+seg -> seg : findCueContours(image : const cv::Mat&) : std::vector<std::vector<cv::Point>>
+seg -[hidden]> seg 
+deactivate seg
+
+detect -> fea : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate fea
+fea -> fea : findCornerPoints(contours : const std::vector<std::vector<cv::Point>>&) : std::vector<cv::Point>
+fea -[hidden]> fea
+deactivate fea
+
+
+detect -> cla : data = process(img : cv::Mat, data : std::shared_ptr<void>) : std::shared_ptr<void>
+activate cla
+cla -> cla : classifyCue(cornerPoints : const std::vector<cv::Point>&) : cv::Point
+cla -[hidden]> cla
+deactivate cla
+
+deactivate detect
+deactivate main
+
+@enduml

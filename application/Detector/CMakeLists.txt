@@ -20,6 +20,13 @@ set(SRC
     src/BoundaryFeatureExtract.cpp
     src/BoundarySegmentation.cpp
     src/BoundaryClassifier.cpp
+    
+    src/CueDetector.cpp
+    src/CueEnhancement.cpp
+    src/CueFeatureExtraction.cpp
+    src/CueSegmentation.cpp
+    src/CueClassification.cpp
+    
     src/BallClassification.cpp
     src/BallDetector.cpp
     src/BallEnhancement.cpp
