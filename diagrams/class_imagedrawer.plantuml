@@ -1,0 +1,65 @@
+@startuml
+
+package ImageDrawer
+{
+    class ColorRGBInt <<struct>>
+    {
+        + r : uint8_t
+        + b : uint8_t
+        + g : uint8_t
+        + ColorRGBInt(r : uint8_t, b : uint8_t, g : uint8_t)
+    }
+
+    class ColorRGBAInt <<struct>>
+    {
+        + a : uint8_t
+        + ColorRGBAInt(r : uint8_t, b : uint8_t, g : uint8_t, a : uint8_t)
+    }
+
+    interface IImageDrawer
+    {
+        + setDrawColor(color : const ColorRGBAInt&) : void
+        + setDrawColor(color : const ColorRGBInt&) : void
+        + setBackground(color : const ColorRGBInt&) : void
+        + drawCircle(center : const cv::Point&, radius : double) : void
+        + drawLine(pointA : const cv::Poin&t, pointB : const cv::Point&) : void
+        + setLineWidth(thickness : int) : void
+        + draw() : void
+    }
+
+    enum TTY_MODE
+    {
+        GRAPHICS
+        TEXT
+    }
+
+    class CairoDrawer
+    {
+        
+        - fbp : char*
+        - fbfd : int
+        - terminal : const std::string
+        - screensize : unsigned long
+        - curColor : ColorRGBAInt
+        - cursorPos : cv::Point
+        - screenWidth : uint32_t
+        - screenHeight : uint32_t
+        - vinfo : fb_var_screeninfo
+        - finfo : fb_fix_screeninfo
+        - cairoContext : cairo_t*
+        - cairoSurface : cairo_surface_t*
+        - setTty(device : string, mode : TTY_MODE) : void
+        + CairoDrawer(framebuffer : string, terminal : string, format : cairo_format_t)
+    }
+}
+
+IImageDrawer .> ColorRGBInt
+IImageDrawer .> ColorRGBAInt
+
+IImageDrawer <|.. CairoDrawer
+
+ColorRGBInt <|-- ColorRGBAInt
+
+CairoDrawer .> TTY_MODE
+
+@enduml

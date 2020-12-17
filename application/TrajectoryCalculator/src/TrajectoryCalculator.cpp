@@ -152,7 +152,7 @@ namespace TrajectoryCalculator
             sides[0] = 2;
         }
 
-        if (abs(angle) >= (M_PI / 2))
+        if (fabs(angle) >= (M_PI / 2))
         {
             sides[1] = 3;
         }
