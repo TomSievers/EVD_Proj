@@ -1,0 +1,62 @@
+@startuml
+
+participant main as "main"
+participant cairo as "CairoDrawer : drawer"
+participant ca as "cairolib"
+
+activate main
+
+create cairo
+main -> cairo : <<construct>> (framebuffer : string, terminal : string, CAIRO_FORMAT_RGB16_565 : cairo_format_t) : void
+activate cairo
+cairo -> cairo : setTty(terminal : string, KD_GRAPHICS : TTY_MODE) : void
+cairo -> ca : cairoSurface = cairo_image_surface_create_for_data(fbp : *unsigned char, format : cairo_format_t, screenWidth : int, screenHeight : int, linelength : int) : *cairo_surface_t
+cairo -> ca : cairoContext = cairo_create(cairoSurface : *cairo_surface_t)
+cairo -[hidden]> ca
+deactivate cairo
+
+main -> cairo : setDrawColor(color : const ColorRGBInt&) : void
+activate cairo
+cairo -> ca : cairo_set_source_rgb(cairoContext, color.r, color.g, color.b) : void
+cairo -[hidden]> ca
+deactivate cairo
+
+main -> cairo : setBackground(color : const ColorRGBInt&) : void
+activate cairo
+cairo -> ca : cairo_set_source_rgb(cairoContext, color.r, color.g, color.b) : void
+cairo -> ca : cairo_rectangle(cairoContext, 0, 0, screenWidth : int, screenHeight : int) : void
+cairo -> ca : cairo_fill(cairoContext) : void
+cairo -> cairo : draw() : void
+cairo -> ca : cairo_set_source_rgb(cairoContext, prevColor.r, prevColor.g, prevColor.b) : void
+cairo -[hidden]> ca
+deactivate cairo
+
+main -> cairo : setLineWidth(thickness : int) : void
+activate cairo
+cairo -> ca : cairo_set_line_width(cairoContext, thickness) : void
+cairo -[hidden]> ca
+deactivate cairo
+
+main -> cairo : drawCircle(center : const cv::Point&, radius : double, thickness : int) : void
+activate cairo
+cairo -> ca : cairo_move_to(cairoContext, center.x+radius, center.y) : void
+cairo -> ca : cairo_arc(cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
+cairo -[hidden]> ca
+deactivate cairo
+
+main -> cairo : drawLine(pointA : const cv::Poin&t, pointB : const cv::Point&, thickness : int) : void
+activate cairo
+cairo -> ca : cairo_move_to(cairoContext, pointA.x, pointA.y) : void
+cairo -> ca : cairo_line_to(cairoContext, pointB.x, pointB.y) : void
+cairo -[hidden]> ca
+deactivate cairo
+
+main -> cairo : draw() : void
+activate cairo
+cairo -> ca : cairo_stroke(cairoContext) : void
+cairo -[hidden]> ca
+deactivate cairo
+
+
+
+@enduml
