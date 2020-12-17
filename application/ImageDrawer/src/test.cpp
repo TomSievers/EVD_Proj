@@ -5,6 +5,7 @@ using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
+#ifdef __linux__
     ImageDrawer::CairoDrawer drawer("/dev/fb0", "/dev/tty1", CAIRO_FORMAT_RGB16_565);
 
     drawer.setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
@@ -37,6 +38,8 @@ int main(int argc, char const *argv[])
     drawer.draw();
 
     std::this_thread::sleep_for(2s);
+
+#endif
 
     return 0;
 }
