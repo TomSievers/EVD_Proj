@@ -9,7 +9,7 @@
 struct cairo_format_t
 {
     int STUB = 0;
-}
+};
 #endif
 
 namespace ImageDrawer
