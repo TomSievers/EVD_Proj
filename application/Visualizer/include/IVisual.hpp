@@ -35,6 +35,12 @@ namespace Visualizer
             pt_new.y = (pt.y - inMin.y) * (outMax.y - outMin.y) / (inMax.y - inMin.y) + outMin.y;
             return pt_new;
         };
+
+        double mapRad(double rad)
+        {
+            double factor = ((double)outMax.x)/((double)inMax.x);
+            return rad*factor;
+        }
         cv::Point inMax;
         cv::Point inMin;
         cv::Point outMax;
