@@ -10,20 +10,25 @@ package Visualizer
         + CueBall(center : cv::Point)
     }
 
-    class Trajectories <<struct>>
-    {
-        + cueBallTrajectory : vector<cv::Point>
-        + otherBallTrajectories : vector<vector<cv::Point>>
-    }
-
     interface IVisual
     {
-        + update(ball : const CueBall&, trajectories : const Trajectories&) : void
+        + //update(ball : const CueBall&, trajectories : const vector<cv::Point>&) : void//
+        + setInMaxPoint(pt : const cv::Point&) : void
+        + setInMinPoint(pt : const cv::Point&) : void
+        + setOutMaxPoint(pt : const cv::Point&) : void
+        + setOutMinPoint(pt : const cv::Point&) : void
+        # map(pt : const cv::Point&) : cv::Point
+        # mapRad(rad : double) : double
+        # inMax : cv::Point
+        # inMin : cv::Point
+        # outMax : cv::Point
+        # outMin : cv::Point
     }
 
     class ObjectVisualizer
     {
-        - coordTrans (point : const cv::Point&) : cv::Point 
+        - prevTrajectory : vector<cv::Point>
+        - prevBall : CueBall
     }
 }
 
@@ -39,8 +44,7 @@ package ImageDrawer
     }
 }
 
-CueBall "1" <-- IVisual : prevBall
-Trajectories "1" <-- IVisual : prevTrajectory
+CueBall <.. IVisual
 
 IVisual <|.. ObjectVisualizer
 
