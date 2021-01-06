@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV REQUIRED)
 
-add_definitions("-Wextra -Wconversion")
+add_definitions("-Wextra -Wconversion -Wno-psabi")
 
 include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS})
 include_directories(./)
@@ -20,16 +20,36 @@ set(SRC
     src/BoundaryFeatureExtract.cpp
     src/BoundarySegmentation.cpp
     src/BoundaryClassifier.cpp
+    
+    src/CueDetector.cpp
+    src/CueEnhancement.cpp
+    src/CueFeatureExtraction.cpp
+    src/CueSegmentation.cpp
+    src/CueClassification.cpp
+    
     src/BallClassification.cpp
     src/BallDetector.cpp
     src/BallEnhancement.cpp
     src/BallFeatureExtraction.cpp
     src/BallSegmentation.cpp
+
+    src/TableConfEnhancement.cpp
+    src/TableConfSegmentation.cpp
+    src/TableConfFeatureExtraction.cpp
+    src/TableConfDetector.cpp
+    src/BallConfEnhancement.cpp
+    src/BallConfSegmentation.cpp
+    src/BallConfFeatureExtraction.cpp
+    src/BallConfDetector.cpp
+    src/CueConfEnhancement.cpp
+    src/CueConfSegmentation.cpp
+    src/CueConfFeatureExtraction.cpp
+    src/CueConfDetector.cpp
 )
 
 add_definitions(-DDEBUG)
 
-add_executable(${PROJECT_NAME}_test src/BallDetectorTest.cpp)
+add_executable(${PROJECT_NAME}_test src/TableConfTest.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
 

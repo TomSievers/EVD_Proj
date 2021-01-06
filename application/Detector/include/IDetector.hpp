@@ -7,6 +7,16 @@
 
 namespace Detector
 {
+    struct Line
+    {
+        double a, b, c;
+		Line(){};
+        Line(double a, double b, double c) :
+               a(a), b(b), c(c)
+        {};
+        ~Line(){};
+    };
+
 	struct Object
 	{
 		Object() {};
@@ -18,6 +28,13 @@ namespace Detector
 		std::array<cv::Point, 4> corners;
 		std::array<cv::Point, 6> pocketsLoc;
 		double pocketRad;
+	};
+
+	struct CueObject : public Object
+	{
+		cv::Point center;
+		std::vector<cv::Point> endPoints;
+		Line line;
 	};
 
 	enum BallType
@@ -35,6 +52,17 @@ namespace Detector
         float radius;
         BallType ballType;
     };
+
+	struct Config : public Object
+	{
+		std::array<int, 4> roiPositions; // x-min, x-max, y-min, y-max
+		cv::Scalar tableColorMin;
+		cv::Scalar tableColorMax;
+		cv::Scalar cueBallColorMin;
+		cv::Scalar cueBallColorMax;
+		cv::Scalar cueColorMin;
+		cv::Scalar cueColorMax;
+	};
 
 	enum VisionStep
 	{
