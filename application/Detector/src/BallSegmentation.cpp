@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <opencv2/highgui.hpp>
+#include <opencv2/features2d.hpp>
 
 // defines for the pool table color
 #define BACKGROUND_MIN_H 105
@@ -45,21 +46,37 @@ namespace Detector
         cv::Mat closedBackground;
          
         cv::morphologyEx(imageNoBackground, closedBackground, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
-        //
-        
+        cv::morphologyEx(closedBackground, closedBackground, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(11, 11)));
+
         //remove border blobs
-        for(int x = 0; x < closedBackground.cols; ++x)
+        for(int y=0; y<closedBackground.rows; y++)
         {
-            cv::floodFill(closedBackground, cv::Point(x, 0), cv::Scalar(0));
-            cv::floodFill(closedBackground, cv::Point(x, closedBackground.rows-1), cv::Scalar(0));
+            uint8_t* row = closedBackground.ptr<uint8_t>(y);
+            if(y == 0 || y == closedBackground.rows-1)
+            {
+                for(int x=0; x<closedBackground.cols; x++)
+                {
+                    if(row[x] == 255)
+                    {   
+                        cv::floodFill(closedBackground, cv::Point(x, y), cv::Scalar(0));
+                    }
+
+                }
+            }
+            if(row[0] == 255)
+            {
+                cv::floodFill(closedBackground, cv::Point(0, y), cv::Scalar(0));
+            }
+
+            if(row[closedBackground.cols-1] == 255)
+            {
+                cv::floodFill(closedBackground, cv::Point(closedBackground.cols-1, y), cv::Scalar(0));
+            }
+            
         }
 
-        for(int y = 0; y < closedBackground.rows; ++y)
-        {
-            cv::floodFill(closedBackground, cv::Point(0, y), cv::Scalar(0));
-            cv::floodFill(closedBackground, cv::Point(closedBackground.cols-1, y), cv::Scalar(0));
-        }
-
+        
+        
         cv::Mat dist;
         cv::Mat test;
         double min, max;
@@ -87,29 +104,68 @@ namespace Detector
         cv::matchTemplate(distborder, distTempl, nxcor, cv::TM_CCOEFF_NORMED);
         cv::minMaxLoc(nxcor, &min, &max);
 
-        cv::Mat peaks, peaks8u;
-        cv::threshold(nxcor, peaks, max*.5, 255, cv::THRESH_BINARY);
-        cv::convertScaleAbs(peaks, peaks8u);
-        /*cv::cvtColor(img, dist, cv::COLOR_BGR2GRAY);
-        cv::threshold(dist, test, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-        cv::threshold(dist, dist, 0, 80, cv::THRESH_BINARY);
-        cv::bitwise_and(dist, test, dist);*/
-        cv::imshow("Distance", dist);
-        cv::morphologyEx(peaks8u, peaks8u, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)), cv::Point(-1, -1), 1);
-        cv::imshow("Distance Transform Image", peaks8u);
+        if(max >= 0.9)
+        {
+            cv::Mat peaks, peaks8u;
+            cv::threshold(nxcor, peaks, max*.5, 255, cv::THRESH_BINARY);
+            cv::convertScaleAbs(peaks, peaks8u);
+            
+            //cv::imshow("Distance", dist);
+            cv::morphologyEx(peaks8u, peaks8u, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(9, 9)));
+            cv::imshow("Distance Transform Image", peaks8u);
 
+            auto params = cv::SimpleBlobDetector::Params();
+            params.filterByColor = true;
+            params.blobColor = 255;
+            params.filterByArea = true;
+            params.filterByCircularity = true;
+            params.minCircularity = static_cast<float>(0.1);
+            params.minArea = 50;
+
+            auto detect = cv::SimpleBlobDetector::create(params);
+            std::vector<cv::KeyPoint> keypoints;
+            detect->detect(peaks8u, keypoints);
+            for(auto keypoint : keypoints)
+            {
+                std::shared_ptr<BallObject> circlePtr = std::make_shared<BallObject>();
+                circlePtr->point = keypoint.pt;
+                circlePtr->radius = 15;
+                std::static_pointer_cast<std::vector<std::shared_ptr<BallObject>>>(data)->push_back(circlePtr);
+            }
+
+            /*std::vector<std::vector<cv::Point>> contours;
+            cv::findContours(peaks8u, contours, cv::RETR_TREE, cv::CHAIN_APPROX_SIMPLE);
+            for(auto contour : contours)
+            {
+                std::vector<cv::Point> approx;
+                double eps = cv::arcLength(contour, true)*0.03;
+                cv::approxPolyDP(contour, approx, eps, true);
+                    auto M = cv::moments(approx);
+                    cv::Point center;
+                    center.x = int(M.m10 / M.m00);
+                    center.y = int(M.m01 / M.m00);
+
+                    std::shared_ptr<BallObject> circlePtr = std::make_shared<BallObject>();
+                    circlePtr->point = center;
+                    circlePtr->radius = 15;
+                    std::static_pointer_cast<std::vector<std::shared_ptr<BallObject>>>(data)->push_back(circlePtr);
+            }*/
+        }
+
+        std::cout << max << std::endl;
 
         // 3: find the balls (circles)
-        std::vector<cv::Vec3f> circles = findCircles(peaks8u);
+        //std::vector<cv::Vec3f> circles = findCircles(closedBackground);
+        
 
         // 4: add the found balls to the data
-        for(const cv::Vec3f circle : circles)
+        /*for(const cv::Vec3f circle : circles)
         {
             std::shared_ptr<BallObject> circlePtr = std::make_shared<BallObject>();
             circlePtr->point = cv::Point((int) std::round(circle[0]), (int) std::round(circle[1]));
             circlePtr->radius = circle[2];
             std::static_pointer_cast<std::vector<std::shared_ptr<BallObject>>>(data)->push_back(circlePtr);
-        }
+        }*/
 
         return std::make_shared<cv::Mat>(closedBackground);
     }

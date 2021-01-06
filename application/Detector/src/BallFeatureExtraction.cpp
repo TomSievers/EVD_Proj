@@ -68,13 +68,17 @@ namespace Detector
                     {
                         if(sqrt(pow((double)(x - ball->point.x), 2) +  pow((double)(y - ball->point.y), 2)) <= ball->radius)
                         {
-                            ++count;
-                            if(imageWhitePartsClosed.at<uint8_t>(y, x) == 255)
+                            if(y < imageWhitePartsClosed.rows && x < imageWhitePartsClosed.cols && y > 0 && x > 0)
                             {
-                                ++whiteCount;
-                            } else {
-                                ++blackCount;
-                            }   
+                                ++count;
+                                if(imageWhitePartsClosed.at<uint8_t>(x, y) == 255)
+                                {
+                                    ++whiteCount;
+                                } else {
+                                    ++blackCount;
+                                }   
+                            }
+                            
                         }
                     }
                 }
@@ -143,7 +147,6 @@ namespace Detector
             cv::bitwise_xor(image, imageWhitePartsClosed, bitwised_xor_image);
             for(std::size_t i = 0; i < ballObjects.size(); ++i)
             {
-
                 cv::putText(*enhancementImg, //target image
                             std::to_string(i) + " " + std::to_string(ballObjects.at(i)->percentageWhite), //text
                             ballObjects.at(i)->point, //top-left position

@@ -34,8 +34,6 @@ set(SRC
     src/BallSegmentation.cpp
 )
 
-add_definitions(-DDEBUG)
-
 add_executable(${PROJECT_NAME}_test src/BallDetectorTest.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
