@@ -16,7 +16,7 @@ namespace Detector
 
     std::vector<cv::Point> BoundaryFeatureExtract::getBiggestContour(const std::vector<std::vector<cv::Point>>& contours)
     {
-        int64_t biggestContourId = -1;
+        std::size_t biggestContourId = -1;
         double biggestContourArea = 0;
         std::vector<std::vector<cv::Point>> contours_poly(contours.size());
         for(std::size_t i = 0; i < contours.size(); ++i)
@@ -30,7 +30,7 @@ namespace Detector
                 biggestContourId = i;
             }
         }
-        if(biggestContourId != -1)
+        if(biggestContourId != static_cast<std::size_t>(-1))
         {
             return contours_poly[biggestContourId];
         }
