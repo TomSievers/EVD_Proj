@@ -9,7 +9,11 @@ using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    Visualizer::ObjectVisualizer vis(cv::Point(0, 0), cv::Point(1000, 500));
+    #if defined(__linux__) && defined(HAVE_CAIRO)
+    Visualizer::ObjectVisualizer vis(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500));
+    #else
+    Visualizer::ObjectVisualizer vis(cairo_format_t(), cv::Point(0, 0), cv::Point(1000, 500));
+    #endif
 
     std::vector<cv::Point> trajectory;
     trajectory.push_back(cv::Point(1, 1));

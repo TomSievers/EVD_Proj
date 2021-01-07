@@ -1,17 +1,12 @@
 #include <include/ObjectVisualizer.hpp>
-#include <include/CairoDrawer.hpp>
 #include <iostream>
 
 namespace Visualizer
 {
     
-        ObjectVisualizer::ObjectVisualizer(const cv::Point& inMin, const cv::Point& inMax) : IVisual(nullptr)
+        ObjectVisualizer::ObjectVisualizer(cairo_format_t format, const cv::Point& inMin, const cv::Point& inMax) : IVisual(nullptr)
         {
-#if defined(__linux__) && defined(HAVE_CAIRO)
-            auto cairo = std::make_shared<ImageDrawer::CairoDrawer>("/dev/fb0", "/dev/tty1", CAIRO_FORMAT_RGB16_565);
-#else
-            auto cairo = std::make_shared<ImageDrawer::CairoDrawer>("/dev/fb0", "/dev/tty1", cairo_format_t());
-#endif
+            auto cairo = std::make_shared<ImageDrawer::CairoDrawer>("/dev/fb0", "/dev/tty1", format);
             drawer = cairo;
             outMin = cv::Point(0, 0);
             this->inMin = inMin;
