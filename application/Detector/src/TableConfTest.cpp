@@ -50,7 +50,7 @@ int main(int argc, char** argv)
     cv::Mat hsvcueBallImage;
     cv::cvtColor(cueBallImage, hsvcueBallImage, cv::COLOR_BGR2HSV);
 
-    cv::Mat cueImage = cv::imread("cue.jpg");
+    cv::Mat cueImage = cv::imread("cue.png");
     cv::Mat hsvCueImage;
     cv::cvtColor(cueImage, hsvCueImage, cv::COLOR_BGR2HSV);
 

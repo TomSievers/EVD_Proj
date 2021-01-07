@@ -73,5 +73,6 @@ namespace Detector
 
             std::cout << "finished making objects" << std::endl;
         }
+        return objects;
     }
 }

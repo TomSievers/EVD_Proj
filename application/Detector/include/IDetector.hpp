@@ -16,7 +16,6 @@ namespace Detector
         {};
         ~Line(){};
     };
-
 	struct Object
 	{
 		Object() {};
@@ -36,7 +35,6 @@ namespace Detector
 		std::vector<cv::Point> endPoints;
 		Line line;
 	};
-
 	enum BallType
     {
 		NOT_CUE_BALL,

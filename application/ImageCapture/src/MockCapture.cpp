@@ -1,17 +1,18 @@
 #include <include/MockCapture.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <iostream>
 
 namespace ImageCapture
 {
-    MockCapture::MockCapture(const std::string& imgPath) : img(cv::imread(imgPath))
+    MockCapture::MockCapture(const std::string& imgPath) : img(cv::imread(imgPath)), cap(imgPath)
     {
-        if(img.empty())
+        if(img.empty() && !cap.isOpened())
         {
             std::string funName = __PRETTY_FUNCTION__;
-            throw std::runtime_error(funName + ": Mock image could not be opened");
-        }
-
+            throw std::runtime_error(funName + ": Mock image/video could not be opened");
+        } 
+        newFrame = true;
         active.store(true);
         thread = std::thread(&MockCapture::update, this);
     }
@@ -24,10 +25,21 @@ namespace ImageCapture
     void MockCapture::update()
     {
         cv::Mat tmpFrame;
+        cv::Mat lastFrame;
         while(active.load())
         {
-            tmpFrame = img.clone();
-
+            
+            if(!img.empty())
+            {
+                tmpFrame = img.clone();
+            } else if(newFrame) {
+                cap >> lastFrame;
+                tmpFrame = lastFrame;
+                newFrame = false;
+            } else {
+                tmpFrame = lastFrame;
+            }
+            
             if(!tmpFrame.empty())
             {
                 updateMutex.lock();
@@ -59,6 +71,7 @@ namespace ImageCapture
     cv::Mat MockCapture::getFrame()
     {
         std::lock_guard<std::mutex> guard(updateMutex);
+        newFrame = true;
         return curFrame;
     }
     

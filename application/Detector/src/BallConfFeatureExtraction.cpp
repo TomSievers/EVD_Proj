@@ -31,9 +31,6 @@ namespace Detector
         cv::Mat threshold;
         cv::threshold(channels[2], threshold, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
 
-        cv::imshow("threshold", threshold);
-        cv::waitKey(0);
-
         config.cueBallColorMin = cv::Scalar(179, 255, 255);
         config.cueBallColorMax = cv::Scalar(0, 0, 0);
 
