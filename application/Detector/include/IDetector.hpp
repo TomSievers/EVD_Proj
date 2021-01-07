@@ -51,6 +51,12 @@ namespace Detector
         BallType ballType;
     };
 
+	struct ChangeObject : public Object
+    {
+		int nonZero;
+        bool moving;
+    };
+
 	enum VisionStep
 	{
 		ACQUISITION,

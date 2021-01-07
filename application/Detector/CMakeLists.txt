@@ -32,11 +32,17 @@ set(SRC
     src/BallEnhancement.cpp
     src/BallFeatureExtraction.cpp
     src/BallSegmentation.cpp
+
+    src/ChangeClassification.cpp
+    src/ChangeDetector.cpp
+    src/ChangeEnhancement.cpp
+    src/ChangeFeatureExtraction.cpp
+    src/ChangeSegmentation.cpp
 )
 
 add_definitions(-DDEBUG)
 
-add_executable(${PROJECT_NAME}_test src/BallDetectorTest.cpp)
+add_executable(${PROJECT_NAME}_test src/test.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
 

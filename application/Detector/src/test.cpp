@@ -1,5 +1,6 @@
 #include <opencv2/highgui.hpp>
 #include <include/Boundary/BoundaryDetector.hpp>
+#include <include/Change/ChangeDetector.hpp>
 #include <include/Cue/CueDetector.hpp>
 #include <include/Acquisition.hpp>
 #include <opencv2/highgui.hpp>
@@ -13,7 +14,7 @@ using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/balls1.h264");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/play.h264");
     cv::Mat img;
     // skip first frames because a lot darker
     for(auto i = 0; i < 30; ++i)
@@ -21,16 +22,26 @@ int main(int argc, char const *argv[])
         cap->process(img, nullptr);
         std::this_thread::sleep_for(100ms);
     }
-    
-    std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
-    std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
 
+
+    std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
     auto bounds = detect->getObjects();
     std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
+    (std::make_shared<Detector::ChangeDetector>(cap))->getObjects();
+    std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
+
+
     auto cues = cueDetect->getObjects();
 
     std::shared_ptr<Detector::Boundary> bound;
     std::shared_ptr<Detector::CueObject> cue;
+
+    bound = std::static_pointer_cast<Detector::Boundary>(bounds.at(0));
+
+    for(int i = 0; i < bound->corners.size(); ++i)
+    {
+        std::cout << bound->corners[i].x << ", " << bound->corners[i].y << "\n";
+    }
 
     try
     {
@@ -42,12 +53,32 @@ int main(int argc, char const *argv[])
         std::cerr << e.what() << '\n';
     }
     
-        while(true)
+    bool previous = false;
+    cv::Mat pframe;
+
+    cv::destroyAllWindows();
+    while(true)
     {
         
-        cv::Mat frame =  cap->getCapture().getFrame();
+        cv::Mat frame = cap->getCapture().getFrame();
+
+        cv::imshow("Original", frame);
         if(!frame.empty())
         {
+            std::shared_ptr<Detector::IDetector> changeDetect = std::make_shared<Detector::ChangeDetector>(cap);
+            auto changes = changeDetect->getObjects();
+            std::shared_ptr<Detector::ChangeObject> changeObject = std::static_pointer_cast<Detector::ChangeObject>(changes.at(0));;
+
+            if(changeObject->moving)
+            {
+                std::cout << "Is moving: Yes\n";
+            }
+            else
+            {
+                std::cout << "Is moving: No\n";
+            }
+            
+            
             if(bound != nullptr)
             {
                 for(auto pocket : bound->pocketsLoc)
@@ -67,7 +98,7 @@ int main(int argc, char const *argv[])
             }
         }
 
-        if(cv::waitKey(1) == 27)
+        if(cv::waitKey(30) == 27)
         {
             cap->getCapture().stop();
             break;
