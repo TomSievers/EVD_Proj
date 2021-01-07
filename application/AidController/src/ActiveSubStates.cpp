@@ -40,13 +40,26 @@ void Detecting::onDo(Controller& con)
         
         avgRadius += realBall->radius;
     }
-
+    
     if(cueBall != nullptr)
     {
         avgRadius /= trajBalls.size();
         trajBalls.insert(trajBalls.begin(), cueBall->point);
         con.getTrajectoryCalc()->setBalls(trajBalls);
         con.getTrajectoryCalc()->setBallRadius(avgRadius);
+        bool ballMoved = false;
+        while(!ballMoved)
+        {
+            auto cue = con.getDetector(CUE)->getObjects();
+            if(!cue.empty())
+            {
+                auto realCue = std::dynamic_pointer_cast<Detector::CueObject>(cue[0]);
+                std::array<cv::Point, 2> cuePoints = {realCue->endPoints[1], realCue->endPoints[0]};
+                con.getTrajectoryCalc()->setCue(cuePoints);
+                auto traj = con.getTrajectoryCalc()->getTrajectory();
+                
+            }
+        }
     }
 }
 
