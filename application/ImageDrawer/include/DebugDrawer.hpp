@@ -59,6 +59,7 @@ namespace ImageDrawer
         int thickness;
         ColorRGBAInt color;
         ColorRGBInt background;
+        int width, height;
         cv::Mat img;
         //data
     }; //DebugDrawer

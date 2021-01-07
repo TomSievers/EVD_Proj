@@ -31,12 +31,11 @@ void Setup::onEntry(Controller& con)
     {
         #if defined(__linux__) && defined(HAVE_CAIRO)
         con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500)));
-        #else
-        con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cairo_format_t(), cv::Point(0, 0), cv::Point(1000, 500)));
         #endif
     }
     catch(const std::exception& e)
     {
+        con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cv::Point(0, 0), cv::Point(1000, 500)));
         std::cerr << e.what() << '\n';
     }
 }

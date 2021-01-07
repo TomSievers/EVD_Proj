@@ -6,9 +6,9 @@
 
 namespace ImageDrawer
 {
-    DebugDrawer::DebugDrawer(int width, int height) : thickness(1), color(0, 0, 0, 0), background(0, 0, 0)
+    DebugDrawer::DebugDrawer(int width, int height) : thickness(1), color(0, 0, 0, 0), background(0, 0, 0), width(width), height(height)
     {
-        img = cv::Mat::zeros(cv::Size(width, height), CV_8UC4);
+        img = cv::Mat::zeros(cv::Size(width, height), CV_8UC3);
     }
 
     DebugDrawer::~DebugDrawer()
@@ -34,6 +34,7 @@ namespace ImageDrawer
 
     void DebugDrawer::setBackground(const ColorRGBInt& color)
     {
+        img = cv::Mat::zeros(cv::Size(width, height), CV_8UC3);
         background.r = color.r;
         background.g = color.g;
         background.b = color.b;
@@ -42,12 +43,12 @@ namespace ImageDrawer
 
     void DebugDrawer::drawCircle(const cv::Point& center, double radius)
     {
-        cv::circle(img, center, radius, cv::Scalar(color.b, color.g, color.r, color.a), thickness);
+        cv::circle(img, center, (int)round(radius), cv::Scalar(color.b, color.g, color.r), thickness);
     }
 
     void DebugDrawer::drawLine(const cv::Point& pointA, const cv::Point& pointB)
     {
-        cv::line(img, pointA, pointB, cv::Scalar(color.b, color.g, color.r, color.a), thickness);
+        cv::line(img, pointA, pointB, cv::Scalar(color.b, color.g, color.r), thickness);
     }
 
     void DebugDrawer::setLineWidth(int thickness)
@@ -58,6 +59,7 @@ namespace ImageDrawer
     void DebugDrawer::draw()
     {
         cv::imshow("output", img);
+        cv::waitKey(1);
     }
 
 } // namespace ImageDrawer

@@ -61,6 +61,7 @@ void Detecting::onDo(Controller& con)
                 Visualizer::CueBall ball(cueBall->point);
                 ball.radius = avgRadius*2;
                 con.getVisualizer()->update(traj, ball);
+                break;
             }
         }
         con.scheduleEvent(Event::MOVING);
