@@ -1,0 +1,53 @@
+@startuml
+
+package Visualizer
+{
+    class CueBall <<struct>>
+    {
+        + centerPoint : cv::Point
+        + radius : double
+        + thickness : int
+        + CueBall(center : cv::Point)
+    }
+
+    interface IVisual
+    {
+        + //update(ball : const CueBall&, trajectories : const vector<cv::Point>&) : void//
+        + setInMaxPoint(pt : const cv::Point&) : void
+        + setInMinPoint(pt : const cv::Point&) : void
+        + setOutMaxPoint(pt : const cv::Point&) : void
+        + setOutMinPoint(pt : const cv::Point&) : void
+        # map(pt : const cv::Point&) : cv::Point
+        # mapRad(rad : double) : double
+        # inMax : cv::Point
+        # inMin : cv::Point
+        # outMax : cv::Point
+        # outMin : cv::Point
+    }
+
+    class ObjectVisualizer
+    {
+        - prevTrajectory : vector<cv::Point>
+        - prevBall : CueBall
+    }
+}
+
+package ImageDrawer
+{
+    interface IImageDrawer
+    {
+        + setDrawColor(color : const ColorRGBAInt&) : void
+        + setDrawColor(color : const ColorRGBInt&) : void
+        + setBackground(color : const ColorRGBInt&) : void
+        + drawCircle(center : const cv::Point&, radius : double, thickness : int) : void
+        + drawLine(pointA : const cv::Point&, pointB : const cv::Point&, thickness : int) : void
+    }
+}
+
+CueBall <.. IVisual
+
+IVisual <|.. ObjectVisualizer
+
+IVisual -> "1" IImageDrawer : drawer
+
+@enduml

@@ -8,6 +8,16 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DDEBUG")
 
 find_package(OpenCV REQUIRED)
 
+find_package(PkgConfig)
+
+if(${PKG_CONFIG_FOUND})
+    pkg_check_modules(cairo REQUIRED cairo)
+    add_definitions("-DHAVE_CAIRO")
+else()
+    message("pkg-config not found cannot build with cairo")
+endif()
+
+
 file(GLOB children RELATIVE ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/*)
 
 foreach(child ${children})

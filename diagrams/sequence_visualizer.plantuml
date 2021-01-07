@@ -1,0 +1,97 @@
+@startuml
+
+participant main as "main"
+participant vis as "ObjectVisualizer : vis"
+participant draw as "IImageDrawer : drawer"
+participant cue as "CueBall : prevBall"
+participant traj as "Trajectories : prevTrajectory"
+
+activate main
+create vis
+main -> vis : <<construct>>
+activate vis
+
+create draw
+vis -> draw : <<construct>>
+vis -> draw : setBackground(black : const ColorRGBInt&) : void
+activate draw
+draw --> vis
+deactivate draw
+
+create cue
+vis -> cue : <<construct>>
+
+create traj
+vis -> traj : <<construct>>
+deactivate vis
+
+main -> vis : update(ball : CueBall, trajectories : Trajectories) : void
+activate vis
+
+vis -> draw : setDrawColor(black : const ColorRGBInt&) : void
+activate draw
+deactivate draw
+vis -> draw : drawCircle(prevBall.centerPoint : const cv::Point&, prevBall.radius : double, prevBall.thickness : int) : void
+activate draw
+deactivate draw
+
+loop foreach prevTrajectory.cueBallTrajectory as point
+    vis -> vis : curPoint = coordTrans (point : const cv::Point&) : cv::Point
+    activate vis
+    deactivate vis
+    vis -> draw : drawLine(curPoint : const cv::Point&, prevPoint : const cv::Point&, thickness : int) : void
+    activate draw
+    deactivate draw
+end
+
+loop foreach prevTrajectory.otherBallTrajectories as ballPath
+    loop foreach ballPath as point
+        vis -> vis : curPoint = coordTrans (point : const cv::Point&) : cv::Point
+        activate vis
+        deactivate vis
+        vis -> draw : drawLine(curPoint : const cv::Point&, prevPoint : const cv::Point&, thickness : int) : void
+        activate draw
+        deactivate draw
+    end
+end
+
+vis -> vis : ballCenter = coordTrans (ball.centerPoint : const cv::Point&) : cv::Point
+activate vis
+deactivate vis
+
+vis -> draw : setDrawColor(white : const ColorRGBInt&) : void
+activate draw
+deactivate draw
+vis -> draw : drawCircle(ballCenter : const cv::Point&, ball.radius : double, ball.thickness : int) : void
+activate draw
+deactivate draw
+
+loop foreach trajectories.cueBallTrajectory as point
+    vis -> vis : curPoint = coordTrans (point : const cv::Point&) : cv::Point
+    activate vis
+    deactivate vis
+    vis -> draw : drawLine(curPoint : const cv::Point&, prevPoint : const cv::Point&, thickness : int) : void
+    activate draw
+    deactivate draw
+end
+
+loop foreach trajectories.otherBallTrajectories as ballPath
+    loop foreach ballPath as point
+        vis -> vis : curPoint = coordTrans (point : const cv::Point&) : cv::Point
+        activate vis
+        deactivate vis
+        vis -> draw : drawLine(curPoint : const cv::Point&, prevPoint : const cv::Point&, thickness : int) : void
+        activate draw
+        deactivate draw
+    end
+end
+
+vis -> vis : prevBall = ball
+activate vis
+deactivate vis
+
+vis -> vis : prevTrajectory = trajectories
+activate vis
+deactivate vis
+
+@enduml
