@@ -12,7 +12,7 @@ namespace TrajectoryCalculator
         cv::Point pt2;
     };
 
-    class TrajectoryCalculator: ITrajectory
+    class TrajectoryCalculator : public ITrajectory
     {
     public:
         /**
@@ -20,7 +20,7 @@ namespace TrajectoryCalculator
          * 
          */
         TrajectoryCalculator() {};
-        ~TrajectoryCalculator() {};
+        virtual ~TrajectoryCalculator() {};
     
         /**
          * @brief Set the corners of the table to the given points.
