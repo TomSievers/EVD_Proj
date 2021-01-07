@@ -23,10 +23,6 @@ void Controller::changeState()
     if(cur != nullptr)
     {
         cur->onExit(*this);
-        auto temp = cur;
-        cur = history;
-        history = temp;
-        
     }
     auto temp = cur;
     cur = history;

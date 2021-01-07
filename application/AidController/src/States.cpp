@@ -6,30 +6,39 @@
 #include <thread>
 #include <chrono>
 #include <Visualizer/include/ObjectVisualizer.hpp>
+#include <iostream>
 
 using namespace std::chrono_literals;
 
 Setup::Setup()
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 Setup::~Setup()
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 void Setup::onEntry(Controller& con)
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     con.setDetector(BOUNDARY, std::make_shared<Detector::BoundaryDetector>(con.getAcquisition()));
     con.setDetector(BALL, std::make_shared<Detector::BallDetector>(con.getAcquisition()));
     con.setDetector(CUE, std::make_shared<Detector::CueDetector>(con.getAcquisition()));
     con.setTrajectoryCalc(std::make_shared<TrajectoryCalculator::TrajectoryCalculator>());
-    #if defined(__linux__) && defined(HAVE_CAIRO)
-    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500)));
-    #else
-    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cairo_format_t(), cv::Point(0, 0), cv::Point(1000, 500)));
-    #endif
+    try
+    {
+        #if defined(__linux__) && defined(HAVE_CAIRO)
+        con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500)));
+        #else
+        con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cairo_format_t(), cv::Point(0, 0), cv::Point(1000, 500)));
+        #endif
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 
 void Setup::onDo(Controller& con)
@@ -51,6 +60,7 @@ void Setup::onDo(Controller& con)
 
 void Setup::onExit(Controller& con)
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     std::this_thread::sleep_for(100ms);
 }
 
@@ -61,17 +71,17 @@ bool Setup::handleEvent(Controller& con, const EventContainer& ev)
 
 Inactive::Inactive()
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 Inactive::~Inactive()
-{
-
+{   
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 void Inactive::onEntry(Controller& con)
 {
-    
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 void Inactive::onDo(Controller& con)
@@ -81,8 +91,8 @@ void Inactive::onDo(Controller& con)
 
 void Inactive::onExit(Controller& con)
 {
-
-}
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+}   
 
 bool Inactive::handleEvent(Controller& con, const EventContainer& ev)
 {
@@ -107,27 +117,31 @@ bool Inactive::handleEvent(Controller& con, const EventContainer& ev)
 
 Active::Active()
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 Active::~Active()
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 void Active::onEntry(Controller& con)
 {
-    
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    substate = std::make_shared<Waiting>();
 }
 
 void Active::onDo(Controller& con)
 {
-    substate->onDo(con);
+    if(substate != nullptr)
+    {
+        substate->onDo(con);
+    }
 }
 
 void Active::onExit(Controller& con)
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 bool Active::handleEvent(Controller& con, const EventContainer& ev)
@@ -170,17 +184,17 @@ bool Active::handleEvent(Controller& con, const EventContainer& ev)
 
 Calibrate::Calibrate()
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 Calibrate::~Calibrate()
-{
-
+{   
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 void Calibrate::onEntry(Controller& con)
 {
-    
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 void Calibrate::onDo(Controller& con)
@@ -190,7 +204,7 @@ void Calibrate::onDo(Controller& con)
 
 void Calibrate::onExit(Controller& con)
 {
-
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 bool Calibrate::handleEvent(Controller& con, const EventContainer& ev)

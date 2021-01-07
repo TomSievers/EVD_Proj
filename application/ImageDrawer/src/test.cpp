@@ -5,7 +5,7 @@ using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO) && !defined(DEBUG)
     ImageDrawer::CairoDrawer drawer("/dev/fb0", "/dev/tty1", CAIRO_FORMAT_RGB16_565);
 
     drawer.setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
