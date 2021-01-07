@@ -1,18 +1,40 @@
 #include <include/Controller.hpp>
+#include <include/States.hpp>
 
 Controller::Controller(const std::string& cap)
 {
     acquisition = std::make_shared<Detector::Acquisition>(cap);
+    this->changeState(std::make_shared<Setup>());
 }
 
 Controller::Controller(int cap)
 {
     acquisition = std::make_shared<Detector::Acquisition>(cap);
+    this->changeState(std::make_shared<Setup>());
 }
 
 Controller::~Controller()
 {
 
+}
+
+void Controller::changeState()
+{
+    if(cur != nullptr)
+    {
+        cur->onExit(*this);
+        auto temp = cur;
+        cur = history;
+        history = temp;
+        
+    }
+    auto temp = cur;
+    cur = history;
+    history = temp;
+    if(cur != nullptr)
+    {
+        cur->onEntry(*this);
+    }
 }
 
 void Controller::changeState(const std::shared_ptr<IState> state)
@@ -68,4 +90,14 @@ void Controller::setTrajectoryCalc(std::shared_ptr<TrajectoryCalculator::ITrajec
 std::shared_ptr<TrajectoryCalculator::ITrajectory> Controller::getTrajectoryCalc()
 {
     return trajectoryCalc;
+}
+
+void Controller::setVisualizer(std::shared_ptr<Visualizer::IVisual> vis)
+{
+    visualizer = vis;
+}
+
+std::shared_ptr<Visualizer::IVisual> Controller::getVisualizer()
+{
+    return visualizer;
 }

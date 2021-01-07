@@ -9,10 +9,12 @@ find_package(OpenCV REQUIRED)
 
 add_definitions("-Wextra -Wconversion")
 
-include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS})
+include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS} ${cairo_INCLUDE_DIRS})
 include_directories(./)
 include_directories(../)
 include_directories(../Detector)
+include_directories(../ImageDrawer)
+include_directories(../Visualizer)
 
 set(SRC 
     src/Context.cpp
@@ -26,10 +28,10 @@ add_executable(${PROJECT_NAME}_test src/test.cpp)
 add_library(${PROJECT_NAME} SHARED ${SRC})
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME}_test ${OpenCV_LIBRARIES} ${PROJECT_NAME})
-    target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME}_test ${OpenCV_LIBRARIES} trajectory detector visualizer ${PROJECT_NAME})
+    target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} trajectory detector visualizer)
     add_custom_command(TARGET ${PROJECT_NAME} COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}.dll C:/lib)
 elseif(UNIX)
-    target_link_libraries(${PROJECT_NAME}_test ${OpenCV_LIBRARIES} ${PROJECT_NAME} pthread)
-    target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} pthread)
+    target_link_libraries(${PROJECT_NAME}_test ${OpenCV_LIBRARIES} trajectory detector visualizer ${PROJECT_NAME} pthread)
+    target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} trajectory detector visualizer ${cairo_LIBRARIES} pthread)
 endif()

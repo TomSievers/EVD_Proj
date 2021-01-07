@@ -5,6 +5,7 @@
 #include <TrajectoryCalculator/include/TrajectoryCalculator.hpp>
 #include <thread>
 #include <chrono>
+#include <Visualizer/include/ObjectVisualizer.hpp>
 
 using namespace std::chrono_literals;
 
@@ -24,6 +25,11 @@ void Setup::onEntry(Controller& con)
     con.setDetector(BALL, std::make_shared<Detector::BallDetector>(con.getAcquisition()));
     con.setDetector(CUE, std::make_shared<Detector::CueDetector>(con.getAcquisition()));
     con.setTrajectoryCalc(std::make_shared<TrajectoryCalculator::TrajectoryCalculator>());
+    #if defined(__linux__) && defined(HAVE_CAIRO)
+    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500)));
+    #else
+    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cairo_format_t(), cv::Point(0, 0), cv::Point(1000, 500)));
+    #endif
 }
 
 void Setup::onDo(Controller& con)
@@ -37,6 +43,7 @@ void Setup::onDo(Controller& con)
             boundary = std::dynamic_pointer_cast<Detector::Boundary>(objects.at(0));
         }
     }
+
     con.getTrajectoryCalc()->setPocketRadius(static_cast<uint16_t>(round(boundary->pocketRad)));
     con.getTrajectoryCalc()->setTableCorners(boundary->corners);
     con.changeState(std::make_shared<Inactive>());
@@ -158,5 +165,35 @@ bool Active::handleEvent(Controller& con, const EventContainer& ev)
     default:
         break;
     }
+    return true;
+}
+
+Calibrate::Calibrate()
+{
+
+}
+
+Calibrate::~Calibrate()
+{
+
+}
+
+void Calibrate::onEntry(Controller& con)
+{
+    
+}
+
+void Calibrate::onDo(Controller& con)
+{
+    con.changeState();
+}
+
+void Calibrate::onExit(Controller& con)
+{
+
+}
+
+bool Calibrate::handleEvent(Controller& con, const EventContainer& ev)
+{
     return true;
 }
