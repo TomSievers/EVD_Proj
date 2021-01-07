@@ -5,19 +5,6 @@ project(image_drawer)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(OpenCV REQUIRED)
-
-find_package(PkgConfig)
-
-if(${PKG_CONFIG_FOUND})
-    pkg_check_modules(cairo REQUIRED cairo)
-    add_definitions("-DHAVE_CAIRO")
-elseif(NOT ${PKG_CONFIG_FOUND} AND UNIX)
-    message("pkg-config not found cannot build with cairo")
-else()
-    message("pkg-config not found cannot build with cairo")
-endif()
-
 add_definitions("-Wextra -Wconversion")
 
 include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS} ${cairo_INCLUDE_DIRS})
