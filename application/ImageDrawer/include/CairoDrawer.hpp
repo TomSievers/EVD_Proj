@@ -2,10 +2,10 @@
 #define CAIRODRAWER_HPP
 
 #include <include/IImageDrawer.hpp>
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
 #include <cairo.h>
 #include <linux/fb.h>
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#else
 struct cairo_format_t
 {
     int STUB = 0;
@@ -66,8 +66,17 @@ namespace ImageDrawer
          * 
          */
         virtual void draw();
+        /**
+         * @brief Construct a new Cairo Drawer object
+         * 
+         * @param framebuffer path to the file discriptor of the framebuffer
+         * @param terminal path to the current terminal connected to the output display
+         * @param format color format of the screen
+         */
         CairoDrawer(const std::string& framebuffer, const std::string& terminal, cairo_format_t format);
         virtual ~CairoDrawer();
+        uint32_t getScreenWidth();
+        uint32_t getScreenHeight();
     private:
         void setTty(const std::string& device, TTY_MODE mode);
         unsigned char* fbp;
@@ -78,7 +87,7 @@ namespace ImageDrawer
         cv::Point cursorPos;
         uint32_t screenWidth;
         uint32_t screenHeight;
-#ifdef __linux__
+#if defined(__linux__) && defined(HAVE_CAIRO)
         fb_var_screeninfo vinfo;
         fb_fix_screeninfo finfo;
         cairo_t* cairoContext;
