@@ -3,6 +3,10 @@
 
 #include "IUserInterface.hpp"
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 namespace UserInterface
 {
     class KeyboardInterface : public IUserinterface
@@ -29,6 +33,9 @@ namespace UserInterface
     private:
         bool callbackEnable;
         int curKey;
+#if defined(_WIN32)
+        HANDLE conIn;
+#endif
     };
 }
 

@@ -1,7 +1,7 @@
 #include "../include/KeyboardInterface.hpp"
-#if defined(_WIN32)
-#include <conio.h>
-#elif defined(__linux__) && defined(HAVE_CURSES) 
+
+
+#if defined(__linux__) && defined(HAVE_CURSES) 
 #include <curses.h>
 #include <stdio.h>
 #endif
@@ -9,15 +9,17 @@
 
 namespace UserInterface
 {
+#if defined(_WIN32)
+    KeyboardInterface::KeyboardInterface(std::function<void(const Event&)> callback) : IUserinterface(callback), curKey(-1), conIn(GetStdHandle(STD_INPUT_HANDLE))
+#else
     KeyboardInterface::KeyboardInterface(std::function<void(const Event&)> callback) : IUserinterface(callback), curKey(-1)
+#endif
     {
         active = true;
 #if defined(__linux__) && defined(HAVE_CURSES) 
         initscr();
         nodelay(stdscr, true);
         noecho();
-#elif defined(_WIN32)
-
 #endif
         thread = std::thread(&KeyboardInterface::update, this);
     }
@@ -40,13 +42,27 @@ namespace UserInterface
 
     void KeyboardInterface::update()
     {
+#if defined(_WIN32)
+        DWORD nEvents;
+        INPUT_RECORD input;
+        KEY_EVENT_RECORD keyEvent;
+#endif
+        int ch;
         while(active)
         {  
-            int ch = -1;
+            ch = -1;
 #if defined(__linux__) && defined(HAVE_CURSES) 
             ch = getch();
 #elif defined(_WIN32)
-            ch = _getch_nolock();
+            ReadConsoleInput(conIn, &input, 1, &nEvents);
+            if(input.EventType == KEY_EVENT)
+            {
+                keyEvent = (KEY_EVENT_RECORD&)input.Event;
+                if(keyEvent.bKeyDown == TRUE)
+                {
+                    ch = keyEvent.uChar.AsciiChar;
+                }
+            }
 #endif
             if(callback)
             {
@@ -72,6 +88,7 @@ namespace UserInterface
                     break;
                     case 27:
                     {
+                        //ESC
                         stop();
                     }
                     break;
