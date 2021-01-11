@@ -20,7 +20,7 @@ namespace UserInterface
          * @brief Construct a new IUserinterface object
          * 
          */
-        IUserinterface(){}
+        IUserinterface(std::function<void(const Event&)> callback) : callback(callback){}
         /**
          * @brief Destroy the IUserinterface object
          * 
@@ -32,13 +32,9 @@ namespace UserInterface
          */
         virtual void stop() = 0;
         
-        std::function<void(Event&)> IUserinterfaceFunc;
-
     protected:
         virtual void update() = 0;
-        std::function<void(Event&)> callback;
-
-    private:
+        std::function<void(const Event&)> callback;
         bool active;
         std::thread thread;
     };

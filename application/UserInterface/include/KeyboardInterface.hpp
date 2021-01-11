@@ -12,7 +12,7 @@ namespace UserInterface
          * @brief Construct a new Keyboard Interface object
          * 
          */
-        KeyboardInterface();
+        KeyboardInterface(std::function<void(const Event&)> callback);
         /**
          * @brief Destroy the Keyboard Interface object
          * 
@@ -25,10 +25,10 @@ namespace UserInterface
          */
         virtual void stop();
         virtual void update();
-        
+        int getCurKey();
     private:
-        bool active;
-        std::thread thread;
+        bool callbackEnable;
+        int curKey;
     };
 }
 
