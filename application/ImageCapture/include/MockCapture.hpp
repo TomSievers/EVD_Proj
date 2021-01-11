@@ -3,6 +3,7 @@
 
 #include "ICapture.hpp"
 #include <opencv2/core.hpp>
+#include <opencv2/videoio.hpp>
 
 namespace ImageCapture
 {
@@ -39,6 +40,8 @@ namespace ImageCapture
          */
         virtual void update();
         cv::Mat img;
+        cv::VideoCapture cap;
+        bool newFrame;
         std::array<cv::Point2f, 4> targetROI;
     }; //MockCapture
 

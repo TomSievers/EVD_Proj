@@ -6,15 +6,6 @@
 
 namespace Detector
 {
-    struct Line
-    {
-        double a, b, c;
-
-        Line(double a, double b, double c) :
-               a(a), b(b), c(c)
-        {};
-        ~Line(){};
-    };
 
     class BoundaryFeatureExtract : public IImageProcessing
     {

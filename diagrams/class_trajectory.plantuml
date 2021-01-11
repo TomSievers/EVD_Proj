@@ -1,7 +1,4 @@
 @startuml
-
-
-
 package TrajectoryCalculator {
     
     class Line <<struct>> {
@@ -10,32 +7,30 @@ package TrajectoryCalculator {
     }
 
     interface ITrajectory{
-     # corners : cv::Point[4]
-     # balls : std::vector<<cv::Point>>
-     # cue: cv::Point[2]
+     # tableCorners : std::array<cv::Point,4>
+     # ballLocations : std::vector<<cv::Point>>
+     # cuePoints: std::array<cv::Point,2>
      # ballRadius: uint16_t
+     # pocketRadius: uint16_t
      
-     + //setTable(corners : cv::Point[4]) : void//
-     + //setBalls(balls : std::vector<<cv::Point>>) : void//
-     + //setCue(cue : cv::Point[2]) : void//
+     + //setTable(corners : std::array<cv::Point,4>&) : void//
+     + //setBalls(balls : std::vector<cv::Point>&) : void//
+     + //setCue(cue : std::array<cv::Point,2>&) : void//
+     + //setPocketRadius(radius: uint16_t) : void
      + //setBallRadius(radius: uint16_t) : void//
-     + //getTrajectory() : std::vector<<cv::Point>>//
+     + //getTrajectory() : std::vector<cv::Point>//
     }
     
     class TrajectoryCalculator{
-      - invertAngle(angl : float): float
-      - ptToAngle(pt1 : cv::Point, pt2 : cv::Point) : float
-      - euclideanDistance(pt1 : cv::Point, pt2: cv::Point) : uint32_t
-      - predictPoint(pt: cv::Point, angle: float, distance: uint32_t
-      - lineLineIntersections(line1 : Line, line2 : Line) : std::vector<<cv::Point>>
-      - lineCircleIntersections(line: Line, circle : cv::Point, circleRadius: uint8_t): std::vector<<cv::Point>>
-      - lineCircleDistance(line : Line, circle : cv::Point) : uint32_t
-      + nextPoint(start: cv::Point&, angle: float&, trajectory :: std::vector<<Point>>&, hitBalls: cv::vector<<Point>>&)
+      - ptToAngle(pt1 : cv::Point&, pt2 : cv::Point&) : float
+      - predictPoint(pt: cv::Point&, angle: float&, distance: uint32_t) : uint8_t
+      - lineCircleIntersection(line: Line&, circle : cv::Point&, circleRadius: uint16_t): std::vector<cv::Point>
+      - linePointDistance(pnt1: cv::Point&, pnt1: cv::Point&, pnt: cv::Point&) : uint32_t
+      + nextPoint(start: cv::Point, angle: float, hitBalls: cv::vector<Point>, flag: uint8_t)
     }
 
 }
 
 ITrajectory <|. TrajectoryCalculator
 TrajectoryCalculator <-- Line
-
-@enduml 
+@enduml

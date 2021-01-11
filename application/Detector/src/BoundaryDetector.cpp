@@ -9,7 +9,7 @@ namespace Detector
 {
     BoundaryDetector::BoundaryDetector(std::shared_ptr<Acquisition> cap) : IDetector(cap)
     {
-        processors[EHANCEMENT] = std::make_shared<BoundaryEnhancement>();
+        processors[ENHANCEMENT] = std::make_shared<BoundaryEnhancement>();
         processors[SEGMENTATION] = std::make_shared<BoundarySegmentation>();
         processors[FEATURE_EXTRACT] = std::make_shared<BoundaryFeatureExtract>();
         processors[CLASSIFICATION] = std::make_shared<BoundaryClassifier>();

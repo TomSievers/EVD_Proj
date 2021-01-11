@@ -2,7 +2,6 @@
 #include <ImageCapture/include/Capture.hpp>
 #include <ImageCapture/include/MockCapture.hpp>
 #include <iostream>
-
 namespace Detector
 {
     Acquisition::Acquisition(int deviceId) : cap(std::make_unique<ImageCapture::Capture>(deviceId))
