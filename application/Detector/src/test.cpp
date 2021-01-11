@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
     auto bounds = detect->getObjects();
     std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
-    (std::make_shared<Detector::ChangeDetector>(cap))->getObjects();
+    std::shared_ptr<Detector::IDetector> changeDetect = std::make_shared<Detector::ChangeDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
 
 
@@ -65,7 +65,6 @@ int main(int argc, char const *argv[])
         cv::imshow("Original", frame);
         if(!frame.empty())
         {
-            std::shared_ptr<Detector::IDetector> changeDetect = std::make_shared<Detector::ChangeDetector>(cap);
             auto changes = changeDetect->getObjects();
             std::shared_ptr<Detector::ChangeObject> changeObject = std::static_pointer_cast<Detector::ChangeObject>(changes.at(0));;
 

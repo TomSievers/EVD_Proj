@@ -15,9 +15,6 @@ namespace Detector
             virtual ~ChangeDetector();
 
             std::vector<std::shared_ptr<Object>> getObjects();
-
-        private:
-            static cv::Mat frame; 
     };
 }
 

@@ -19,25 +19,20 @@ namespace Detector
     {
         std::shared_ptr<ChangeObject> changeObjectPtr = std::static_pointer_cast<ChangeObject>(data);
         changeObjectPtr->moving = false;
-        if(previousFrame)
+        if(!previousFrame.empty())
         {
-            cv::Mat difference = img != *previousFrame;
+            cv::Mat difference = img != previousFrame;
             cv::erode(difference, difference, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3)), cv::Point(-1,-1), 3);
-
 #ifdef DEBUG
             cv::imshow("Difference", difference);
 #endif
             
-
-            changeObjectPtr->nonZero = cv::countNonZero(difference);//(bool)nonzero > 0;
+            changeObjectPtr->nonZero = cv::countNonZero(difference);
         }
-     
-        return std::make_shared<cv::Mat>(img);
-    }
 
-    void ChangeFeatureExtraction::setPreviousFrame(const cv::Mat& img)
-    {
-        previousFrame = std::make_shared<cv::Mat>(img);
+        img.copyTo(previousFrame);
+
+        return nullptr;
     }
 
 }

@@ -14,9 +14,8 @@ namespace Detector
             virtual ~ChangeFeatureExtraction();
 
             std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data);
-            void setPreviousFrame(const cv::Mat& img);
         private:
-            std::shared_ptr<cv::Mat> previousFrame;
+            cv::Mat previousFrame;
     };
 }
 
