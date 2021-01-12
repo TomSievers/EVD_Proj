@@ -22,7 +22,7 @@ namespace Detector
         if(!previousFrame.empty())
         {
             cv::Mat difference = img != previousFrame;
-            cv::erode(difference, difference, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3)), cv::Point(-1,-1), 3);
+            cv::erode(difference, difference, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3)));
 #ifdef DEBUG
             cv::imshow("Difference", difference);
 #endif

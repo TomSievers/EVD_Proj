@@ -57,12 +57,12 @@ int main(int argc, char const *argv[])
     cv::Mat pframe;
 
     cv::destroyAllWindows();
+    cv::Mat original;
     while(true)
     {
         
         cv::Mat frame = cap->getCapture().getFrame();
 
-        cv::imshow("Original", frame);
         if(!frame.empty())
         {
             auto changes = changeDetect->getObjects();
@@ -70,31 +70,32 @@ int main(int argc, char const *argv[])
 
             if(changeObject->moving)
             {
-                std::cout << "Is moving: Yes\n";
+                std::cout << "Is moving: Yes - " << changeObject->nonZero << "\n";
             }
             else
             {
-                std::cout << "Is moving: No\n";
+                std::cout << "Is moving: No - " << changeObject->nonZero << "\n";
             }
             
-            
+            frame.copyTo(original);
             if(bound != nullptr)
             {
                 for(auto pocket : bound->pocketsLoc)
                 {
-                    cv::circle(frame, pocket, bound->pocketRad, cv::Scalar(0, 255, 0), 1);
+                    cv::circle(original, pocket, bound->pocketRad, cv::Scalar(0, 255, 0), 1);
                 }
 
                 for(int i = 0; i < bound->corners.size(); ++i)
                 {
-                    cv::line(frame, bound->corners[i], bound->corners[i + 1], cv::Scalar(0, 0, 255), 2);
+                    cv::line(original, bound->corners[i], bound->corners[i + 1], cv::Scalar(0, 0, 255), 2);
                 }
             }
             if(cue != nullptr)
             {
-                cv::circle(frame, cv::Point(cue->endPoints[0].x, cue->endPoints[0].y), 8, cv::Scalar(255,0,0), cv::FILLED, cv::LINE_8);
-                cv::imshow("test", frame);
+                cv::circle(original, cv::Point(cue->endPoints[0].x, cue->endPoints[0].y), 8, cv::Scalar(255,0,0), cv::FILLED, cv::LINE_8);
             }
+
+            cv::imshow("Original", original);
         }
 
         if(cv::waitKey(30) == 27)

@@ -1,7 +1,7 @@
 #include "include/Change/ChangeClassification.hpp"
 #include <iostream>
 
-#define CHANGE_THRESHOLD 0
+#define CHANGE_THRESHOLD 60
 
 namespace Detector
 {

@@ -2,6 +2,8 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <iostream>
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
 
 namespace ImageCapture
 {
@@ -52,6 +54,8 @@ namespace ImageCapture
                 }
                 updateMutex.unlock();
             }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(30));
         }
     }
 
