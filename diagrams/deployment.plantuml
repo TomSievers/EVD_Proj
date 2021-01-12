@@ -12,7 +12,7 @@ node RPi as "<<device>>\nRaspberry Pi 3 Model B+" {
 
         component CueDetector
 
-        component GestureDetector
+        component ChangeDetector
 
         component BallDetector
 
@@ -48,13 +48,13 @@ AidController ..> TrajectoryCalculator
 Visualizer ..> ImageDrawer
 
 CueDetector -- IDetector
-GestureDetector -- IDetector
+ChangeDetector -- IDetector
 BallDetector -- IDetector
 BoundaryDetector -- IDetector
 
 ImageCapture <.. CueDetector
 ImageCapture <.. BallDetector
-ImageCapture <.. GestureDetector
+ImageCapture <.. ChangeDetector
 ImageCapture <.. BoundaryDetector
 
 UserInterface <. AidController
