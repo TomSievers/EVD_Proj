@@ -30,7 +30,7 @@ namespace ImageCapture
         cv::Mat lastFrame;
         while(active.load())
         {
-            
+            auto start = std::chrono::high_resolution_clock::now();
             if(!img.empty())
             {
                 tmpFrame = img.clone();
@@ -54,8 +54,10 @@ namespace ImageCapture
                 }
                 updateMutex.unlock();
             }
+            auto end = std::chrono::high_resolution_clock::now();
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(30));
+            auto sleep = std::chrono::microseconds((1000000/30)-std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+            std::this_thread::sleep_for(sleep);
         }
     }
 
