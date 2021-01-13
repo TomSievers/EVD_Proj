@@ -15,6 +15,7 @@ namespace UserInterface
         /**
          * @brief Construct a new Keyboard Interface object
          * 
+         * @param callback 
          */
         KeyboardInterface(std::function<void(const Event&)> callback);
         /**
@@ -24,15 +25,24 @@ namespace UserInterface
         virtual ~KeyboardInterface();
         
         /**
-         * @brief 
+         * @brief stop checking for keyboard input
+         * 
+         */
+        virtual void stop();
+        /**
+         * @brief Get the the last key that is pressed
+         * 
+         * @return int curKey
+         */
+        int getCurKey();
+    protected:
+        /**
+         * @brief check for keyboard input
+         * if the A, C, S or ESC key has been pressed an action is required
          * 
          */
         virtual void update();
-        virtual void stop();
-        int getCurKey();
-        
     private:
-        bool callbackEnable;
         int curKey;
     };
 }

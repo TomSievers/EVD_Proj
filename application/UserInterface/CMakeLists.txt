@@ -17,8 +17,6 @@ set(SRC
     src/KeyboardInterface.cpp
 )
 
-add_definitions(-DDEBUG)
-
 add_executable(${PROJECT_NAME}_test src/test.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
