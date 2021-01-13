@@ -74,7 +74,7 @@ void KeyboardInterface::update()
         active = false;
     }
 
-    char KeyboardInterface::getCurKey()
+    int KeyboardInterface::getCurKey()
     {
         return curKey;
     }

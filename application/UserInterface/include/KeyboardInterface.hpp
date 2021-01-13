@@ -29,7 +29,7 @@ namespace UserInterface
          */
         virtual void update();
         virtual void stop();
-        char getCurKey();
+        int getCurKey();
         
     private:
         bool callbackEnable;
