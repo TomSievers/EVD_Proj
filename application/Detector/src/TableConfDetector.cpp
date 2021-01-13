@@ -57,8 +57,8 @@ namespace Detector
         for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
         {
             std::cout << "sum " << (hsvMinSum[i] / numberOfRuns) << " " << (hsvMaxSum[i] / numberOfRuns) << std::endl;
-            configPtr->tableColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns) - 8;
-            configPtr->tableColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns) + 8;
+            configPtr->tableColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns) - 10;
+            configPtr->tableColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns) + 10;
         }
 
         objects.push_back(configPtr);

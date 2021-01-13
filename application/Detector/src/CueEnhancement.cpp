@@ -23,6 +23,7 @@ namespace Detector
         (void) data;
         return nullptr;
     }
+    
     void CueEnhancement::blurImage(cv::Mat& image)
     {
         cv::GaussianBlur(image, image, cv::Size(7,7), 10, 0);

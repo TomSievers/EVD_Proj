@@ -45,9 +45,10 @@ set(SRC
     src/CueConfSegmentation.cpp
     src/CueConfFeatureExtraction.cpp
     src/CueConfDetector.cpp
+    src/Configuration.cpp
 )
 
-add_definitions(-DDEBUG)
+# add_definitions(-DDEBUG)
 
 add_executable(${PROJECT_NAME}_test src/TableConfTest.cpp)
 

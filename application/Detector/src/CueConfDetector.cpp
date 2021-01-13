@@ -65,8 +65,10 @@ namespace Detector
             for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
             {
                 std::cout << "sum " << (hsvMinSum[i] / numberOfRuns) << " " << (hsvMaxSum[i] / numberOfRuns) << std::endl;
-                configPtr->cueColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns) - 8;
-                configPtr->cueColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns) + 8;
+                configPtr->cueColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns) - 10;
+                configPtr->cueColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns);
+                if (i != 0) // dont add extra to the max range of hue
+                    configPtr->cueColorMax[i] += 10;
             }
 
             objects.push_back(configPtr);
