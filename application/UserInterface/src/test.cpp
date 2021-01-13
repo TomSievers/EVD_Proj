@@ -20,16 +20,17 @@ void callback(const UserInterface::Event& e)
 
 int main()
 {
-    //provide empty function so keypresses can still be captured
     std::function<void(const UserInterface::Event&)> e;
     UserInterface::KeyboardInterface keyboardInterface(callback);
     int key = 0;
+    int previousKey = -1;
     while(key != 27)
     {
         key = keyboardInterface.getCurKey();
-        if(key != -1)
+        if(key != -1 && key != previousKey)
         {
             printf("char: %d\r\n", key);
+            previousKey = key;
         }
     }
     return 0;

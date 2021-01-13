@@ -27,15 +27,13 @@ namespace UserInterface
          * @brief 
          * 
          */
-        virtual void stop();
         virtual void update();
-        int getCurKey();
+        virtual void stop();
+        char getCurKey();
+        
     private:
         bool callbackEnable;
         int curKey;
-#if defined(_WIN32)
-        HANDLE conIn;
-#endif
     };
 }
 

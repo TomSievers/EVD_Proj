@@ -31,7 +31,6 @@ namespace UserInterface
          * 
          */
         virtual void stop() = 0;
-        
     protected:
         virtual void update() = 0;
         std::function<void(const Event&)> callback;
