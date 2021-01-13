@@ -23,7 +23,7 @@ namespace Detector
         cv::cvtColor(img, imageHSV, cv::COLOR_BGR2HSV);
 
         // 1: remove background
-        cv::Mat background = removeBackground(imageHSV(cv::Range(30, img.rows-30), cv::Range(30, img.cols-30)));
+        cv::Mat background = removeBackground(imageHSV);
         cv::morphologyEx(background, background, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3)));
 
 #ifdef DEBUG

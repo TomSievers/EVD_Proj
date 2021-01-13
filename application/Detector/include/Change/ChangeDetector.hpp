@@ -15,6 +15,12 @@ namespace Detector
             virtual ~ChangeDetector();
 
             std::vector<std::shared_ptr<Object>> getObjects();
+            void setRoi(std::array<cv::Point2i, 4>& roi);
+            void clearRoi();
+        private:
+            std::array<cv::Point2i, 4> roi;
+            bool useRoi;
+            
     };
 }
 

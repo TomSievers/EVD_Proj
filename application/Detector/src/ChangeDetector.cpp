@@ -17,6 +17,8 @@ namespace Detector
         processors[SEGMENTATION] = std::make_shared<ChangeSegmentation>();
         processors[FEATURE_EXTRACT] = std::make_shared<ChangeFeatureExtraction>();
         processors[CLASSIFICATION] = std::make_shared<ChangeClassification>();
+
+        useRoi = false;
     }
 
     ChangeDetector::~ChangeDetector()
@@ -31,7 +33,23 @@ namespace Detector
         std::shared_ptr<void> data = std::make_shared<ChangeObject>();
         for(const std::pair<VisionStep, std::shared_ptr<IImageProcessing>>& processor : processors)
         {
-            std::shared_ptr<void> returnedData = processor.second->process(img, data);
+            std::shared_ptr<void> returnedData;
+            if(processor.first == SEGMENTATION)
+            {
+                if(useRoi)
+                {
+                    img = img(cv::Range(roi[0].y, roi[3].y), cv::Range(roi[0].x, roi[1].x));
+                }
+                else // Remove pockets because of lighting errors
+                {
+                    img = img(cv::Range(30, img.rows-30), cv::Range(30, img.cols-30));
+                }
+
+                returnedData = processor.second->process(img, data);
+            }
+            else{
+                returnedData = processor.second->process(img, data);
+            }
 
             if(returnedData)
             {
@@ -43,5 +61,16 @@ namespace Detector
         objects.push_back(changeObjectPtr);
 
         return objects;
+    }
+
+    void ChangeDetector::setRoi(std::array<cv::Point2i, 4>& points)
+    {
+        roi = points;
+        useRoi = true;
+    }
+
+    void ChangeDetector::clearRoi()
+    {
+        useRoi = false;
     }
 }

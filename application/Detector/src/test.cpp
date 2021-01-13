@@ -52,12 +52,12 @@ int main(int argc, char const *argv[])
     {
         std::cerr << e.what() << '\n';
     }
-    
-    bool previous = false;
-    cv::Mat pframe;
 
     cv::destroyAllWindows();
     cv::Mat original;
+
+    std::array<cv::Point2i, 4> points = {cv::Point2i(0, 0), cv::Point2i(500, 0), cv::Point2i(500, 400), cv::Point2i(0, 400)};
+    (std::static_pointer_cast<Detector::ChangeDetector>(changeDetect))->setRoi(points);
     while(true)
     {
         
