@@ -46,6 +46,7 @@ int main(int argc, char** argv)
     }
 
     cv::Mat image = cv::imread("empty_table.png");
+    cv::imwrite("image2.png", image);
     cv::Mat hsvImage;
     cv::cvtColor(image, hsvImage, cv::COLOR_BGR2HSV);
 
@@ -72,6 +73,7 @@ int main(int argc, char** argv)
     cv::inRange(hsvcueBallImage, hsvMinCueBall, hsvMaxCueBall, inRangeImageCueBall);
     cv::inRange(hsvCueImage, hsvMinCue, hsvMaxCue, inRangeImageCue);
 
+    cv::imshow("input image table config", image);
     cv::imshow("image in range", inRangeImage);
     cv::imshow("image in range cue ball", inRangeImageCueBall);
     cv::imshow("image in range cue", inRangeImageCue); // empty because of preprocessing
@@ -87,8 +89,20 @@ int main(int argc, char** argv)
     for(auto i = 0; i < 30; ++i)
     {
         capture->process(captureImg, nullptr);
-        std::this_thread::sleep_for(100ms);
+        std::this_thread::sleep_for(30ms);
     }
+
+    cv::Mat inrangeImageTest;
+    cv::Mat hsv;
+    cv::cvtColor(captureImg, hsv, cv::COLOR_BGR2HSV);
+    cv::inRange(hsv, Configuration::getInstance().getConfig()->tableColorMin, Configuration::getInstance().getConfig()->tableColorMax, inrangeImageTest);
+
+    cv::imshow("myImage", captureImg);
+    cv::waitKey(0);
+    cv::imwrite("image1.png", captureImg);
+
+    std::cout << "CONF TABLEmin: " << Configuration::getInstance().getConfig()->tableColorMin << std::endl;
+    std::cout << "CONF TABLE max: " << Configuration::getInstance().getConfig()->tableColorMax << std::endl;
 
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(capture);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(capture);
@@ -97,12 +111,12 @@ int main(int argc, char** argv)
 
     std::vector<std::shared_ptr<Detector::Object>> bounds;
 
-    //do
-   // {
-     //   bounds = detect->getObjects();
-    //} while(bounds.size() == 0);
+    do
+    {
+       bounds = detect->getObjects();
+    } while(bounds.size() == 0);
 
-    std::shared_ptr<Detector::Boundary> bound;// = std::static_pointer_cast<Detector::Boundary>(bounds.at(0));
+    std::shared_ptr<Detector::Boundary> bound = std::static_pointer_cast<Detector::Boundary>(bounds.at(0));
 
     std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
     

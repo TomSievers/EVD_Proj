@@ -21,8 +21,6 @@ namespace Detector
             (void)image;
             std::vector<std::vector<cv::Point>> contours = *std::static_pointer_cast<std::vector<std::vector<cv::Point>>>(data);
             std::vector<cv::Point> cornerPoints = findCornerPoints(contours);
-            
-            std::cout << "cornerpoints size " << cornerPoints.size() << std::endl;
             if(cornerPoints.size() == 4)
             {
                 return std::make_shared<std::vector<cv::Point>>(cornerPoints);
@@ -42,9 +40,11 @@ namespace Detector
             cv::approxPolyDP(contours[i], approxPolyContours[i], epsilon*0.05, true);
         }
         int16_t biggestContourId = -1;
+
         for(uint8_t i = 0; i < approxPolyContours.size(); i++)
         {
-            std::cout << "approx size " << approxPolyContours[i].size() << std::endl;
+
+            std::cout << approxPolyContours[i].size() << std::endl;
             if(approxPolyContours[i].size() == 4)
             {
                 if(cv::contourArea(approxPolyContours[i]) >= cv::contourArea(approxPolyContours[(biggestContourId == -1) ? i : biggestContourId]))
@@ -53,16 +53,13 @@ namespace Detector
                 }
             }
         }
-        std::cout << "biggestContourID " << biggestContourId << std::endl;
         if(biggestContourId != -1)
         {
             for(std::size_t i = 0; i < approxPolyContours[biggestContourId].size(); i++)
             {
-                std::cout << "pushing back" << std::endl;
                 cornerPoints.push_back(cv::Point(approxPolyContours[biggestContourId][i].x, approxPolyContours[biggestContourId][i].y));
             }
 
-            /*
             for(auto& c : cornerPoints)
             {
                 int i = 0;
@@ -74,7 +71,7 @@ namespace Detector
                     }
                     ++i;
                 }
-            }*/
+            }
 #ifdef DEBUG
             for(auto c : cornerPoints)
             {
