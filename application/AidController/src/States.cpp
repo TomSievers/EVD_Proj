@@ -3,6 +3,7 @@
 #include <Detector/include/Ball/BallDetector.hpp>
 #include <Detector/include/Cue/CueDetector.hpp>
 #include <TrajectoryCalculator/include/TrajectoryCalculator.hpp>
+#include <Detector/include/Change/ChangeDetector.hpp>
 #include <thread>
 #include <chrono>
 #include <Visualizer/include/ObjectVisualizer.hpp>
@@ -26,18 +27,14 @@ void Setup::onEntry(Controller& con)
     con.setDetector(BOUNDARY, std::make_shared<Detector::BoundaryDetector>(con.getAcquisition()));
     con.setDetector(BALL, std::make_shared<Detector::BallDetector>(con.getAcquisition()));
     con.setDetector(CUE, std::make_shared<Detector::CueDetector>(con.getAcquisition()));
+    con.setDetector(CHANGE, std::make_shared<Detector::ChangeDetector>(con.getAcquisition()));
     con.setTrajectoryCalc(std::make_shared<TrajectoryCalculator::TrajectoryCalculator>());
-    try
-    {
-        #if defined(__linux__) && defined(HAVE_CAIRO)
-        con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500)));
-        #endif
-    }
-    catch(const std::exception& e)
-    {
-        con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cv::Point(0, 0), cv::Point(1000, 500)));
-        std::cerr << e.what() << '\n';
-    }
+#if defined(__linux__) && defined(HAVE_CAIRO)
+    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500)));
+#else
+    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cv::Point(0, 0), cv::Point(1000, 500)));
+#endif
+
 }
 
 void Setup::onDo(Controller& con)

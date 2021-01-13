@@ -102,7 +102,6 @@ namespace Detector
 
             cv::imshow("enhanced image", *enhancementImg);
             cv::imshow("image white parts", bitwised_xor_image);
-            cv::waitKey(0);
 #endif
         }
     }

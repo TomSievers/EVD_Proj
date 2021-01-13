@@ -11,7 +11,8 @@ enum DetectorType
 {
     CUE,
     BALL,
-    BOUNDARY
+    BOUNDARY,
+    CHANGE
 };
 
 class Controller : public Context

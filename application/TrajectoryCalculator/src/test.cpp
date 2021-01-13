@@ -41,7 +41,6 @@ int main(int argc, char const *argv[])
     
 
     cv::imshow("img", img);
-    cv::waitKey(0);
 
     return 0;
 }

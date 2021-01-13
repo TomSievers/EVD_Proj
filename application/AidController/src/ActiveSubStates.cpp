@@ -1,6 +1,7 @@
 #include <include/ActiveSubStates.hpp>
 #include <include/Controller.hpp>
 #include <opencv2/core.hpp>
+#include <Detector/include/Change/ChangeDetector.hpp>
 #include <vector>
 #include <iostream>
 
@@ -49,6 +50,14 @@ void Detecting::onDo(Controller& con)
         con.getTrajectoryCalc()->setBalls(trajBalls);
         con.getTrajectoryCalc()->setBallRadius(static_cast<uint16_t>(avgRadius));
         bool ballMoved = false;
+        auto changeDet = std::dynamic_pointer_cast<Detector::ChangeDetector>(con.getDetector(CHANGE));
+        std::array<cv::Point2i, 4> roi = {
+            cv::Point(cueBall->point.x-(int)round(avgRadius), cueBall->point.y-(int)round(avgRadius)),
+            cv::Point(cueBall->point.x+(int)round(avgRadius), cueBall->point.y-(int)round(avgRadius)),
+            cv::Point(cueBall->point.x+(int)round(avgRadius), cueBall->point.y+(int)round(avgRadius)),
+            cv::Point(cueBall->point.x-(int)round(avgRadius), cueBall->point.y+(int)round(avgRadius))
+        };
+        changeDet->setRoi(roi);
         while(!ballMoved)
         {
             auto cue = con.getDetector(CUE)->getObjects();
@@ -63,7 +72,18 @@ void Detecting::onDo(Controller& con)
                 con.getVisualizer()->update(traj, ball);
                 break;
             }
+
+            auto change = changeDet->getObjects();
+            if(!change.empty())
+            {
+                std::shared_ptr<Detector::ChangeObject> changeObject = std::static_pointer_cast<Detector::ChangeObject>(change.at(0));
+                if(changeObject->moving)
+                {
+                    ballMoved = true;
+                }
+            }
         }
+        changeDet->clearRoi();
         con.scheduleEvent(Event::MOVING);
     }
 }
@@ -102,32 +122,25 @@ void Waiting::onDo(Controller& con)
 {
     std::vector<std::shared_ptr<Detector::Object>> prevBalls;
     bool moving = true;
+    uint32_t stopCount = 0;
     while(moving)
     {
-        auto balls = con.getDetector(BALL)->getObjects();
-        moving = false;
-        if(!prevBalls.empty() && !balls.empty())
+        auto change = con.getDetector(CHANGE)->getObjects();
+        if(!change.empty())
         {
-            for(auto prevBall : prevBalls)
+            std::shared_ptr<Detector::ChangeObject> changeObject = std::static_pointer_cast<Detector::ChangeObject>(change.at(0));
+            if(!changeObject->moving)
             {
-                bool changed = true;
-                auto prevRealBall = std::dynamic_pointer_cast<Detector::BallObject>(prevBall);
-                for(auto ball : balls)
-                {
-                    auto realBall = std::dynamic_pointer_cast<Detector::BallObject>(ball);
-                    if(checkBallPosition(realBall->point, prevRealBall->point))
-                    {
-                        changed = false;
-                    }
-                }
-                if(changed)
-                {
-                    moving = true;
-                    break;
-                }
+                ++stopCount;
+            } else {
+                stopCount = 0;
+            }
+
+            if(stopCount >= 5)
+            {
+                moving = false;
             }
         }
-        prevBalls = balls;
     }
     con.scheduleEvent(Event::STEADY);
 

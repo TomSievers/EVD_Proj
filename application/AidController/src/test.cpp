@@ -9,7 +9,7 @@ int main(int argc, char const *argv[])
     while(true)
     {
         con.run();
-        int key = cv::waitKey(0);
+        int key = cv::waitKey(1);
         if(key == 27)
         {
             break;
