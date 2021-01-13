@@ -1,0 +1,36 @@
+@startuml
+
+participant main as "main"
+participant ui as "GestureInterface : gesture"
+participant det as "IDetector : detector"
+participant cb as "CallbackStub : callback"
+
+create ui
+activate main
+main -> ui : <<construct>>
+activate ui
+
+ui -> ui : update() : void
+
+loop while active == true
+
+ui -> det : gesture = getObjects() : std::vector<std::shared_ptr<Object>>
+activate det
+deactivate det
+
+alt gesture not empty
+
+ui -> cb : callback(event : Event&) : void
+activate cb
+deactivate cb
+
+end
+end
+
+main -> ui : stop() : void
+deactivate ui
+
+main -> ui !! : <<deconstruct>>
+
+
+@enduml
