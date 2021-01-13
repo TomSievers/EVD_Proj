@@ -119,12 +119,15 @@ namespace ImageCapture
     void Capture::update()
     {
         cv::Mat tmpFrame;
+
         while(active.load())
         {
+            
             cap >> tmpFrame;
 
             if(!tmpFrame.empty())
             {
+                auto start = std::chrono::high_resolution_clock::now();
                 updateMutex.lock();
                 if(transMat.empty())
                 {
@@ -133,6 +136,13 @@ namespace ImageCapture
                     cv::warpPerspective(tmpFrame, curFrame, transMat, cv::Size(static_cast<int>(fabs(targetROI[1].x - targetROI[0].x)), static_cast<int>(fabs(targetROI[2].y - targetROI[1].y))));
                 }
                 updateMutex.unlock();
+                auto end = std::chrono::high_resolution_clock::now();
+                auto sleep = std::chrono::microseconds(1000-std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+                if(sleep.count() > 0)
+                {
+                    std::cout << sleep.count() << std::endl;
+                    std::this_thread::sleep_for(sleep);
+                }
             }
         }
     }

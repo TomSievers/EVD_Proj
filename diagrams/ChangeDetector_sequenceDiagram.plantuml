@@ -1,0 +1,46 @@
+@startuml
+
+participant main as "main"
+participant ballDetector as "ballDetector : BallDetector"
+participant ballAcquisitor as "ballAcquisitor : Acquisition"
+participant capture as "capture : Capture"
+participant ballEnhancer as "ballEnhancer : BallEnhancement"
+participant ballSegmentor as "ballSegmentor : BallSegmentation"
+participant ballFeatureExtractor as "ballFeatureExtractor : BallFeatureExtraction"
+participant ballClassifier as "ballClassifier : BallClassification"
+
+
+main -> ballDetector : <<construct>>
+ballDetector -> ballAcquisitor : <<construct>>
+ballDetector -> ballEnhancer : <<construct>>
+ballDetector -> ballSegmentor : <<construct>>
+ballDetector -> ballFeatureExtractor : <<construct>>
+ballDetector -> ballClassifier : <<construct>>
+
+main -> ballDetector : std::vector<std::shared_ptr<Object>> = getObjects()
+
+ballDetector -> ballAcquisitor : process(image, data)
+ballAcquisitor -> capture : getFrame()
+ballAcquisitor --> ballDetector
+
+ballDetector -> ballEnhancer : process(image, data)
+ballEnhancer -> ballEnhancer : cv::Mat blurredImage = blurImage(image)
+ballEnhancer --> ballDetector
+
+ballDetector -> ballSegmentor : process(image, data)
+ballSegmentor -> ballSegmentor : cv::Mat imageWithoutBackground = removeBackground(image)
+ballSegmentor -> ballSegmentor : std::vector<cv::Vec3f> circles = findCircles(image)
+ballSegmentor --> ballDetector
+
+ballDetector -> ballFeatureExtractor : setEnhancementImage(enhancedImage)
+ballDetector -> ballFeatureExtractor : process(image, data)
+ballFeatureExtractor -> ballFeatureExtractor : determineWhitePercentage(image, ballObjects)
+ballFeatureExtractor --> ballDetector
+
+ballDetector -> ballClassifier : process(image, data)
+ballClassifier -> ballClassifier : classifyBalls(ballObjects)
+ballClassifier --> ballDetector
+
+ballDetector --> main
+
+@enduml

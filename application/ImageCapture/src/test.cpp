@@ -3,7 +3,7 @@
 
 int main(int argc, char const *argv[])
 {
-    ImageCapture::Capture cap(0);
+    ImageCapture::Capture cap(2);
 
     std::array<cv::Point2f, 4> roi = {cv::Point2f(10, 100), cv::Point2f(200, 100), cv::Point2f(200, 200), cv::Point2f(10, 200)};
 
