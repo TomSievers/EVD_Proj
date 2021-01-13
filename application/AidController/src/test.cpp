@@ -1,30 +1,26 @@
 #include <include/Controller.hpp>
 #include <include/States.hpp>
+#include <UserInterface/include/KeyboardInterface.hpp>
 #include <opencv2/highgui.hpp>
-#include <iostream>
+
+using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    Controller con("../../Photos_pool_table/setup1_3.jpg");
+    
+    std::shared_ptr<Controller> con = std::make_shared<Controller>("../../Photos_pool_table/setup1_3.jpg");
+    UserInterface::KeyboardInterface keyboard(std::bind(static_cast<void(Controller::*)(const UserInterface::Event&)>(&Controller::scheduleEvent), con, std::placeholders::_1));
+
+    int key;
+    int winKey;
     while(true)
     {
-        con.run();
-        int key = cv::waitKey(1);
-        if(key == 27)
+        con->run();
+        key = keyboard.getCurKey();
+        winKey = cv::waitKey(1);
+        if(key == 27 || winKey == 27)
         {
             break;
-        } else if( key != -1) {
-            if(key == 97)
-            {
-                con.scheduleEvent(UserInterface::START);
-            } else if(key == 115)
-            {
-                con.scheduleEvent(UserInterface::STOP);
-            } else if(key == 99)
-            {
-                con.scheduleEvent(UserInterface::CALIBRATE);
-            }
-            std::cout << key << std::endl;
         }
     }
     return 0;

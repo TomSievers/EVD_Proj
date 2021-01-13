@@ -1,5 +1,6 @@
 #include <include/Controller.hpp>
 #include <include/States.hpp>
+#include <iostream>
 
 Controller::Controller(const std::string& cap)
 {
@@ -54,6 +55,7 @@ void Controller::run()
     {
         if(!events.empty())
         {
+            std::cout << events.front().ui << std::endl;
             if(cur->handleEvent(*this, events.front()))
             {
                 events.pop();

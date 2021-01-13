@@ -4,21 +4,7 @@
 #include <queue>
 #include <memory>
 #include <include/IState.hpp>
-
-//Stub for UI
-namespace UserInterface
-{
-    enum Event
-    {
-        NONE,
-        START,
-        STOP,
-        CALIBRATE
-    };
-
-} // namespace UserInterface
-
-
+#include <UserInterface/include/IUserInterface.hpp>
 
 enum Event
 {

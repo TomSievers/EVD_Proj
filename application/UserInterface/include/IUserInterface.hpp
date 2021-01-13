@@ -10,7 +10,8 @@ namespace UserInterface
     {
         START,
         STOP,
-        CALIBRATE
+        CALIBRATE,
+        NONE
     };
 
     class IUserinterface
