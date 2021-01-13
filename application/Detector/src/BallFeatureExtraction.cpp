@@ -55,59 +55,33 @@ namespace Detector
             
             cv::Mat imageWhitePartsClosed;
             cv::morphologyEx(imageWhiteParts, imageWhitePartsClosed, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
-            
-            std::vector<std::vector<cv::Point>> whiteContours;
-            cv::findContours(imageWhitePartsClosed, whiteContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-            // check for every ball which ball contour points and white parts are in his region
-            for(std::size_t i = 0; i < ballObjects.size(); ++i)
+            for(auto ball : ballObjects)
             {
-                double radiusSquared = std::pow(ballObjects.at(i)->radius, 2);
-                // check which ball contour points are in region of ball
-                for(std::size_t k = 0; k < ballContours.size(); ++k)
+                uint64_t whiteCount = 0;
+                uint64_t blackCount = 0;
+                uint64_t count = 0;
+                for(int x = (int)round((double)ball->point.x - ball->radius); x < (int)round((double)ball->point.x + ball->radius); ++x)
                 {
-                    for(std::size_t y = 0; y < ballContours.at(k).size(); ++y)
+                    for(int y = (int)round((double)ball->point.y - ball->radius); y < (int)round((double)ball->point.y + ball->radius); ++y)
                     {
-                        double distanceBetweenPoints = std::pow(ballContours.at(k).at(y).x - ballObjects.at(i)->point.x, 2) +
-                                                        std::pow(ballContours.at(k).at(y).y - ballObjects.at(i)->point.y, 2);
-                        
-                        if(distanceBetweenPoints <= (radiusSquared + radiusSquared / 2)) // since the found circles are not always perfect, add some value to the max distance
+                        if(sqrt(pow((double)(x - ball->point.x), 2) +  pow((double)(y - ball->point.y), 2)) <= ball->radius)
                         {
-                            ballObjects.at(i)->ballContourPoints.push_back(ballContours.at(k).at(y));
+                            if(y < imageWhitePartsClosed.rows && x < imageWhitePartsClosed.cols && y >= 0 && x >= 0)
+                            {
+                                //imageWhitePartsClosed.at<uint8_t>(y, x) = 125;
+                                ++count;
+                                if(imageWhitePartsClosed.at<uint8_t>(y, x) == 255)
+                                {
+                                    ++whiteCount;
+                                }
+                            }
+                            
                         }
                     }
                 }
 
-                // check which white contour parts parts are in region of ball
-                for(std::size_t k = 0; k < whiteContours.size(); ++k)
-                {
-                    for(std::size_t y = 0; y < whiteContours.at(k).size(); ++y)
-                    {
-                        double distanceBetweenPoints = std::pow(whiteContours.at(k).at(y).x - ballObjects.at(i)->point.x, 2) +
-                                                        std::pow(whiteContours.at(k).at(y).y - ballObjects.at(i)->point.y, 2);
-                        
-                        if(distanceBetweenPoints <= (radiusSquared + radiusSquared / 2)) // since the found circles are not always perfect, add some value to the max distance
-                        {
-                            ballObjects.at(i)->whiteContourPoints.push_back(whiteContours.at(k).at(y));
-                        }
-                    }
-                }
-
-                // determine the white percentage of the ball
-                if(ballObjects.at(i)->ballContourPoints.size() != 0)
-                {
-                    double ballContourArea = cv::contourArea(ballObjects.at(i)->ballContourPoints);
-                    double whiteContourArea = 0;
-
-                    if(ballObjects.at(i)->whiteContourPoints.size() != 0)
-                    {
-                        whiteContourArea = cv::contourArea(ballObjects.at(i)->whiteContourPoints);
-                    }
-
-                    ballObjects.at(i)->percentageWhite = (uint8_t) std::round(whiteContourArea / ballContourArea * 100);
-                } else {
-                    ballObjects.at(i)->percentageWhite = 0;
-                }
+                ball->percentageWhite = (uint8_t)round(((float)whiteCount/(float)count)*100.0F);
             }
 
 #ifdef DEBUG

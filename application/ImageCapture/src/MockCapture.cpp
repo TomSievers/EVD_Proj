@@ -34,12 +34,10 @@ namespace ImageCapture
             if(!img.empty())
             {
                 tmpFrame = img.clone();
-            } else if(newFrame) {
+            } else {
                 cap >> lastFrame;
                 tmpFrame = lastFrame;
                 newFrame = false;
-            } else {
-                tmpFrame = lastFrame;
             }
             
             if(!tmpFrame.empty())
@@ -49,8 +47,7 @@ namespace ImageCapture
                 {
                     curFrame = tmpFrame;
                 } else {
-                    cv::resize(curFrame, curFrame, cv::Size(static_cast<int>(fabs(targetROI[1].x - targetROI[0].x)), static_cast<int>(fabs(targetROI[2].y - targetROI[1].y))));
-                    cv::warpPerspective(tmpFrame, curFrame, transMat, curFrame.size());
+                    cv::warpPerspective(tmpFrame, curFrame, transMat, cv::Size(static_cast<int>(fabs(targetROI[1].x - targetROI[0].x)), static_cast<int>(fabs(targetROI[2].y - targetROI[1].y))));
                 }
                 updateMutex.unlock();
             }

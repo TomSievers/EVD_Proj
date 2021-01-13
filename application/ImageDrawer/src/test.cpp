@@ -18,7 +18,7 @@ int main(int argc, char const *argv[])
 
     drawer.setLineWidth(4);
 
-    drawer.drawLine(cv::Point(200, 200), cv::Point(400, 400));
+    drawer.drawLine(cv::Point(200, 200), cv::Point(1900, 1000));
 
     drawer.setDrawColor(ImageDrawer::ColorRGBInt(255, 0, 0));
 

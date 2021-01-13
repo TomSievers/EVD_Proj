@@ -71,6 +71,16 @@ namespace ImageDrawer
 #endif
     }
 
+    uint32_t CairoDrawer::getScreenWidth()
+    {
+        return screenWidth;
+    }
+
+    uint32_t CairoDrawer::getScreenHeight()
+    {
+        return screenHeight;
+    }
+
     void CairoDrawer::setDrawColor(const ColorRGBInt& color)
     {
 #if defined(__linux__) && defined(HAVE_CAIRO)
