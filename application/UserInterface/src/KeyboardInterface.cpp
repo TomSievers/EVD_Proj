@@ -14,7 +14,7 @@ namespace UserInterface
     KeyboardInterface::KeyboardInterface(std::function<void(const Event&)> callback) : IUserinterface(callback), curKey(-1)
     {
         active = true;
-#ifdef __linux__ && defined(HAVE_CURSES)
+#if defined(__linux__) && defined(HAVE_CURSES)
         initscr();
         noecho();
         nodelay(stdscr,1);
@@ -26,7 +26,7 @@ namespace UserInterface
     {
         stop();
         thread.join();
-#ifdef __linux__ && defined(HAVE_CURSES)
+#if defined(__linux__) && defined(HAVE_CURSES)
         endwin();
 #endif
     }
