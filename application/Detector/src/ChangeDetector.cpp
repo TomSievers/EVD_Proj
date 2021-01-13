@@ -67,10 +67,12 @@ namespace Detector
     {
         roi = points;
         useRoi = true;
+        std::dynamic_pointer_cast<ChangeFeatureExtraction>(processors[FEATURE_EXTRACT])->clearFrame();
     }
 
     void ChangeDetector::clearRoi()
     {
+        std::dynamic_pointer_cast<ChangeFeatureExtraction>(processors[FEATURE_EXTRACT])->clearFrame();
         useRoi = false;
     }
 }

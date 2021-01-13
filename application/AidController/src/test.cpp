@@ -20,6 +20,7 @@ int main(int argc, char const *argv[])
         winKey = cv::waitKey(1);
         if(key == 27 || winKey == 27)
         {
+            keyboard.stop();
             break;
         }
     }

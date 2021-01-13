@@ -55,7 +55,6 @@ void Controller::run()
     {
         if(!events.empty())
         {
-            std::cout << events.front().ui << std::endl;
             if(cur->handleEvent(*this, events.front()))
             {
                 events.pop();

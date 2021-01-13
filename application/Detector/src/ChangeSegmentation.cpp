@@ -19,6 +19,7 @@ namespace Detector
 
     std::shared_ptr<void> ChangeSegmentation::process(cv::Mat& img, std::shared_ptr<void> data)
     {
+        
         cv::Mat imageHSV;
         cv::cvtColor(img, imageHSV, cv::COLOR_BGR2HSV);
 

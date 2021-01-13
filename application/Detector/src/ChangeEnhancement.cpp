@@ -16,6 +16,7 @@ namespace Detector
 
     std::shared_ptr<void> ChangeEnhancement::process(cv::Mat& img, std::shared_ptr<void> data)
     {
+        
         return std::make_shared<cv::Mat>(blurImage(img));
     }
 

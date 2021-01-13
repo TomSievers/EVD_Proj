@@ -7,17 +7,17 @@
 
 Detecting::Detecting()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 Detecting::~Detecting()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 void Detecting::onEntry(Controller& con)
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 void Detecting::onDo(Controller& con)
@@ -70,7 +70,6 @@ void Detecting::onDo(Controller& con)
                 Visualizer::CueBall ball(cueBall->point);
                 ball.radius = avgRadius*2;
                 con.getVisualizer()->update(traj, ball);
-                break;
             }
 
             auto change = changeDet->getObjects();
@@ -90,7 +89,7 @@ void Detecting::onDo(Controller& con)
 
 void Detecting::onExit(Controller& con)
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 bool Detecting::handleEvent(Controller& con, const EventContainer& ev)
@@ -100,17 +99,17 @@ bool Detecting::handleEvent(Controller& con, const EventContainer& ev)
 
 Waiting::Waiting()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 Waiting::~Waiting()
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 void Waiting::onEntry(Controller& con)
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 bool checkBallPosition(const cv::Point& a, const cv::Point& b)
@@ -148,7 +147,7 @@ void Waiting::onDo(Controller& con)
 
 void Waiting::onExit(Controller& con)
 {
-    std::cout << __PRETTY_FUNCTION__ << std::endl;
+    
 }
 
 bool Waiting::handleEvent(Controller& con, const EventContainer& ev)
