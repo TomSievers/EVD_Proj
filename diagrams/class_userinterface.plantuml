@@ -24,21 +24,23 @@ package UserInterface
     {
         # active : bool
         # thread : std::thread
-        # callback : std::function<void(Event&)>
+        # callback : std::function<void(const Event&)>
         # //update() : void//
-        + IUserInterface(func : std::function<void(Event&)>)
+        + IUserInterface(func : std::function<void(const Event&)>)
         + //stop() : void//
     }
 
     class GestureInterface
     {
         - gestureDetector : std::shared_ptr<IDetector>
-        + GestureInterface(func : std::function<void(Event&)>, detector : std::shared_ptr<IDetector>)
+        + GestureInterface(func : std::function<void(const Event&)>, detector : std::shared_ptr<IDetector>)
     }
 
     class KeyboardInterface
     {
-        + KeyboardInterface(func : std::function<void(Event&)>)
+        - curKey : int
+        + getCurKey() : int
+        + KeyboardInterface(func : std::function<void(const Event&)>)
     }
 }
 
