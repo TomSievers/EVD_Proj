@@ -1,0 +1,89 @@
+@startuml
+package ImageCapture
+{
+    interface ICapture
+    {
+        # curFrame : cv::Mat
+        # active : bool
+        # thread : std::thread
+        # updateMutex : std::mutex
+        + //setRoi(roi : const cv::Point2f[4], width : float, height : float) : void//
+        + //getFrame() : cv::Mat//
+        + //stop() : void//
+        # //update() : void//
+    }
+}
+
+package Detector {
+    class Object <<struct>> {
+
+    }
+
+    class ChangeObject <<struct>> {
+        + nonZero: int
+        + moving: bool
+    }
+
+    enum VisionStep {
+        ACQUISITION,
+        ENHANCEMENT,
+        SEGMENTATION,
+        FEATURE_EXTRACT,
+        CLASSIFICATION
+    }
+
+    interface IDetector {
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+        - processors : std::map<VisionStep, std::shared_ptr<IImageProcessing>> 
+    }
+
+    class ChangeDetector {
+
+    }
+
+    note "The processors map contains variables with the following types:\nChangeEnhancement,\nChangeSegmentation,\nChangeFeatureExtraction,\nChangeClassification" as ChangeDetectorNode
+
+    interface IImageProcessing {
+        + //process(image : cv::Mat&, data : std::shared_ptr<void>) : cv::Mat//
+    }
+
+    class Acquisition {
+        + Acquisition(deviceID : int)
+        + Acquisition(mock_img : const std::string&)
+        + getCapture() : ImageCapture::ICapture&
+        - cap : std::unique_ptr<ImageCapture::ICapture>
+    }
+
+    class ChangeEnhancement {
+        - blurImage(image : const cv::Mat&) : cv::Mat
+    }
+
+    class ChangeSegmentation {
+        - removeBackground(image : const cv::Mat&) : cv::Mat
+    }
+
+    class ChangeFeatureExtraction {
+        - previousFrame: cv::Mat
+    }
+
+    class ChangeClassification {
+
+    }
+}
+
+
+
+IDetector <|.. ChangeDetector
+IDetector .> Object
+Object <|.. ChangeObject
+Acquisition ..> ICapture
+IImageProcessing <|.. Acquisition
+IImageProcessing <|.. ChangeEnhancement
+IImageProcessing <|.. ChangeSegmentation
+IImageProcessing <|.. ChangeFeatureExtraction
+IImageProcessing <|.. ChangeClassification
+IImageProcessing .> ChangeObject
+IImageProcessing .> VisionStep
+ChangeDetector --> IImageProcessing
+ChangeDetector - ChangeDetectorNode
+@enduml
