@@ -55,7 +55,7 @@ namespace Visualizer
         }
         
 
-        drawer->setLineWidth(1);
+        drawer->setLineWidth(2);
         drawer->setDrawColor(ImageDrawer::ColorRGBInt(255, 255, 255));
         if(!trajectory.empty())
         {

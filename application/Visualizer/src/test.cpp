@@ -15,25 +15,23 @@ int main(int argc, char const *argv[])
     Visualizer::ObjectVisualizer vis(cv::Point(0, 0), cv::Point(1000, 500));
     #endif
 
-    std::vector<cv::Point> trajectory;
-    trajectory.push_back(cv::Point(1, 1));
-    trajectory.push_back(cv::Point(999, 499));
-    trajectory.push_back(cv::Point(500, 499));
-    Visualizer::CueBall ball(cv::Point(250, 250));
+    auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(10);
+    auto now = std::chrono::high_resolution_clock::now();
 
-    vis.update(trajectory, ball);
+    while(std::chrono::duration_cast<std::chrono::milliseconds>(end-now).count() > 0)
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        std::vector<cv::Point> trajectory;
+        trajectory.push_back(cv::Point(1, 1));
+        trajectory.push_back(cv::Point(999, 499));
+        trajectory.push_back(cv::Point(500, 499));
+        Visualizer::CueBall ball(cv::Point(250, 250));
 
-    cv::waitKey(5000);
-
-    trajectory.clear();
-    trajectory.push_back(cv::Point(0, 0));
-    trajectory.push_back(cv::Point(0, 250));
-    trajectory.push_back(cv::Point(1000, 500));
-    Visualizer::CueBall ball2(cv::Point(500, 250));
-
-    vis.update(trajectory, ball2);
-
-    cv::waitKey(5000);
+        vis.update(trajectory, ball);
+        
+        now = std::chrono::high_resolution_clock::now();
+    }
+    
 
     return 0;
 }
