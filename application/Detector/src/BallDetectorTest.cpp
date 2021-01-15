@@ -7,7 +7,7 @@
 
 int main(int argc, char** argv)
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup1_2.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup3_3.jpg");
     std::unique_ptr<Detector::IDetector> boundaryDetector = std::make_unique<Detector::BoundaryDetector>(cap);
     std::unique_ptr<Detector::IDetector> ballDetector = std::make_unique<Detector::BallDetector>(cap);
 
@@ -19,13 +19,12 @@ int main(int argc, char** argv)
     {
         // wait for ROI
     }
+for(uint8_t i = 0; i < 10; i++){
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
     std::vector<std::shared_ptr<Detector::Object>> objects = ballDetector->getObjects();
 
-    for(std::shared_ptr<Detector::Object> objectPtr : objects)
-    {
-        std::cout << std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->point << " is of type  " 
-                    << std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->ballType << " and has a white percentage of " 
-                    << (uint16_t) std::dynamic_pointer_cast<Detector::BallObject>(objectPtr)->percentageWhite << std::endl;
-    }
+    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
+    std::cout << "detecting balls took " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "milliseconds" << std::endl; 
+}
 }
