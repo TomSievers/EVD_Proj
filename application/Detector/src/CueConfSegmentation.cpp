@@ -124,7 +124,7 @@ namespace Detector
         {
             return cv::Mat();
         }
-        
+
         return cueEndPoint;
     }
 

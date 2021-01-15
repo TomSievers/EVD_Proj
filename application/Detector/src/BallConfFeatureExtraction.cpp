@@ -1,5 +1,6 @@
 #include "include/Configure/BallConfFeatureExtraction.hpp"
 #include <opencv2/highgui.hpp>
+#include <iostream>
 
 namespace Detector
 {
@@ -21,35 +22,26 @@ namespace Detector
     }
 
     void BallConfFeatureExtraction::determineCueBallPixelValue(cv::Mat& img, Config& config)
-    {
-        cv::Mat hsvImage;
-        cv::cvtColor(img, hsvImage, cv::COLOR_BGR2HSV);
-        
-        cv::Mat channels[3];
-        cv::split(hsvImage, channels);
-
-        cv::Mat threshold;
-        cv::threshold(channels[2], threshold, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
-
+    {        
         config.cueBallColorMin = cv::Scalar(179, 255, 255);
         config.cueBallColorMax = cv::Scalar(0, 0, 0);
 
         // check all pixel values
-        for(int i = 0; i < hsvImage.rows; ++i)
+        for(int i = 0; i < img.rows; ++i)
         {
-            for(int k = 0; k < hsvImage.cols; ++k)
+            for(int k = 0; k < img.cols; ++k)
             {
-                if(threshold.at<uint8_t>(i, k) == 255)
+                if(img.at<cv::Vec3b>(i, k)[0] != 0 && img.at<cv::Vec3b>(i, k)[1] != 0 && img.at<cv::Vec3b>(i, k)[1] != 0)
                 {
                     for(int x = 0; x < 3; ++x)
                     {
-                        if(hsvImage.at<cv::Vec3b>(i, k)[x] < config.cueBallColorMin[x])
+                        if(img.at<cv::Vec3b>(i, k)[x] < config.cueBallColorMin[x])
                         {
-                            config.cueBallColorMin[x] = hsvImage.at<cv::Vec3b>(i, k)[x];
+                            config.cueBallColorMin[x] = img.at<cv::Vec3b>(i, k)[x];
                         }
-                        if(hsvImage.at<cv::Vec3b>(i, k)[x] > config.cueBallColorMax[x])
+                        if(img.at<cv::Vec3b>(i, k)[x] > config.cueBallColorMax[x])
                         {
-                            config.cueBallColorMax[x] = hsvImage.at<cv::Vec3b>(i, k)[x];
+                            config.cueBallColorMax[x] = img.at<cv::Vec3b>(i, k)[x];
                         }
                     }
                 }

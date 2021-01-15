@@ -14,6 +14,8 @@ namespace Detector
             virtual ~BallConfSegmentation();
 
             std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data);
+        private:
+            cv::Mat removeBackground(const cv::Mat& img);
     };
 }
 
