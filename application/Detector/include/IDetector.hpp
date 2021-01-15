@@ -61,6 +61,12 @@ namespace Detector
 		cv::Scalar cueColorMin;
 		cv::Scalar cueColorMax;
 	};
+	
+	struct ChangeObject : public Object
+    {
+		int nonZero;
+        bool moving;
+    };
 
 	enum VisionStep
 	{

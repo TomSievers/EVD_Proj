@@ -1,0 +1,162 @@
+@startuml
+
+package Detector
+{
+    interface IDetector
+    {
+        + IDetector(cap : std::shared_ptr<Acquisition>)
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+
+        # processors : std::vector<std::shared_ptr<IImageProcessing>>
+    }
+}
+
+package Visualizer
+{
+    interface IVisual
+    {
+        + update(ball : const CueBall&, trajectories : const Trajectories&) : void
+    }
+}
+
+package TrajectoryCalculator {
+
+    interface ITrajectory{
+        # tableCorners : std::array<cv::Point,4>
+        # ballLocations : std::vector<<cv::Point>>
+        # cuePoints: std::array<cv::Point,2>
+        # ballRadius: uint16_t
+        # pocketRadius: uint16_t
+        
+        + //setTable(corners : std::array<cv::Point,4>&) : void//
+        + //setBalls(balls : std::vector<cv::Point>&) : void//
+        + //setCue(cue : std::array<cv::Point,2>&) : void//
+        + //setPocketRadius(radius: uint16_t) : void//
+        + //setBallRadius(radius: uint16_t) : void//
+        + //getTrajectory() : std::vector<cv::Point>//
+    }
+}
+
+package UserInterface
+{
+    enum Event
+    {
+        START
+        STOP
+        CALIBRATE
+    }
+
+    interface IUserInterface
+    {
+        # active : bool
+        # thread : std::thread
+        # callback : std::function<void(Event&)>
+        # update() : void
+        + IUserInterface(func : std::function<void(Event&)>)
+        + stop() : void
+    }
+}
+
+package AidController
+{
+    class EventContainer <<struct>>
+    {
+        + ui : Event
+        + detect : DetectorEvent
+    }
+
+    class Controller
+    {
+        - detectors : std::map<DetectorType, IDetector>
+        - globalAcquisition : std::shared_ptr<Acquisition>
+        - UI : std::shared_ptr<IUserIntreface>
+        - trajectoryCalc : std::shared_ptr<ITrajectory>
+        - visualizer : std::shared_ptr<IVisual>
+        + getDetector(detector : DetectorType) : std::shared_ptr<IDetector>
+        + getTrajectoryCalculator() : std::shared_ptr<ITrajectory>
+        + getVisualizer() : std::shared_ptr<IVisual>
+    }
+
+    interface IState
+    {
+        + //onEntry(controller : Controller&)//
+        + //onDo(controller : Controller&)//
+        + //onExit(controller : Controller&)//
+        + //handleEvent(event : EventContainer&)//
+    }
+
+    interface IActiveSubState
+
+    class Waiting
+
+    class Detecting
+
+    class Setup
+
+    class Active
+
+    class Inactive
+
+    class Calibrate
+
+    enum DetectorEvent
+    {
+        STEADY
+        MOVING
+    }
+
+    enum DetectorType
+    {
+        BOUNDARY
+        CUE
+        BALL
+    }
+
+    class Context
+    {
+        - events : std::queue<EventContainer>
+        - curState : std::shared_ptr<IState>
+        - history : std::shared_ptr<IState>
+        + scheduleEvent(event : Event&) : void
+        + scheduleEvent(event : DetectorEvent&) : void
+        + run() : void
+    }
+}
+
+ITrajectory <- Controller
+IVisual <-- Controller
+IDetector <.. Controller
+Controller ..> DetectorType
+Controller -|> Context
+Controller --> IUserInterface
+'Context <|- Controller
+Context --> IState
+Context --> EventContainer
+
+IState <|.. Setup
+IState <|.. Active
+IState <|.. Inactive
+IState <|.. Calibrate
+
+'Setup -[hidden]> Inactive
+'Inactive -[hidden]> Calibrate
+'Calibrate -[hidden]> Active
+
+Active -> IActiveSubState 
+
+IState <|-- IActiveSubState
+IActiveSubState <|.. Waiting
+IActiveSubState <|.. Detecting
+
+IUserInterface .> Event
+
+EventContainer --> Event
+EventContainer --> DetectorEvent
+
+ITrajectory --> IUserInterface
+
+DetectorType -[hidden]-> EventContainer
+
+'Controller --> EventContainer 
+
+@enduml

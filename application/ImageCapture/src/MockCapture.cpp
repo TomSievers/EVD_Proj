@@ -2,6 +2,9 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <iostream>
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
+
 
 namespace ImageCapture
 {
@@ -28,7 +31,7 @@ namespace ImageCapture
         cv::Mat lastFrame;
         while(active.load())
         {
-            
+            auto start = std::chrono::high_resolution_clock::now();
             if(!img.empty())
             {
                 tmpFrame = img.clone();
@@ -49,10 +52,10 @@ namespace ImageCapture
                 }
                 updateMutex.unlock();
             }
+            auto end = std::chrono::high_resolution_clock::now();
 
-            while(newFrame == false && active.load())
-            {
-            }
+            auto sleep = std::chrono::microseconds((1000000/30)-std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+            std::this_thread::sleep_for(sleep);
         }
     }
 

@@ -1,0 +1,29 @@
+@startuml
+
+[*] --> Setup
+Setup -> Inactive : setup finished
+Setup : On Entry / initialize detectors
+Setup : On Do / search boundaries
+
+Inactive -> Active : start recieved
+Inactive : On Entry / set history state
+Inactive : On Do / use UI controller
+
+Active -> Inactive : stop recieved
+Active : On Entry / set history state
+Active : On Do / update aid
+
+Calibrate --> [H] : calibrate finished
+Calibrate : On Do / apply calibration
+Calibrate : On Exit / save calibration
+
+Active --> Calibrate : calibrate recieved
+Inactive --> Calibrate : calibrate recieved
+
+state Active {
+    [*] -> Waiting
+    Waiting -> Detecting : cue ball is steady
+    Detecting -> Waiting : cue ball is moving
+}
+
+@enduml

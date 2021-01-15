@@ -5,7 +5,7 @@ component ImageCapture
 
 component CueDetector
 
-component GestureDetector
+component ChangeDetector
 
 component BallDetector
 
@@ -35,13 +35,13 @@ Visualizer --( IImageDrawer
 IImageDrawer -- ImageDrawer
 
 CueDetector -- IDetector
-GestureDetector -- IDetector
+ChangeDetector-- IDetector
 BallDetector -- IDetector
 BoundaryDetector -- IDetector
 
 ICapture )-- CueDetector
 ICapture )-- BallDetector
-ICapture )-- GestureDetector
+ICapture )-- ChangeDetector
 ICapture )-- BoundaryDetector
 
 IUserInterface )- AidController
@@ -54,5 +54,4 @@ IVisual - Visualizer
 IDetector )-- AidController
 
 ImageCapture -- ICapture
-
 @enduml

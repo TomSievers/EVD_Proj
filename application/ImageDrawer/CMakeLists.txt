@@ -12,6 +12,7 @@ include_directories(./)
 
 set(SRC 
     src/CairoDrawer.cpp 
+    src/DebugDrawer.cpp
 )
 
 add_executable(${PROJECT_NAME}_test src/test.cpp)

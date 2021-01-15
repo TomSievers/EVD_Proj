@@ -46,11 +46,19 @@ set(SRC
     src/CueConfFeatureExtraction.cpp
     src/CueConfDetector.cpp
     src/Configuration.cpp
+
+    src/ChangeClassification.cpp
+    src/ChangeDetector.cpp
+    src/ChangeEnhancement.cpp
+    src/ChangeFeatureExtraction.cpp
+    src/ChangeSegmentation.cpp
 )
 
 # add_definitions(-DDEBUG)
 
 add_executable(${PROJECT_NAME}_test src/TableConfTest.cpp)
+
+# add_executable(${PROJECT_NAME}_test src/test.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
 
