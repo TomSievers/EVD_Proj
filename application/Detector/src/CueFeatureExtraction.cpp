@@ -14,6 +14,7 @@ namespace Detector
     {
 
     }
+    
     std::shared_ptr<void> CueFeatureExtraction::process(cv::Mat& image, std::shared_ptr<void> data)
     {
         if(data != nullptr)

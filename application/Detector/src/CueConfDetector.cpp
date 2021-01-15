@@ -49,10 +49,20 @@ namespace Detector
 
                 std::shared_ptr<void> data = currentConfigPtr;
 
+                bool continueToNextLoop = false;
+
                 for(const std::pair<VisionStep, std::shared_ptr<IImageProcessing>>& processor : processors)
                 {
                     processor.second->process(img, data);
+                    if(img.empty())
+                    {
+                        continueToNextLoop = true;
+                        break;
+                    }
                 }
+
+                if(continueToNextLoop)
+                    continue;
 
                 for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
                 {
@@ -62,18 +72,18 @@ namespace Detector
                 numberOfRuns++;
             }
 
-            for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
+            if(numberOfRuns > 0)
             {
-                std::cout << "sum " << (hsvMinSum[i] / numberOfRuns) << " " << (hsvMaxSum[i] / numberOfRuns) << std::endl;
-                configPtr->cueColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns) - 10;
-                configPtr->cueColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns);
-                if (i != 0) // dont add extra to the max range of hue
-                    configPtr->cueColorMax[i] += 10;
+                for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
+                {
+                    configPtr->cueColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns) - 10;
+                    configPtr->cueColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns);
+                    if (i != 0) // dont add extra to the max range of hue
+                        configPtr->cueColorMax[i] += 10;
+                }
+
+                objects.push_back(configPtr);
             }
-
-            objects.push_back(configPtr);
-
-            std::cout << "finished making objects" << std::endl;
         }
         return objects;
     }

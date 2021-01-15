@@ -16,10 +16,8 @@ namespace Detector
 
     std::shared_ptr<void> TableConfEnhancement::process(cv::Mat& img, std::shared_ptr<void> data)
     {
-        std::cout << "enhancement" << std::endl;
         cv::Mat blur = blurImage(img);
         blur.copyTo(img);
-        std::cout << "enhancement_f" << std::endl;
         return nullptr;
     }
 

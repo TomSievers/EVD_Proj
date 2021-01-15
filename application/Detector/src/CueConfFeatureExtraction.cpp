@@ -55,8 +55,5 @@ namespace Detector
                 }
             }
         }
-
-        std::cout << "cue min values: " << config.cueColorMin << std::endl;
-        std::cout << "cue max values " << config.cueColorMax << std::endl;
     }
 }

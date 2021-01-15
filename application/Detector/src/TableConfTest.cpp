@@ -28,12 +28,20 @@ int main(int argc, char** argv)
     std::this_thread::sleep_for(1000ms); // wait on capture thread
 
     std::vector<std::shared_ptr<Detector::Object>> tableColor = tableConfigDetector->getObjects();
-    
-    std::dynamic_pointer_cast<Detector::BallConfDetector>(cueBallConfigDetector)->setCurrentConfig(tableColor.at(0));
-    std::vector<std::shared_ptr<Detector::Object>> cueBallColor = cueBallConfigDetector->getObjects();
+    std::vector<std::shared_ptr<Detector::Object>> cueBallColor;
+    std::vector<std::shared_ptr<Detector::Object>> cueColor;
 
-    std::dynamic_pointer_cast<Detector::CueConfDetector>(cueConfigDetector)->setCurrentConfig(cueBallColor.at(0));
-    std::vector<std::shared_ptr<Detector::Object>> cueColor = cueConfigDetector->getObjects();
+    if(tableColor.size() != 0)
+    {
+        std::dynamic_pointer_cast<Detector::BallConfDetector>(cueBallConfigDetector)->setCurrentConfig(tableColor.at(0));
+        cueBallColor = cueBallConfigDetector->getObjects();
+    }
+
+    if(cueBallColor.size() != 0)
+    {
+        std::dynamic_pointer_cast<Detector::CueConfDetector>(cueConfigDetector)->setCurrentConfig(cueBallColor.at(0));
+        cueColor = cueConfigDetector->getObjects();
+    }
     
     cap->getCapture().stop();
     capCueBall->getCapture().stop();

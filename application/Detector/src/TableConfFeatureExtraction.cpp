@@ -17,24 +17,15 @@ namespace Detector
 
     std::shared_ptr<void> TableConfFeatureExtraction::process(cv::Mat& img, std::shared_ptr<void> data)
     {
-        std::cout << "FE" << std::endl;
         std::shared_ptr<Config> configPtr = std::static_pointer_cast<Config>(data);
         determinePixelColors(img, *configPtr);
-        std::cout << "FE_f" << std::endl;
         return nullptr;
     }
 
     void TableConfFeatureExtraction::determinePixelColors(cv::Mat& img, Config& config)
     {
-        //config.tableColorMin = {179, 255, 255};
-        //config.tableColorMax = {0, 0, 0};
         config.tableColorMin = cv::Scalar(179, 255, 255);
         config.tableColorMax = cv::Scalar(0, 0, 0);
-
-        //cv::imshow("img__", img);
-        //cv::waitKey(0);
-
-        std::cout << "img rows: " << img.rows << " img cols " << img.cols << std::endl;
 
         for(int i = 0; i < img.rows; ++i)
         {
@@ -53,8 +44,5 @@ namespace Detector
                 }
             }
         }
-
-        std::cout << "config pic: " << (int) config.tableColorMin[0] << " " << (int) config.tableColorMin[1] << " " << (int) config.tableColorMin[2] << std::endl;
-        std::cout << "config pic: " << (int) config.tableColorMax[0] << " " << (int) config.tableColorMax[1] << " " << (int) config.tableColorMax[2] << std::endl;
     }
 }

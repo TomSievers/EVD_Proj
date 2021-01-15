@@ -39,80 +39,23 @@ namespace Detector
 
     cv::Mat CueConfSegmentation::removeCueGrip(cv::Mat& img, Config& config)
     {
-        /*
-        cv::Mat hsvImage;
-        cv::cvtColor(img, hsvImage, cv::COLOR_BGR2HSV);
-
-        cv::Mat imageRemovedStick;
-        cv::inRange(hsvImage, config.tableColorMin, config.tableColorMax, imageRemovedStick);
-        
-        cv::Mat imageNoBackground;
-        cv::bitwise_not(imageRemovedStick, imageNoBackground);
-
-        cv::Mat hsvImageAdjusted = hsvImage.clone();
-        for(int i = 0; i < hsvImageAdjusted.rows; ++i)
-        {
-            for(int k = 0; k < hsvImageAdjusted.cols; ++k)
-            {
-                if(imageNoBackground.at<uint8_t>(i, k) == 0)
-                {
-                    hsvImageAdjusted.at<cv::Vec3b>(i, k)[0] = 0;
-                    hsvImageAdjusted.at<cv::Vec3b>(i, k)[1] = 0;
-                    hsvImageAdjusted.at<cv::Vec3b>(i, k)[2] = 0;
-                }
-            }
-        }
-
-        cv::Mat toBgr;
-        cv::Mat gray;
-        cv::cvtColor(hsvImageAdjusted, toBgr, cv::COLOR_HSV2BGR);
-        cv::cvtColor(toBgr, gray, cv::COLOR_BGR2GRAY);*/
-
-        srand(time(0));
-
         cv::Mat gray;
         cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
         
         cv::Mat resizedImage;
         cv::resize(gray, resizedImage, cv::Size(), 2, 2);
-        //image = resizedImage.clone();
 
         cv::Mat canny;
         cv::Canny(resizedImage, canny, 0, 25);
-
-        //int value = 0;
-        //cv::namedWindow("window", cv::WINDOW_AUTOSIZE);
-        //cv::createTrackbar("canny_a", "window", &a, 250, on_trackbar);
-        //cv::createTrackbar("canny_b", "window", &b, 250, on_trackbar);
-        //cv::waitKey(0);
 
         cv::Mat dilated;
         cv::Mat eroded;
         cv::dilate(canny, dilated, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)));
         cv::erode(dilated, eroded, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3)));
         
-        cv::imshow("eroded", eroded);
-        cv::waitKey(0);
-        
         std::vector<std::vector<cv::Point>> contours;
         std::vector<cv::Vec4i> hierarchy;
         cv::findContours(eroded, contours, hierarchy, cv::RETR_TREE, cv::CHAIN_APPROX_NONE);
-
-        std::cout << contours.size() << std::endl;
-
-        for(std::size_t i = 0; i < hierarchy.size(); ++i)
-        {
-            std::cout << hierarchy.at(i) << std::endl;
-        }
-
-        cv::Mat ImageToDraw = img.clone();
-        cv::Mat imageToDrawResized;
-        cv::resize(ImageToDraw, imageToDrawResized, cv::Size(0, 0), 2, 2);
-
-        for(std::size_t i = 0; i < contours.size(); ++i)
-        {
-            cv::drawContours(imageToDrawResized, contours, i, cv::Scalar(rand() % 255, rand() % 255, rand() % 255));
-        }
 
         cv::Mat cueEndPoint;
 
@@ -148,8 +91,6 @@ namespace Detector
                 }
             }
 
-            std::cout << contourMinDistance << std::endl;
-
             if(contourMinDistance != -1)
             {
                 cv::cvtColor(img, cueEndPoint, cv::COLOR_BGR2HSV);
@@ -179,14 +120,11 @@ namespace Detector
                 }
             } 
         }
-
-        cv::Mat cue;
-        cv::Mat bgr;
-        cv::resize(cueEndPoint, cue, cv::Size(0, 0), 2, 2);
-        cv::cvtColor(cue, bgr, cv::COLOR_HSV2BGR);
-        cv::imshow("image_hsv", bgr);
-        cv::waitKey(0);
-
+        else
+        {
+            return cv::Mat();
+        }
+        
         return cueEndPoint;
     }
 

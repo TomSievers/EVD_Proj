@@ -1,0 +1,133 @@
+@startuml
+
+package ImageCapture
+{
+    interface ICapture
+    {
+        # curFrame : cv::Mat
+        # active : bool
+        # thread : std::thread
+        # updateMutex : std::mutex
+        + //setRoi(roi : const cv::Point2f[4], width : float, height : float) : void//
+        + //getFrame() : cv::Mat//
+        + //stop() : void//
+        # //update() : void//
+    }
+}
+
+package Detector {
+
+    class Object <<struct>> {
+
+    }
+
+    class Config <<struct>> {
+        roiPositions : std::array<int, 4>
+        tableColorMin : cv::Scalar
+        tableColorMax : cv::Scalar
+        cueBallColorMin : cv::Scalar
+        cueBallColorMax : cv::Scalar
+        cueColorMin : cv::Scalar
+        cueCOlorMax : cv::Scalar
+    }
+
+    interface IImageProcessing {
+        + //process(img : cv::Mat&, data : std::shared_ptr<void>) : std::shared_ptr<void>//
+    }
+
+    enum VisionStep {
+        ACQUISITION,
+        ENHANCEMENT,
+        SEGMENTATION,
+        FEATURE_EXTRACT,
+        CLASSIFICATION
+    }
+
+    interface IDetector {
+        + //getObjects() : std::vector<std::shared_ptr<Object>>//
+        - processors : std::map<VisionStep, std::shared_ptr<IImageProcessing>> 
+    }
+
+    class Acquisition {
+        + Acquisition(deviceID : int)
+        + Acquisition(mock_img : const std::string&)
+        + getCapture() : ImageCapture::ICapture&
+        - cap : std::unique_ptr<ImageCapture::ICapture>
+    }
+
+    class TableConfDetector {
+        + TableConfDetector(cap : std::shared_ptr<Acquisition>)
+    }
+
+    class TableConfEnhancement {
+        - blurImage(image : const cv::Mat&) : cv::Mat
+    }
+
+    class TableConfSegmentation {
+        - shiftImage(img : const cv::Mat&) : cv::Mat
+        - findROI(shiftedImage : const cv::Mat&, enhancedImage : const cv::Mat&, config : Config&) : cv::Mat
+    }
+
+    class TableConfFeatureExtraction {
+        - determinePixelColors(img : cv::Mat&, config : Config&)
+    }
+
+    class BallConfDetector {
+        + BallConfDetector(cap : std::shared_ptr<Acquisition>)
+        + setCurrentConfig(aConfig : std::shared_ptr<Object>) : void
+        - configPtr : std::shared_ptr<Config>
+    }
+
+    class BallConfEnhancement {
+        - blurImage(image : const cv::Mat&) : cv::Mat
+    }
+
+    class BallConfSegmentation {
+
+    }
+
+    class BallConfFeatureExtraction {
+        - determineCueBallPixelValue(img : cv::Mat&, config: Config&) : void
+    }
+
+    class CueConfDetector {
+        + CueConfDetector(cap : std::shared_ptr<Acquisition>)
+        + setCurrentConfig(aConfig : std::shared_ptr<Object>) : void
+        - configPtr : std::shared_ptr<Config>
+    }
+
+    class CueConfEnhancement {
+        - blurImage(image : const cv::Mat&) : cv::Mat
+    }
+
+    class CueConfSegmentation {
+        - removeCueGrip(img : cv::Mat&, config : Config&) : cv::Mat
+        - determineLine(point1 : const cv::Point&, point2 : const cv::Point&, a : uint16_t&, b : uint16_t&, c : uint16_t&) : void
+        - distancePointAndLine(point1 : const cv::Point&, point2 : const cv::Point&, distancePoint : const cv::Point&) : double
+    }
+
+    class CueConfFeatureExtraction {
+        - determineCuePixelValue(img: cv::Mat&, config : Config&) : void
+    }
+}
+
+IDetector --> IImageProcessing
+IImageProcessing <|-- Acquisition
+Acquisition ..> ICapture
+IImageProcessing <|-- BallConfEnhancement
+IImageProcessing <|-- BallConfSegmentation
+IImageProcessing <|-- BallConfFeatureExtraction
+IImageProcessing <|-- CueConfEnhancement
+IImageProcessing <|-- CueConfSegmentation
+IImageProcessing <|-- CueConfFeatureExtraction
+IImageProcessing <|-- TableConfEnhancement
+IImageProcessing <|-- TableConfSegmentation
+IImageProcessing <|-- TableConfFeatureExtraction
+IDetector <|-- TableConfDetector
+IDetector <|-- CueConfDetector
+IDetector <|-- BallConfDetector
+IDetector .> VisionStep
+IDetector .> Object
+Object <|-- Config
+
+@enduml

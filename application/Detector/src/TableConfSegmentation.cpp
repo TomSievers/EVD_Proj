@@ -18,7 +18,6 @@ namespace Detector
 
     std::shared_ptr<void> TableConfSegmentation::process(cv::Mat& img, std::shared_ptr<void> data)
     {
-        std::cout << "seg" << std::endl;
         cv::Mat imgHsv;
         cv::cvtColor(img, imgHsv, cv::COLOR_BGR2HSV);
 
@@ -27,13 +26,11 @@ namespace Detector
         std::shared_ptr<Config> configPtr = std::static_pointer_cast<Config>(data);
         cv::Mat ROI = findROI(shiftedImage, imgHsv, *configPtr);
         ROI.copyTo(img);
-        std::cout << "seg_f" << std::endl;
         return nullptr;
     }
 
     cv::Mat TableConfSegmentation::shiftImage(const cv::Mat& img)
     {
-        std::cout << "SHIFT IMAGE" << std::endl;
         cv::Mat splitted[3];
         cv::split(img, splitted);
 
@@ -118,8 +115,6 @@ namespace Detector
         config.roiPositions[1] = roiXmax;
         config.roiPositions[2] = roiYmin;
         config.roiPositions[3] = roiYmax;
-
-        std::cout << "FOUND POS: " << roiXmin << " " << roiXmax << " " << roiYmin << " " << roiYmax << std::endl;
 
         // return the region of interest
         return enhancedImage(cv::Rect(roiXmin, roiYmin, roiXmax - roiXmin, roiYmax - roiYmin)).clone();

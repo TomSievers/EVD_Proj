@@ -31,17 +31,26 @@ namespace Detector
         std::chrono::system_clock::time_point stamp = std::chrono::system_clock::now();
         std::chrono::duration<int> duration(2);
 
-        std::cout << "running" << std::endl;
         // for duration loop through new images and determine the avg pixel color of the table
         while(std::chrono::system_clock::now() < (stamp + duration))
         {
             cv::Mat img;
             std::shared_ptr<void> data = std::make_shared<Config>();
             
+            bool continueToNextLoop = false;
+
             for(const std::pair<VisionStep, std::shared_ptr<IImageProcessing>>& processor : processors)
             {
                 processor.second->process(img, data);
+                if(img.empty()) // in case no region in interest can be found, continue
+                {
+                    continueToNextLoop = true;
+                    break;;
+                }
             }
+
+            if(continueToNextLoop)
+                continue;
 
             std::shared_ptr<Config> currentConfigPtr = std::static_pointer_cast<Config>(data);
             
@@ -54,24 +63,24 @@ namespace Detector
             numberOfRuns++;
         }
 
-        for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
+        if(numberOfRuns != 0)
         {
-            std::cout << "sum " << (hsvMinSum[i] / numberOfRuns) << " " << (hsvMaxSum[i] / numberOfRuns) << std::endl;
-            configPtr->tableColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns);
-            configPtr->tableColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns);
+            for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
+            {
+                configPtr->tableColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns);
+                configPtr->tableColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns);
+            }
+
+            // TODO: change this so we can work with a small range like -20 +20
+            configPtr->tableColorMin[0] -= 10;
+            configPtr->tableColorMax[0] += 10;
+            configPtr->tableColorMin[1] = 0;
+            configPtr->tableColorMax[1] = 255;
+            configPtr->tableColorMin[2] -= 10;
+            configPtr->tableColorMax[2] += 30;
+
+            objects.push_back(configPtr);
         }
-
-        // TODO: change this so we can work with a small range like -20 +20
-        configPtr->tableColorMin[0] -= 10;
-        configPtr->tableColorMax[0] += 10;
-        configPtr->tableColorMin[1] = 0;
-        configPtr->tableColorMax[1] = 255;
-        configPtr->tableColorMin[2] -= 10;
-        configPtr->tableColorMax[2] += 30;
-
-        objects.push_back(configPtr);
-
-        std::cout << "finished making objects" << std::endl;
         return objects;
     }
 }

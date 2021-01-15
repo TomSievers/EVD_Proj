@@ -63,14 +63,11 @@ namespace Detector
 
             for(std::size_t i = 0; i < hsvMinSum.size(); ++i)
             {
-                std::cout << "sum " << (hsvMinSum[i] / numberOfRuns) << " " << (hsvMaxSum[i] / numberOfRuns) << std::endl;
                 configPtr->cueBallColorMin[i] = (uint8_t) (hsvMinSum[i] / numberOfRuns) - 8;
                 configPtr->cueBallColorMax[i] = (uint8_t) (hsvMaxSum[i] / numberOfRuns) + 8;
             }
 
             objects.push_back(configPtr);
-
-            std::cout << "finished making objects" << std::endl;
         }
         return objects;
     }
