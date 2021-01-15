@@ -11,6 +11,7 @@ namespace UserInterface
         START,
         STOP,
         CALIBRATE,
+        NEXT_CALIBRATION,
         NONE
     };
 

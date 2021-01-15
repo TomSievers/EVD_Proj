@@ -35,7 +35,7 @@ namespace Detector
             uint32_t numberOfRuns = 0;
 
             std::chrono::system_clock::time_point stamp = std::chrono::system_clock::now();
-            std::chrono::duration<int> duration(2);
+            std::chrono::duration<int> duration(4);
 
             // for duration loop through new images and determine the avg pixel color of the table
             while(std::chrono::system_clock::now() < (stamp + duration))

@@ -55,6 +55,9 @@ public:
     virtual void onExit(Controller& con);
     virtual bool handleEvent(Controller& con, const EventContainer& ev);
 private:
+    std::shared_ptr<Detector::Object> config;
+    bool nextCalibration;
+    DetectorType currentDetector;
 	//data
 };
 

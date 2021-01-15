@@ -60,6 +60,11 @@ void KeyboardInterface::update()
                         callback(STOP);
                     }
                     break;
+                    case 110:
+                    {
+                        //n
+                        callback(NEXT_CALIBRATION);
+                    }
                     case 27:
                     {
                         //ESC

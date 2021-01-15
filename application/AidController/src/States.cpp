@@ -182,7 +182,7 @@ bool Active::handleEvent(Controller& con, const EventContainer& ev)
     return true;
 }
 
-Calibrate::Calibrate()
+Calibrate::Calibrate() : nextCalibration(true), currentDetector(CALIBRATE_TABLE)
 {
     
 }
@@ -201,49 +201,38 @@ void Calibrate::onEntry(Controller& con)
 
 void Calibrate::onDo(Controller& con)
 {
-    std::shared_ptr<Detector::Object> config;
-    
     // keep looping until configuration succeeded
-    while(true)
+    if(nextCalibration)
     {
-        std::vector<std::shared_ptr<Detector::Object>> objects = con.getDetector(CALIBRATE_TABLE)->getObjects();
-
-        if(!objects.empty())
+        while(true)
         {
-            config = objects.at(0);
-            break;
+            std::vector<std::shared_ptr<Detector::Object>> objects = con.getDetector(currentDetector)->getObjects();
+
+            if(!objects.empty())
+            {
+                config = objects.at(0);
+
+                if(currentDetector == CALIBRATE_TABLE)
+                {
+                    std::dynamic_pointer_cast<Detector::BallConfDetector>(con.getDetector(CALIBRATE_CUE_BALL))->setCurrentConfig(config);
+                }
+                else if(currentDetector == CALIBRATE_CUE_BALL)
+                {
+                    std::dynamic_pointer_cast<Detector::CueConfDetector>(con.getDetector(CALIBRATE_CUE))->setCurrentConfig(config);
+                }
+
+                break;
+            }
         }
-    }
-
-    std::dynamic_pointer_cast<Detector::BallConfDetector>(con.getDetector(CALIBRATE_CUE_BALL))->setCurrentConfig(config);
-
-    while(true)
-    {
-        std::vector<std::shared_ptr<Detector::Object>> objects = con.getDetector(CALIBRATE_CUE_BALL)->getObjects();
-
-        if(!objects.empty())
+    
+        if(currentDetector == CALIBRATE_CUE)
         {
-            config = objects.at(0);
-            break;
+            Configuration::getInstance().setConfig(std::dynamic_pointer_cast<Detector::Config>(config));
+            con.changeState(std::make_shared<Setup>());
         }
+
+        nextCalibration = false;
     }
-
-    std::dynamic_pointer_cast<Detector::CueConfDetector>(con.getDetector(CALIBRATE_CUE))->setCurrentConfig(config);
-
-    while(true)
-    {
-        std::vector<std::shared_ptr<Detector::Object>> objects = con.getDetector(CALIBRATE_CUE)->getObjects();
-
-        if(!objects.empty())
-        {
-            config = objects.at(0);
-            break;
-        }
-    }
-
-    Configuration::getInstance().setConfig(std::dynamic_pointer_cast<Detector::Config>(config));
-
-    con.changeState(std::make_shared<Active>());
 }
 
 void Calibrate::onExit(Controller& con)
@@ -253,5 +242,17 @@ void Calibrate::onExit(Controller& con)
 
 bool Calibrate::handleEvent(Controller& con, const EventContainer& ev)
 {
+    if(ev.ui == UserInterface::Event::NEXT_CALIBRATION)
+    {
+        nextCalibration = true;
+        if(currentDetector == CALIBRATE_TABLE)
+        {
+            currentDetector = CALIBRATE_CUE_BALL;
+        }
+        else if(currentDetector == CALIBRATE_CUE_BALL)
+        {
+            currentDetector = CALIBRATE_CUE;
+        }
+    }
     return true;
 }
