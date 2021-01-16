@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenCV REQUIRED)
 
-add_definitions("-Wextra -Wconversion")
+add_definitions("-Wall -Wextra -Wconversion")
 
 include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS} ${cairo_INCLUDE_DIRS})
 include_directories(./)

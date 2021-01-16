@@ -32,7 +32,7 @@ foreach(child ${children})
     endif()
 endforeach()
 
-add_definitions("-Wextra -Wconversion")
+add_definitions("-Wall -Wextra -Wconversion")
 
 include_directories(${OpenCV_INCLUDE_DIRS} ./)
 

@@ -127,13 +127,13 @@ namespace ImageDrawer
          */
         virtual void draw();
         /**
-         * @brief Construct a new Cairo Drawer object
+         * @brief Construct a new Vsync Cairo Drawer object
          * 
-         * @param framebuffer path to the file discriptor of gpu
+         * @param gpu path to the file discriptor of gpu
          * @param terminal path to the current terminal connected to the output display
          * @param format color format of the screen
          */
-        VsyncCairoDrawer(const std::string& gpu, const std::string& terminal, cairo_format_t format);
+        VsyncCairoDrawer(const std::string& gpu, const std::string& terminal);
         virtual ~VsyncCairoDrawer();
         uint32_t getScreenWidth();
         uint32_t getScreenHeight();
@@ -148,16 +148,14 @@ namespace ImageDrawer
         
         void update();
 
-        unsigned char* fbp;
-        int fbfd;
         int gpufd;
         const std::string terminal;
-        unsigned long screensize;
         uint32_t screenWidth;
         uint32_t screenHeight;
         std::shared_ptr<GPUOutput> GPULinkedList;
         bool active;
         std::thread thread;
+        ColorRGBAInt curColor;
         
     }; //CairoDrawer
 

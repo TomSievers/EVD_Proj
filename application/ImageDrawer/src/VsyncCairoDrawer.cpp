@@ -71,7 +71,7 @@ namespace ImageDrawer
         }
     }
 #endif
-    VsyncCairoDrawer::VsyncCairoDrawer(const std::string& gpu, const std::string& terminal, cairo_format_t format) : terminal(terminal), screensize(0)
+    VsyncCairoDrawer::VsyncCairoDrawer(const std::string& gpu, const std::string& terminal) : terminal(terminal), curColor(0, 0, 0, 0)
     {
 #if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
 #ifdef DEBUG
@@ -86,7 +86,7 @@ namespace ImageDrawer
             throw(std::runtime_error("unable to find connections on gpu " + gpu));
         }
 
-        GPULinkedList.next.reset();
+        GPULinkedList->next.reset();
 
         for (auto iter = GPULinkedList; iter; iter = iter->next) 
         {
@@ -106,7 +106,6 @@ namespace ImageDrawer
         thread.join();
         std::shared_ptr<GPUOutput> iter;
         drmEventContext ev;
-        int ret;
 
         /* init variables */
         memset(&ev, 0, sizeof(ev));
@@ -119,10 +118,8 @@ namespace ImageDrawer
             GPULinkedList = iter->next;
 
             /* restore saved CRTC configuration */
-            if (!iter->pflip_pending)
-            {
-                drmModeSetCrtc(gpufd, iter->saved_crtc->crtc_id, iter->saved_crtc->buffer_id, iter->saved_crtc->x, iter->saved_crtc->y, &iter->conn, 1, &iter->saved_crtc->mode);
-            }
+            
+            drmModeSetCrtc(gpufd, iter->saved_crtc->crtc_id, iter->saved_crtc->buffer_id, iter->saved_crtc->x, iter->saved_crtc->y, &iter->conn, 1, &iter->saved_crtc->mode);
                 
             drmModeFreeCrtc(iter->saved_crtc);
 
@@ -441,7 +438,6 @@ namespace ImageDrawer
 
         buf->cairoSurface = cairo_image_surface_create_for_data(buf->map, CAIRO_FORMAT_ARGB32, buf->width, buf->height, buf->stride);
         buf->cairoContext = cairo_create(buf->cairoSurface);
-        cairo_move_to(cairoContext, 0, 0);
 #endif
         return 0;
         
@@ -507,11 +503,11 @@ namespace ImageDrawer
             std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
             cairo_set_source_rgb(buf->cairoContext, color.r, color.b, color.g);
             cairo_move_to(buf->cairoContext, 0, 0);
-            cairo_rectangle(buf->cairoContext, 0, 0, vinfo.xres, vinfo.yres);
+            cairo_rectangle(buf->cairoContext, 0, 0, buf->width, buf->height);
             cairo_fill(buf->cairoContext);
             cairo_stroke(buf->cairoContext);
             cairo_set_source_rgba(buf->cairoContext, curColor.r/255.0F, curColor.b/255.0F, curColor.g/255.0F, curColor.a/255.0F);
-            cairo_move_to(buf->cairoContext, cursorPos.x, cursorPos.y);
+            cairo_move_to(buf->cairoContext, 0, 0);
         }
         
 #endif

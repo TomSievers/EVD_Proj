@@ -5,7 +5,7 @@ project(image_drawer)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_definitions("-Wextra -Wconversion")
+add_definitions("-Wall -Wextra -Wconversion")
 
 include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS} ${cairo_INCLUDE_DIRS} ${libdrm_INCLUDE_DIRS})
 include_directories(./)
