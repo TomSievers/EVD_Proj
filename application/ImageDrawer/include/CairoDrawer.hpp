@@ -19,7 +19,7 @@ namespace ImageDrawer
         GRAPHICS,
         TEXT
     };
-
+    
     class CairoDrawer : public IImageDrawer
     {
     public:

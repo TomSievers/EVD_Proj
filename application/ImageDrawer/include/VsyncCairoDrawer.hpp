@@ -8,7 +8,7 @@
 #include <memory>
 #include <cstdint>
 #include <thread>
-#include <mutex>
+#include <atomic>
 #if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
 #include <cairo.h>
 #include <linux/fb.h>
@@ -35,19 +35,13 @@ struct drmModeConnector
 
 namespace ImageDrawer
 {
-    enum TTY_MODE
-    {
-        GRAPHICS,
-        TEXT
-    };
-
     struct GPUBuffer 
     {
         int gpufd;
         uint32_t width;
         uint32_t height;
         uint32_t stride;
-        uint64_t size;
+        size_t size;
         uint32_t handle;
         uint8_t *map;
         uint32_t fb;
@@ -60,9 +54,8 @@ namespace ImageDrawer
     };
 
     struct GPUOutput {
-        std::mutex bufSwap;
+        std::atomic<bool> bufSwap;
         int gpufd;
-        std::shared_ptr<GPUOutput> next;
 
         uint8_t display_buf;
         uint8_t ready_buf;
@@ -138,8 +131,8 @@ namespace ImageDrawer
         uint32_t getScreenWidth();
         uint32_t getScreenHeight();
         void swapDrawReady();
+        void waitSwap();
     private:
-        void setTty(const std::string& device, TTY_MODE mode);
         void openGPU(const std::string& device);
         void prepareGPU();
         int setupGPUOutput(drmModeRes *res, drmModeConnector *conn, std::shared_ptr<GPUOutput> dev);
@@ -152,7 +145,7 @@ namespace ImageDrawer
         const std::string terminal;
         uint32_t screenWidth;
         uint32_t screenHeight;
-        std::shared_ptr<GPUOutput> GPULinkedList;
+        std::vector<std::shared_ptr<GPUOutput>> GPUOutList;
         bool active;
         std::thread thread;
         ColorRGBAInt curColor;

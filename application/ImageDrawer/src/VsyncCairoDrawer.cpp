@@ -12,7 +12,7 @@
 
 namespace ImageDrawer
 {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
     GPUBuffer::GPUBuffer() : gpufd(-1), width(0), height(0), stride(0), handle(0), map(NULL), fb(0), cairoContext(NULL), cairoSurface(NULL)
     {
 
@@ -45,13 +45,11 @@ namespace ImageDrawer
         }
     }
 
-#endif
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
-    GPUOutput::GPUOutput() : gpufd(-1), next(nullptr), display_buf(0), ready_buf(1), draw_buf(2), conn(0), crtc(0), saved_crtc(NULL)
+//#endif
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+    GPUOutput::GPUOutput() : gpufd(-1), display_buf(0), ready_buf(1), draw_buf(2), conn(0), crtc(0), saved_crtc(NULL)
     {
-
         memset(&mode, 0, sizeof(drmModeModeInfo));
-
     };
 
 
@@ -59,110 +57,100 @@ namespace ImageDrawer
     {
         if(gpufd >= 0)
         {
-            drmModeSetCrtc(gpufd,
-                saved_crtc->crtc_id,
-                saved_crtc->buffer_id,
-                saved_crtc->x,
-                saved_crtc->y,
-                &conn,
-                1,
-                &saved_crtc->mode);
+            drmModeSetCrtc(gpufd, saved_crtc->crtc_id, saved_crtc->buffer_id, saved_crtc->x, saved_crtc->y, &conn, 1, &saved_crtc->mode);
             drmModeFreeCrtc(saved_crtc);
         }
     }
-#endif
+//#endif
     VsyncCairoDrawer::VsyncCairoDrawer(const std::string& gpu, const std::string& terminal) : terminal(terminal), curColor(0, 0, 0, 0)
     {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
-#ifdef DEBUG
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#ifdef DEBUG
         std::cout << "using gpu: " << gpu << std::endl;
-#endif
-        setTty(terminal, GRAPHICS);
+//#endif
         openGPU(gpu);
         prepareGPU();
 
-        if(GPULinkedList == nullptr)
+        if(GPUOutList.empty())
         {
             throw(std::runtime_error("unable to find connections on gpu " + gpu));
         }
 
-        GPULinkedList->next.reset();
-
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->display_buf];
+            GPU->saved_crtc = drmModeGetCrtc(gpufd, GPU->crtc);
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->display_buf];
+            int ret = drmModeSetCrtc(gpufd, GPU->crtc, buf->fb, 0, 0,
+                        &GPU->conn, 1, &GPU->mode);
+            if (ret)
+            {
+                std::cerr << "cannot set CRTC for connector " << GPU->conn << " errno: " << errno << std::endl;
+            }
+
             screenWidth = buf->width;
             screenHeight = buf->height;
         }
-
         thread = std::thread(&VsyncCairoDrawer::update, this);
-#endif
+//#endif
     }
 
     VsyncCairoDrawer::~VsyncCairoDrawer()
     {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         active = false;
         thread.join();
-        std::shared_ptr<GPUOutput> iter;
         drmEventContext ev;
 
         /* init variables */
         memset(&ev, 0, sizeof(ev));
         ev.version = DRM_EVENT_CONTEXT_VERSION;
 
-        while (GPULinkedList) 
+        for(auto& GPU : GPUOutList)
         {
-            /* remove from global list */
-            iter = GPULinkedList;
-            GPULinkedList = iter->next;
-
-            /* restore saved CRTC configuration */
-            
-            drmModeSetCrtc(gpufd, iter->saved_crtc->crtc_id, iter->saved_crtc->buffer_id, iter->saved_crtc->x, iter->saved_crtc->y, &iter->conn, 1, &iter->saved_crtc->mode);
-                
-            drmModeFreeCrtc(iter->saved_crtc);
-
-            for(auto& buf : iter->bufs)
+            for(auto& buf : GPU->bufs)
             {
                 buf.reset();
             }
-
-            iter.reset();
+            GPU.reset();
         }
 
         close(gpufd);
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::update()
     {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         drmVBlank vblank;
         memset(&vblank, 0, sizeof(drmVBlank));
         vblank.request.type = DRM_VBLANK_RELATIVE;
         vblank.request.sequence = 1;
+        
         while(active)
         {
+            auto start = std::chrono::high_resolution_clock::now();
             drmWaitVBlank(gpufd, &vblank);
-            for (auto iter = GPULinkedList; iter; iter = iter->next) 
+            auto end = std::chrono::high_resolution_clock::now();
+            std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << std::endl;
+            
+            for(auto& GPU : GPUOutList)
             {
-                iter->bufSwap.lock();
-                auto buf = iter->bufs[iter->ready_buf];
-                drmModeSetCrtc(gpufd, iter->crtc, buf->fb, 0, 0, &iter->conn, 1, &iter->mode);
-                uint8_t temp = iter->display_buf;
-                iter->display_buf = iter->ready_buf;
-                iter->ready_buf = temp;
-                iter->bufSwap.unlock();
+                GPU->bufSwap.lock();
+                auto buf = GPU->bufs[GPU->ready_buf];
+                drmModeSetCrtc(gpufd, GPU->crtc, buf->fb, 0, 0, &GPU->conn, 1, &GPU->mode);
+                uint8_t temp = GPU->display_buf;
+                GPU->display_buf = GPU->ready_buf;
+                GPU->ready_buf = temp;
+                GPU->bufSwap.unlock();
+                
             }
-
         }
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::openGPU(const std::string& device)
     {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         uint64_t has_dumb;
         gpufd = open(device.c_str(), O_RDWR | O_CLOEXEC);
         if (gpufd < 0) 
@@ -174,12 +162,12 @@ namespace ImageDrawer
         {
             throw(std::runtime_error("DRM device" + device + "does not support dumb buffers "));
         }
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::prepareGPU()
     {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         drmModeRes *res;
         drmModeConnector *conn;
         std::shared_ptr<GPUOutput> dev;
@@ -218,18 +206,20 @@ namespace ImageDrawer
 
             /* free connector data and link device into global list */
             drmModeFreeConnector(conn);
-            dev->next = GPULinkedList;
-            GPULinkedList = dev;
+            if(dev != nullptr)
+            {
+                GPUOutList.push_back(dev);
+            }
         }
 
         /* free resources again */
         drmModeFreeResources(res);
-#endif
+//#endif
     }
 
     int VsyncCairoDrawer::setupGPUOutput(drmModeRes *res, drmModeConnector *conn, std::shared_ptr<GPUOutput> dev)
     {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         if (conn->connection != DRM_MODE_CONNECTED) 
         {
             return -ENOENT;
@@ -260,9 +250,9 @@ namespace ImageDrawer
                 return -EFAULT;
             }
         }
-#ifdef DEBUG
-        std::cout << "Mode for connector" << conn->connector_id << " is " << dev->bufs[0].width << "x" << dev->bufs[0].height << std::endl;
-#endif
+//#ifdef DEBUG
+        std::cout << "Mode for connector" << conn->connector_id << " is " << dev->bufs[0]->width << "x" << dev->bufs[0]->height << std::endl;
+//#endif
         /* find a crtc for this connector */
         int ret = findCRTC(res, conn, dev);
         if (ret) 
@@ -294,16 +284,15 @@ namespace ImageDrawer
             dev->bufs[1].reset();
             return ret;
         }
-#endif
+//#endif
         return 0;
     }
 
     int VsyncCairoDrawer::findCRTC(drmModeRes *res, drmModeConnector *conn, std::shared_ptr<GPUOutput> dev)
     {
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         drmModeEncoder *enc;
         int32_t crtc;
-        std::shared_ptr<GPUOutput> iter;
 
         /* first try the currently conected encoder+crtc */
         if (conn->encoder_id)
@@ -314,9 +303,9 @@ namespace ImageDrawer
         if (enc != NULL) {
             if (enc->crtc_id) {
                 crtc = enc->crtc_id;
-                for (iter = GPULinkedList; iter != NULL; iter = iter->next)
+                for(auto& GPU : GPUOutList)
                 {
-                    if (iter->crtc == crtc) 
+                    if (GPU->crtc == crtc) 
                     {
                         crtc = -1;
                         break;
@@ -354,8 +343,10 @@ namespace ImageDrawer
 
                 /* check that no other device already uses this CRTC */
                 crtc = res->crtcs[j];
-                for (iter = GPULinkedList; iter; iter = iter->next) {
-                    if (iter->crtc == crtc) {
+                for(auto& GPU : GPUOutList)
+                {
+                    if (GPU->crtc == crtc) 
+                    {
                         crtc = -1;
                         break;
                     }
@@ -373,13 +364,13 @@ namespace ImageDrawer
         }
 
         std::cerr << "cannot find suitable CRTC for connector " << conn->connector_id << std::endl;
-#endif
+//#endif
         return -ENOENT;
     }
 
     int VsyncCairoDrawer::fillGPUBuffer(std::shared_ptr<GPUBuffer> buf)
     {       
-#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         struct drm_mode_create_dumb creq;
         struct drm_mode_destroy_dumb dreq;
         struct drm_mode_map_dumb mreq;
@@ -438,20 +429,22 @@ namespace ImageDrawer
 
         buf->cairoSurface = cairo_image_surface_create_for_data(buf->map, CAIRO_FORMAT_ARGB32, buf->width, buf->height, buf->stride);
         buf->cairoContext = cairo_create(buf->cairoSurface);
-#endif
+//#endif
         return 0;
         
     }
+    #include <chrono>
+    using namespace std::chrono_literals;
 
     void VsyncCairoDrawer::swapDrawReady()
     {
-        for(auto& iter = GPULinkedList; iter; iter = iter->next)
+        for(auto& GPU : GPUOutList)
         {
-            iter->bufSwap.lock();
-            uint8_t temp = iter->draw_buf;
-            iter->draw_buf = iter->ready_buf;
-            iter->ready_buf = temp;
-            iter->bufSwap.unlock();
+            GPU->bufSwap.lock();
+            uint8_t temp = GPU->draw_buf;
+            GPU->draw_buf = GPU->ready_buf;
+            GPU->ready_buf = temp;
+            GPU->bufSwap.unlock();
         }
     }
 
@@ -467,40 +460,40 @@ namespace ImageDrawer
 
     void VsyncCairoDrawer::setDrawColor(const ColorRGBInt& color)
     {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             curColor.r = color.r;
             curColor.b = color.b;
             curColor.g = color.g;
             curColor.a = 255;
             cairo_set_source_rgb(buf->cairoContext, color.r/255.0F, color.b/255.0F, color.g/255.0F);
         }
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::setDrawColor(const ColorRGBAInt& color)
     {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             curColor.r = color.r;
             curColor.b = color.b;
             curColor.g = color.g;
             curColor.a = color.a;
             cairo_set_source_rgba(buf->cairoContext, color.r/255.0F, color.b/255.0F, color.g/255.0F, color.a/255.0F);
         }
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::setBackground(const ColorRGBInt& color)
     {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_set_source_rgb(buf->cairoContext, color.r, color.b, color.g);
             cairo_move_to(buf->cairoContext, 0, 0);
             cairo_rectangle(buf->cairoContext, 0, 0, buf->width, buf->height);
@@ -510,92 +503,55 @@ namespace ImageDrawer
             cairo_move_to(buf->cairoContext, 0, 0);
         }
         
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::drawCircle(const cv::Point& center, double radius)
     {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_move_to(buf->cairoContext, center.x+radius, center.y);
             cairo_arc(buf->cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
         }
         
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::drawLine(const cv::Point& pointA, const cv::Point& pointB)
     {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_move_to(buf->cairoContext, pointA.x, pointA.y);
             cairo_line_to(buf->cairoContext, pointB.x, pointB.y);
         }
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::setLineWidth(int thickness)
     {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_set_line_width(buf->cairoContext, thickness);
         }
         
-#endif
+//#endif
     }
 
     void VsyncCairoDrawer::draw()
     {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        for (auto iter = GPULinkedList; iter; iter = iter->next) 
+//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+        for(auto& GPU : GPUOutList)
         {
-            std::shared_ptr<GPUBuffer> buf = iter->bufs[iter->draw_buf];
+            std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_stroke(buf->cairoContext);
         }
         
-#endif
-    }
-
-    void VsyncCairoDrawer::setTty(const std::string& device, TTY_MODE mode)
-    {
-#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
-        int fd = open(device.c_str(), O_RDWR);
-
-        if (fd == -1) 
-        {
-            throw(std::runtime_error("Could not open terminal: " + device + " errno: " + std::to_string(errno)));
-        }
-
-        switch (mode)
-        {
-        case GRAPHICS:
-            {
-                if (ioctl( fd, KDSETMODE, KD_GRAPHICS))
-                {
-                    close(fd);
-                    throw(std::runtime_error("Could not set terminal to KD_GRAPHICS mode: " + device + " errno: " + std::to_string(errno)));
-                }
-            }
-            break;
-        case TEXT:
-            {
-                if (ioctl( fd, KDSETMODE, KD_TEXT))
-                {
-                    close(fd);
-                    throw(std::runtime_error("Could not set terminal to KD_GRAPHICS mode: " + device + " errno: " + std::to_string(errno)));
-                }
-            }
-            break;
-        default:
-            break;
-        }
-        close(fd);
-#endif
+//#endif
     }
 }

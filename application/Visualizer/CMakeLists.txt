@@ -9,7 +9,7 @@ find_package(OpenCV REQUIRED)
 
 add_definitions("-Wall -Wextra -Wconversion")
 
-include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS} ${cairo_INCLUDE_DIRS})
+include_directories(SYSTEM ${OpenCV_INCLUDE_DIRS} ${cairo_INCLUDE_DIRS} ${libdrm_INCLUDE_DIRS})
 include_directories(./)
 include_directories(../ImageDrawer)
 

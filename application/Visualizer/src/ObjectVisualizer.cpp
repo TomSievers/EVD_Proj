@@ -1,10 +1,25 @@
 #include <include/ObjectVisualizer.hpp>
 #include <include/DebugDrawer.hpp>
+#include <include/VsyncCairoDrawer.hpp>
 #include <iostream>
 
 namespace Visualizer
 {
-    ObjectVisualizer::ObjectVisualizer(const cv::Point& inMin, const cv::Point& inMax) : IVisual(nullptr)
+    ObjectVisualizer::ObjectVisualizer() : IVisual(nullptr), vsync(true)
+    {
+        auto vsync = std::make_shared<ImageDrawer::VsyncCairoDrawer>("/dev/dri/card1", "/dev/tty1");
+        drawer = vsync;
+        outMin = cv::Point(0, 0);
+        outMin = cv::Point(0, 0);
+        this->inMin = inMin;
+
+
+        outMax = cv::Point(vsync->getScreenWidth(), vsync->getScreenHeight());
+        this->inMax = inMax;
+        drawer->setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
+    }
+
+    ObjectVisualizer::ObjectVisualizer(const cv::Point& inMin, const cv::Point& inMax) : IVisual(nullptr), vsync(false)
     {
         auto debug = std::make_shared<ImageDrawer::DebugDrawer>(inMax.x, inMax.y);
         drawer = debug;
@@ -17,7 +32,7 @@ namespace Visualizer
         drawer->setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
     }
     
-    ObjectVisualizer::ObjectVisualizer(cairo_format_t format, const cv::Point& inMin, const cv::Point& inMax) : IVisual(nullptr)
+    ObjectVisualizer::ObjectVisualizer(cairo_format_t format, const cv::Point& inMin, const cv::Point& inMax) : IVisual(nullptr), vsync(false)
     {
         auto cairo = std::make_shared<ImageDrawer::CairoDrawer>("/dev/fb0", "/dev/tty1", format);
         drawer = cairo;

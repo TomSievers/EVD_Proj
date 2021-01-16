@@ -8,6 +8,7 @@ namespace Visualizer
     class ObjectVisualizer : public IVisual
     {
     public:
+        ObjectVisualizer();
         ObjectVisualizer(const cv::Point& inMin, const cv::Point& inMax);
         ObjectVisualizer(cairo_format_t format, const cv::Point& inMin, const cv::Point& inMax);
         virtual ~ObjectVisualizer();
@@ -15,6 +16,7 @@ namespace Visualizer
     private:
         std::vector<cv::Point> prevTrajectory;
         CueBall prevBall;
+        bool vsync;
     }; //ObjectVisualizer
 } // namespace Visualizer
 
