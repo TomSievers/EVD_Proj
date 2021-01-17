@@ -43,37 +43,34 @@ int main(int argc, char const *argv[])
     }
 #elif defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM) 
     auto start = std::chrono::high_resolution_clock::now();
-    auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(10);
+    auto end = std::chrono::high_resolution_clock::now() + std::chrono::seconds(60);
     
     ImageDrawer::VsyncCairoDrawer drawer("/dev/dri/card1", "/dev/tty1");
 
     drawer.setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
-    cv::Point startPos(100, 100);
+    cv::Point startPos(100, 500);
+
+    uint8_t col = 0;
+    bool flip = false;
+
+    drawer.update();
     while(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() >= 0)
     {
-        auto test = std::chrono::high_resolution_clock::now();
+        
+        /*drawer.setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
+        
+        drawer.setDrawColor(ImageDrawer::ColorRGBInt(255, 255, 255));
 
-        drawer.waitSwap();
-
-        drawer.setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
-
-        drawer.setDrawColor(ImageDrawer::ColorRGBInt(255, 0, 0));
+        drawer.setLineWidth(10);
 
         drawer.drawLine(cv::Point(0, 0), cv::Point(drawer.getScreenWidth(), drawer.getScreenHeight()));
 
         drawer.drawCircle(startPos, 100);
 
         drawer.draw();
+            
+        drawer.swapDrawReady();*/
 
-        start = std::chrono::high_resolution_clock::now();
-
-        drawer.swapDrawReady();
-
-        startPos.x+=10;
-
-        auto now = std::chrono::high_resolution_clock::now();
-
-        std::cout << "total " << std::chrono::duration_cast<std::chrono::milliseconds>(now-test).count() << std::endl;
     }
 
 #elif defined(DEBUGDRAWER)

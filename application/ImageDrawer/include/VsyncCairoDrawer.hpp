@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <thread>
 #include <atomic>
+#include <mutex>
 #if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
 #include <cairo.h>
 #include <linux/fb.h>
@@ -54,7 +55,8 @@ namespace ImageDrawer
     };
 
     struct GPUOutput {
-        std::atomic<bool> bufSwap;
+        std::mutex bufSwap;
+        std::atomic<bool> swapReady;
         int gpufd;
 
         uint8_t display_buf;
@@ -131,7 +133,7 @@ namespace ImageDrawer
         uint32_t getScreenWidth();
         uint32_t getScreenHeight();
         void swapDrawReady();
-        void waitSwap();
+        void update();
     private:
         void openGPU(const std::string& device);
         void prepareGPU();
@@ -139,16 +141,17 @@ namespace ImageDrawer
         int fillGPUBuffer(std::shared_ptr<GPUBuffer> buf);
         int findCRTC(drmModeRes *res, drmModeConnector *conn, std::shared_ptr<GPUOutput> dev);
         
-        void update();
+        
 
         int gpufd;
         const std::string terminal;
         uint32_t screenWidth;
         uint32_t screenHeight;
         std::vector<std::shared_ptr<GPUOutput>> GPUOutList;
+        ColorRGBAInt curColor;
         bool active;
         std::thread thread;
-        ColorRGBAInt curColor;
+       
         
     }; //CairoDrawer
 

@@ -62,7 +62,7 @@ namespace ImageDrawer
         }
     }
 //#endif
-    VsyncCairoDrawer::VsyncCairoDrawer(const std::string& gpu, const std::string& terminal) : terminal(terminal), curColor(0, 0, 0, 0)
+    VsyncCairoDrawer::VsyncCairoDrawer(const std::string& gpu, const std::string& terminal) : terminal(terminal), curColor(0, 0, 0, 0), active(true)
     {
 //#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
 //#ifdef DEBUG
@@ -90,7 +90,7 @@ namespace ImageDrawer
             screenWidth = buf->width;
             screenHeight = buf->height;
         }
-        thread = std::thread(&VsyncCairoDrawer::update, this);
+        //thread = std::thread(&VsyncCairoDrawer::update, this);
 //#endif
     }
 
@@ -115,36 +115,6 @@ namespace ImageDrawer
         }
 
         close(gpufd);
-//#endif
-    }
-
-    void VsyncCairoDrawer::update()
-    {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
-        drmVBlank vblank;
-        memset(&vblank, 0, sizeof(drmVBlank));
-        vblank.request.type = DRM_VBLANK_RELATIVE;
-        vblank.request.sequence = 1;
-        
-        while(active)
-        {
-            auto start = std::chrono::high_resolution_clock::now();
-            drmWaitVBlank(gpufd, &vblank);
-            auto end = std::chrono::high_resolution_clock::now();
-            std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << std::endl;
-            
-            for(auto& GPU : GPUOutList)
-            {
-                GPU->bufSwap.lock();
-                auto buf = GPU->bufs[GPU->ready_buf];
-                drmModeSetCrtc(gpufd, GPU->crtc, buf->fb, 0, 0, &GPU->conn, 1, &GPU->mode);
-                uint8_t temp = GPU->display_buf;
-                GPU->display_buf = GPU->ready_buf;
-                GPU->ready_buf = temp;
-                GPU->bufSwap.unlock();
-                
-            }
-        }
 //#endif
     }
 
@@ -186,7 +156,7 @@ namespace ImageDrawer
             conn = drmModeGetConnector(gpufd, res->connectors[i]);
             if (conn == NULL) 
             {
-                std::cerr << "cannot retrieve DRM connector" << i << ":" << res->connectors[i] << " errno: " << errno << std::endl;
+                std::cerr << "cannot retrieve DRM connector " << i << ":" << res->connectors[i] << " errno: " << errno << std::endl;
                 continue;
             }
 
@@ -251,7 +221,7 @@ namespace ImageDrawer
             }
         }
 //#ifdef DEBUG
-        std::cout << "Mode for connector" << conn->connector_id << " is " << dev->bufs[0]->width << "x" << dev->bufs[0]->height << std::endl;
+        std::cout << "Mode for connector " << conn->connector_id << " is " << dev->bufs[0]->width << "x" << dev->bufs[0]->height << std::endl;
 //#endif
         /* find a crtc for this connector */
         int ret = findCRTC(res, conn, dev);
@@ -433,18 +403,81 @@ namespace ImageDrawer
         return 0;
         
     }
-    #include <chrono>
-    using namespace std::chrono_literals;
+
+    void VsyncCairoDrawer::update()
+    {
+//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+        drmVBlank vblank;
+        memset(&vblank, 0, sizeof(drmVBlank));
+        vblank.request.type = DRM_VBLANK_RELATIVE;
+        vblank.request.sequence = 1;
+        
+        while(active)
+        {
+            setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
+        
+            setDrawColor(ImageDrawer::ColorRGBInt(255, 255, 255));
+
+            setLineWidth(10);
+
+            drawLine(cv::Point(0, 0), cv::Point(getScreenWidth(), getScreenHeight()));
+
+            drawCircle(cv::Point(1000, 100), 100);
+
+            draw();
+
+            //std::cout << "1. " << (int)GPUOutList.at(0)->draw_buf << " " << (int)GPUOutList.at(0)->ready_buf << " " << (int)GPUOutList.at(0)->display_buf << std::endl;
+                
+            swapDrawReady();
+
+            //std::cout << "2. " << (int)GPUOutList.at(0)->draw_buf << " " << (int)GPUOutList.at(0)->ready_buf << " " << (int)GPUOutList.at(0)->display_buf << std::endl;
+
+            setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
+        
+            setDrawColor(ImageDrawer::ColorRGBInt(255, 255, 255));
+
+            setLineWidth(10);
+
+            drawLine(cv::Point(0, 0), cv::Point(getScreenWidth(), getScreenHeight()));
+
+            drawCircle(cv::Point(1000, 100), 100);
+
+            draw();
+
+            //std::cout << "3. " << (int)GPUOutList.at(0)->draw_buf << " " << (int)GPUOutList.at(0)->ready_buf << " " << (int)GPUOutList.at(0)->display_buf << std::endl;
+                
+            //swapDrawReady();
+
+            drmWaitVBlank(gpufd, &vblank);
+            
+            for(auto& GPU : GPUOutList)
+            {                
+                if(GPU->swapReady.load() && GPU->bufSwap.try_lock())
+                {
+                    drmModeSetCrtc(gpufd, GPU->crtc, GPU->bufs[GPU->ready_buf]->fb, 0, 0, &GPU->conn, 1, &GPU->mode);
+                    uint8_t temp = GPU->display_buf;
+                    GPU->display_buf = GPU->ready_buf;
+                    GPU->ready_buf = temp;
+                    GPU->swapReady.store(false);
+                    GPU->bufSwap.unlock();
+                }
+            }   
+        }
+//#endif
+    }
 
     void VsyncCairoDrawer::swapDrawReady()
     {
         for(auto& GPU : GPUOutList)
         {
-            GPU->bufSwap.lock();
-            uint8_t temp = GPU->draw_buf;
-            GPU->draw_buf = GPU->ready_buf;
-            GPU->ready_buf = temp;
-            GPU->bufSwap.unlock();
+            if(GPU->bufSwap.try_lock())
+            {
+                uint8_t temp = GPU->draw_buf;
+                GPU->draw_buf = GPU->ready_buf;
+                GPU->ready_buf = temp;
+                GPU->swapReady.store(true);
+                GPU->bufSwap.unlock();
+            }
         }
     }
 
@@ -500,7 +533,7 @@ namespace ImageDrawer
             cairo_fill(buf->cairoContext);
             cairo_stroke(buf->cairoContext);
             cairo_set_source_rgba(buf->cairoContext, curColor.r/255.0F, curColor.b/255.0F, curColor.g/255.0F, curColor.a/255.0F);
-            cairo_move_to(buf->cairoContext, 0, 0);
+            cairo_move_to(buf->cairoContext, 0, 0);            
         }
         
 //#endif
