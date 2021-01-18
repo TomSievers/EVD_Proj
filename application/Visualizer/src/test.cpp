@@ -9,11 +9,12 @@ using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    #if defined(__linux__) && defined(HAVE_CAIRO) && !defined(DEBUG)
-    Visualizer::ObjectVisualizer vis(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500));
+    #if defined(__linux__) && defined(HAVE_CAIRO)
+    Visualizer::ObjectVisualizer vis(CAIRO_FORMAT_ARGB32, cv::Point(0, 0), cv::Point(1000, 500));
     #else
     Visualizer::ObjectVisualizer vis(cv::Point(0, 0), cv::Point(1000, 500));
     #endif
+    
 
     std::vector<cv::Point> trajectory;
     trajectory.push_back(cv::Point(1, 1));
@@ -23,7 +24,9 @@ int main(int argc, char const *argv[])
 
     vis.update(trajectory, ball);
 
-    cv::waitKey(5000);
+    //cv::waitKey(5000);
+
+    std::this_thread::sleep_for(5s);
 
     trajectory.clear();
     trajectory.push_back(cv::Point(0, 0));
@@ -33,7 +36,9 @@ int main(int argc, char const *argv[])
 
     vis.update(trajectory, ball2);
 
-    cv::waitKey(5000);
+    //cv::waitKey(5000);
+
+    std::this_thread::sleep_for(5s);
 
     return 0;
 }

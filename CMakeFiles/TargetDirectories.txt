@@ -1,0 +1,4 @@
+/home/pi/EVD_Proj/CMakeFiles/edit_cache.dir
+/home/pi/EVD_Proj/CMakeFiles/rebuild_cache.dir
+/home/pi/EVD_Proj/CMakeFiles/fb.dir
+/home/pi/EVD_Proj/CMakeFiles/test.dir

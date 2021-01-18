@@ -1,11 +1,15 @@
+#!/bin/python
 import cv2 as cv
 import numpy as np
 
-img = cv.imread("enhancedIMG.png")
-img = cv.resize(img, (0, 0), fx=0.3, fy=0.3)
-
 def nothing(x):
     pass
+
+cap = cv.VideoCapture(0)
+
+if not cap.isOpened:
+    exit(1)
+
 
 cv.namedWindow('image')
 cv.createTrackbar('Hmin', 'image', 0, 180, nothing)
@@ -16,9 +20,11 @@ cv.createTrackbar('Smax', 'image', 0, 255, nothing)
 cv.createTrackbar('Vmax', 'image', 0, 255, nothing)
 
 #img_noise_removed = cv.fastNlMeansDenoisingColored(img,None,10,10,7,21)
-img_HSV = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+
 
 while(1):
+    ret, img = cap.read()
+    img_HSV = cv.cvtColor(img, cv.COLOR_BGR2HSV)
     
     # get slider positions
     h_min = cv.getTrackbarPos('Hmin', 'image')

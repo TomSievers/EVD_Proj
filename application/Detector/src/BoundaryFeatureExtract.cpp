@@ -1,5 +1,6 @@
 #include <include/Boundary/BoundaryFeatureExtract.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 #include <iostream>
 
 namespace Detector
@@ -140,7 +141,7 @@ namespace Detector
                     pointB = contour.at(i + 1);
                 }
 
-                if(sqrt(pow(pointB.x - pointA.x, 2) + pow(pointB.y - pointA.y, 2)) > 140)
+                if(sqrt(pow(pointB.x - pointA.x, 2) + pow(pointB.y - pointA.y, 2)) > 110)
                 {
                     calculateLine(lines, pointA, pointB);
                 }

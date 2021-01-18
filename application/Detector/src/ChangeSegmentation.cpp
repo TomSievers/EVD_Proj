@@ -28,7 +28,7 @@ namespace Detector
         cv::morphologyEx(background, background, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(3, 3)));
 
 #ifdef DEBUG
-        cv::imshow("Segmented", background);
+        //cv::imshow("Segmented", background);
 #endif
 
         return std::make_shared<cv::Mat>(background);

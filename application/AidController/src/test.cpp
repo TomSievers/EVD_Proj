@@ -8,11 +8,11 @@ using namespace std::chrono_literals;
 int main(int argc, char const *argv[])
 {
     
-    std::shared_ptr<Controller> con = std::make_shared<Controller>("../../Photos_pool_table/setup1_3.jpg");
+    std::shared_ptr<Controller> con = std::make_shared<Controller>(0);
     UserInterface::KeyboardInterface keyboard(std::bind(static_cast<void(Controller::*)(const UserInterface::Event&)>(&Controller::scheduleEvent), con, std::placeholders::_1));
 
     int key;
-    int winKey;
+    int winKey = 0;
     while(true)
     {
         con->run();

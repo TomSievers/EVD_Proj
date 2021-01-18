@@ -7,11 +7,11 @@
 
 // defines for the pool table color
 #define BACKGROUND_MIN_H 105
-#define BACKGROUND_MIN_S 0
-#define BACKGROUND_MIN_V 108
-#define BACKGROUND_MAX_H 115
-#define BACKGROUND_MAX_S 225
-#define BACKGROUND_MAX_V 151
+#define BACKGROUND_MIN_S 160
+#define BACKGROUND_MIN_V 135
+#define BACKGROUND_MAX_H 120
+#define BACKGROUND_MAX_S 200
+#define BACKGROUND_MAX_V 185
 
 // defines for the Hough circle transform
 #define HOUGH_DP 2.4f
@@ -44,6 +44,9 @@ namespace Detector
         // 2: do a closing operation to remove black holes in balls
         cv::Mat closedBackground;
         cv::morphologyEx(imageNoBackground, closedBackground, cv::MORPH_CLOSE, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3)));
+        cv::morphologyEx(imageNoBackground, closedBackground, cv::MORPH_OPEN, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(9, 9)));
+
+        cv::imshow("segment ff", closedBackground);
 
         // 3: find the balls (circles)
         std::vector<cv::Vec3f> circles = findCircles(closedBackground);

@@ -140,7 +140,6 @@ namespace ImageCapture
                 auto sleep = std::chrono::microseconds(1000-std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
                 if(sleep.count() > 0)
                 {
-                    std::cout << sleep.count() << std::endl;
                     std::this_thread::sleep_for(sleep);
                 }
             }

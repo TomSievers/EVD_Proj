@@ -25,7 +25,7 @@ namespace Visualizer
         this->inMin = inMin;
 
 
-        outMax = cv::Point(cairo->getScreenWidth(), cairo->getScreenHeight());
+        outMax = cv::Point(cairo->getScreenWidth(), cairo->getScreenHeight()-55);
         this->inMax = inMax;
         drawer->setBackground(ImageDrawer::ColorRGBInt(0, 0, 0));
     }

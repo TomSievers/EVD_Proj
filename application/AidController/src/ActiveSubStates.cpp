@@ -7,7 +7,7 @@
 
 Detecting::Detecting()
 {
-    
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
 }
 
 Detecting::~Detecting()
@@ -99,6 +99,7 @@ bool Detecting::handleEvent(Controller& con, const EventContainer& ev)
 
 Waiting::Waiting()
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     
 }
 

@@ -8,6 +8,7 @@
 #include <chrono>
 #include <Visualizer/include/ObjectVisualizer.hpp>
 #include <iostream>
+#include <opencv2/highgui.hpp>
 
 using namespace std::chrono_literals;
 
@@ -23,22 +24,23 @@ Setup::~Setup()
 
 void Setup::onEntry(Controller& con)
 {
-    
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     con.setDetector(BOUNDARY, std::make_shared<Detector::BoundaryDetector>(con.getAcquisition()));
     con.setDetector(BALL, std::make_shared<Detector::BallDetector>(con.getAcquisition()));
     con.setDetector(CUE, std::make_shared<Detector::CueDetector>(con.getAcquisition()));
     con.setDetector(CHANGE, std::make_shared<Detector::ChangeDetector>(con.getAcquisition()));
     con.setTrajectoryCalc(std::make_shared<TrajectoryCalculator::TrajectoryCalculator>());
-#if defined(__linux__) && defined(HAVE_CAIRO)
-    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_RGB16_565, cv::Point(0, 0), cv::Point(1000, 500)));
-#else
+/*#if defined(__linux__) && defined(HAVE_CAIRO) && !defined(DEBUG)
+    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_ARGB32, cv::Point(0, 0), cv::Point(1000, 500)));
+#else*/
     con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cv::Point(0, 0), cv::Point(1000, 500)));
-#endif
+//#endif
 
 }
 
 void Setup::onDo(Controller& con)
 {
+    std::cout << __PRETTY_FUNCTION__ << std::endl;
     std::shared_ptr<Detector::Boundary> boundary;
     while(boundary == nullptr)
     {
@@ -47,12 +49,18 @@ void Setup::onDo(Controller& con)
         {
             boundary = std::dynamic_pointer_cast<Detector::Boundary>(objects.at(0));
         }
+        #ifdef DEBUG
+            cv::waitKey(1);
+        #endif
+
     }
 
     con.getTrajectoryCalc()->setPocketRadius(static_cast<uint16_t>(round(boundary->pocketRad)));
     con.getTrajectoryCalc()->setTableCorners(boundary->corners);
     con.changeState(std::make_shared<Inactive>());
+    std::cout << "yes" << std::endl;
 }
+
 
 void Setup::onExit(Controller& con)
 {
