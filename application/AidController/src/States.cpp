@@ -64,12 +64,14 @@ void Setup::onDo(Controller& con)
 
 void Setup::onExit(Controller& con)
 {
-    
+    (void)con;
     std::this_thread::sleep_for(100ms);
 }
 
 bool Setup::handleEvent(Controller& con, const EventContainer& ev)
 {
+    (void)con;
+    (void)ev;
     return false;
 }
 
@@ -85,17 +87,17 @@ Inactive::~Inactive()
 
 void Inactive::onEntry(Controller& con)
 {
-    
+    (void)con;
 }
 
 void Inactive::onDo(Controller& con)
 {
-
+    (void)con;
 }
 
 void Inactive::onExit(Controller& con)
 {
-    
+    (void)con;
 }   
 
 bool Inactive::handleEvent(Controller& con, const EventContainer& ev)
@@ -131,7 +133,7 @@ Active::~Active()
 
 void Active::onEntry(Controller& con)
 {
-    
+    (void)con;
     substate = std::make_shared<Waiting>();
 }
 
@@ -145,7 +147,7 @@ void Active::onDo(Controller& con)
 
 void Active::onExit(Controller& con)
 {
-    
+    (void)con;
 }
 
 bool Active::handleEvent(Controller& con, const EventContainer& ev)
@@ -198,7 +200,7 @@ Calibrate::~Calibrate()
 
 void Calibrate::onEntry(Controller& con)
 {
-    
+    (void)con;
 }
 
 void Calibrate::onDo(Controller& con)
@@ -208,10 +210,12 @@ void Calibrate::onDo(Controller& con)
 
 void Calibrate::onExit(Controller& con)
 {
-    
+    (void)con;
 }
 
 bool Calibrate::handleEvent(Controller& con, const EventContainer& ev)
 {
+    (void)con;
+    (void)ev;
     return true;
 }

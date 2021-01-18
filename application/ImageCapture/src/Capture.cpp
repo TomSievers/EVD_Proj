@@ -18,7 +18,7 @@
 
 namespace ImageCapture
 {
-    Capture::Capture(int device) : cap(cv::VideoCapture(device)), config("../rpi_hq_cam.cfg")
+    Capture::Capture(int device) : config("../rpi_hq_cam.cfg"), cap(cv::VideoCapture(device))
     {
         if(!cap.isOpened())
         {

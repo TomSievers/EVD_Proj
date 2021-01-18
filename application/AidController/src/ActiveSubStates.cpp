@@ -17,7 +17,7 @@ Detecting::~Detecting()
 
 void Detecting::onEntry(Controller& con)
 {
-    
+    (void)con;
 }
 
 void Detecting::onDo(Controller& con)
@@ -89,11 +89,13 @@ void Detecting::onDo(Controller& con)
 
 void Detecting::onExit(Controller& con)
 {
-    
+    (void)con;
 }
 
 bool Detecting::handleEvent(Controller& con, const EventContainer& ev)
 {
+    (void)con;
+    (void)ev;
     return true;
 }
 
@@ -110,12 +112,7 @@ Waiting::~Waiting()
 
 void Waiting::onEntry(Controller& con)
 {
-    
-}
-
-bool checkBallPosition(const cv::Point& a, const cv::Point& b)
-{
-    return (a.x <= b.x+2 && a.x >= b.x-2 && a.y <= b.y+2 && a.y >= b.y-2);
+    (void)con;
 }
 
 void Waiting::onDo(Controller& con)
@@ -148,11 +145,13 @@ void Waiting::onDo(Controller& con)
 
 void Waiting::onExit(Controller& con)
 {
-    
+    (void)con;
 }
 
 bool Waiting::handleEvent(Controller& con, const EventContainer& ev)
 {
+    (void)con;
+    (void)ev;
     return true;
 }
 
