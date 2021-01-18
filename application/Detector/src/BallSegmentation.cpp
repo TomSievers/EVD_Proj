@@ -13,6 +13,15 @@
 #define BACKGROUND_MAX_S 200
 #define BACKGROUND_MAX_V 185
 
+/*
+#define BACKGROUND_MIN_H 105
+#define BACKGROUND_MIN_S 165
+#define BACKGROUND_MIN_V 115
+#define BACKGROUND_MAX_H 115
+#define BACKGROUND_MAX_S 215
+#define BACKGROUND_MAX_V 185
+*/
+
 // defines for the Hough circle transform
 #define HOUGH_DP 2.4f
 #define HOUGH_MINDIST 1
