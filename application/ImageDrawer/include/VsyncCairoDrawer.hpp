@@ -16,10 +16,10 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 #else
-struct cairo_format_t
-{
-    int STUB = 0;
-};
+// struct cairo_format_t
+// {
+//     int STUB = 0;
+// };
 
 struct drmModeRes
 {

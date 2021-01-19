@@ -2,7 +2,7 @@
 #include <include/Cue/CueProcessing.hpp>
 #include "opencv2/imgproc.hpp"
 #include <iostream>
-
+#define DEBUG
 namespace Detector
 {
     CueFeatureExtraction::CueFeatureExtraction()
@@ -41,7 +41,7 @@ namespace Detector
         for(std::size_t i = 0; i < contours.size(); i++)
         {
             double epsilon = cv::arcLength(contours[i], true);
-            cv::approxPolyDP(contours[i], approxPolyContours[i], epsilon*0.005, true);
+            cv::approxPolyDP(contours[i], approxPolyContours[i], epsilon*0.006, true);
         }
         int16_t biggestContourId = -1;
         for(uint8_t i = 0; i < approxPolyContours.size(); i++)
@@ -54,8 +54,10 @@ namespace Detector
         }
         if(biggestContourId != -1)
         {
+            std::cout << approxPolyContours[biggestContourId].size() << std::endl;
             for(std::size_t i = 0; i < approxPolyContours[biggestContourId].size(); i++)
             {
+                std::cout << approxPolyContours[biggestContourId][i].x << " " << approxPolyContours[biggestContourId][i].y << std::endl;
                 cornerPoints.push_back(cv::Point(approxPolyContours[biggestContourId][i].x, approxPolyContours[biggestContourId][i].y));
             }
 
@@ -90,11 +92,6 @@ namespace Detector
                 }
                 prevAngle = angle;
 
-                std::cout << pa.x << " " << pa.y << std::endl;
-                std::cout << pb.x << " " << pb.y << std::endl;
-                std::cout << pc.x << " " << pc.y << std::endl;
-                std::cout << angle << std::endl;
-                std::cout << "------------------" << std::endl;
 
             }
             

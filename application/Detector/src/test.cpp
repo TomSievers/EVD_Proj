@@ -9,12 +9,12 @@
 #include <iostream>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
-
+#define DEBUG
 using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>(0);
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("D:/EVD_Proj/Photos_pool_table/testFrame15.jpg");
     cv::Mat img;
 
 
@@ -32,7 +32,6 @@ int main(int argc, char const *argv[])
             break;
         }
     }    
-
     /*std::shared_ptr<Detector::Boundary> bound;
     std::shared_ptr<Detector::CueObject> cue;
 

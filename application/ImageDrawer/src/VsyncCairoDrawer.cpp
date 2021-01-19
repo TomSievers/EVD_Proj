@@ -5,14 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef __linux__
 #include <sys/mman.h>
 #include <sys/kd.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+#endif
 
 namespace ImageDrawer
 {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
     GPUBuffer::GPUBuffer() : gpufd(-1), width(0), height(0), stride(0), handle(0), map(NULL), fb(0), cairoContext(NULL), cairoSurface(NULL)
     {
 
@@ -45,8 +47,8 @@ namespace ImageDrawer
         }
     }
 
-//#endif
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#endif
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
     GPUOutput::GPUOutput() : gpufd(-1), display_buf(0), ready_buf(1), draw_buf(2), conn(0), crtc(0), saved_crtc(NULL)
     {
         memset(&mode, 0, sizeof(drmModeModeInfo));
@@ -61,10 +63,10 @@ namespace ImageDrawer
             drmModeFreeCrtc(saved_crtc);
         }
     }
-//#endif
+#endif
     VsyncCairoDrawer::VsyncCairoDrawer(const std::string& gpu, const std::string& terminal) : terminal(terminal), curColor(0, 0, 0, 0), active(true)
     {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
 //#ifdef DEBUG
         std::cout << "using gpu: " << gpu << std::endl;
 //#endif
@@ -91,12 +93,12 @@ namespace ImageDrawer
             screenHeight = buf->height;
         }
         //thread = std::thread(&VsyncCairoDrawer::update, this);
-//#endif
+#endif
     }
 
     VsyncCairoDrawer::~VsyncCairoDrawer()
     {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         active = false;
         thread.join();
         drmEventContext ev;
@@ -115,12 +117,12 @@ namespace ImageDrawer
         }
 
         close(gpufd);
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::openGPU(const std::string& device)
     {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         uint64_t has_dumb;
         gpufd = open(device.c_str(), O_RDWR | O_CLOEXEC);
         if (gpufd < 0) 
@@ -132,12 +134,12 @@ namespace ImageDrawer
         {
             throw(std::runtime_error("DRM device" + device + "does not support dumb buffers "));
         }
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::prepareGPU()
     {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         drmModeRes *res;
         drmModeConnector *conn;
         std::shared_ptr<GPUOutput> dev;
@@ -184,12 +186,12 @@ namespace ImageDrawer
 
         /* free resources again */
         drmModeFreeResources(res);
-//#endif
+#endif
     }
 
     int VsyncCairoDrawer::setupGPUOutput(drmModeRes *res, drmModeConnector *conn, std::shared_ptr<GPUOutput> dev)
     {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         if (conn->connection != DRM_MODE_CONNECTED) 
         {
             return -ENOENT;
@@ -254,13 +256,13 @@ namespace ImageDrawer
             dev->bufs[1].reset();
             return ret;
         }
-//#endif
+#endif
         return 0;
     }
 
     int VsyncCairoDrawer::findCRTC(drmModeRes *res, drmModeConnector *conn, std::shared_ptr<GPUOutput> dev)
     {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         drmModeEncoder *enc;
         int32_t crtc;
 
@@ -334,13 +336,13 @@ namespace ImageDrawer
         }
 
         std::cerr << "cannot find suitable CRTC for connector " << conn->connector_id << std::endl;
-//#endif
+#endif
         return -ENOENT;
     }
 
     int VsyncCairoDrawer::fillGPUBuffer(std::shared_ptr<GPUBuffer> buf)
     {       
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         struct drm_mode_create_dumb creq;
         struct drm_mode_destroy_dumb dreq;
         struct drm_mode_map_dumb mreq;
@@ -399,14 +401,14 @@ namespace ImageDrawer
 
         buf->cairoSurface = cairo_image_surface_create_for_data(buf->map, CAIRO_FORMAT_ARGB32, buf->width, buf->height, buf->stride);
         buf->cairoContext = cairo_create(buf->cairoSurface);
-//#endif
+#endif
         return 0;
         
     }
 
     void VsyncCairoDrawer::update()
     {
-//#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
+#if defined(HAVE_LIBDRM) && defined(HAVE_CAIRO)
         drmVBlank vblank;
         memset(&vblank, 0, sizeof(drmVBlank));
         vblank.request.type = DRM_VBLANK_RELATIVE;
@@ -463,7 +465,7 @@ namespace ImageDrawer
                 }
             }   
         }
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::swapDrawReady()
@@ -493,7 +495,7 @@ namespace ImageDrawer
 
     void VsyncCairoDrawer::setDrawColor(const ColorRGBInt& color)
     {
-//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
         for(auto& GPU : GPUOutList)
         {
             std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
@@ -503,12 +505,12 @@ namespace ImageDrawer
             curColor.a = 255;
             cairo_set_source_rgb(buf->cairoContext, color.r/255.0F, color.b/255.0F, color.g/255.0F);
         }
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::setDrawColor(const ColorRGBAInt& color)
     {
-//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
         for(auto& GPU : GPUOutList)
         {
             std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
@@ -518,12 +520,12 @@ namespace ImageDrawer
             curColor.a = color.a;
             cairo_set_source_rgba(buf->cairoContext, color.r/255.0F, color.b/255.0F, color.g/255.0F, color.a/255.0F);
         }
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::setBackground(const ColorRGBInt& color)
     {
-//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
         for(auto& GPU : GPUOutList)
         {
             std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
@@ -536,12 +538,12 @@ namespace ImageDrawer
             cairo_move_to(buf->cairoContext, 0, 0);            
         }
         
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::drawCircle(const cv::Point& center, double radius)
     {
-//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
         for(auto& GPU : GPUOutList)
         {
             std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
@@ -549,42 +551,42 @@ namespace ImageDrawer
             cairo_arc(buf->cairoContext, center.x, center.y, radius, 0.0, 2.0 * M_PI);
         }
         
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::drawLine(const cv::Point& pointA, const cv::Point& pointB)
     {
-//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
         for(auto& GPU : GPUOutList)
         {
             std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_move_to(buf->cairoContext, pointA.x, pointA.y);
             cairo_line_to(buf->cairoContext, pointB.x, pointB.y);
         }
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::setLineWidth(int thickness)
     {
-//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
         for(auto& GPU : GPUOutList)
         {
             std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_set_line_width(buf->cairoContext, thickness);
         }
         
-//#endif
+#endif
     }
 
     void VsyncCairoDrawer::draw()
     {
-//#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
+#if defined(__linux__) && defined(HAVE_CAIRO) && defined(HAVE_LIBDRM)
         for(auto& GPU : GPUOutList)
         {
             std::shared_ptr<GPUBuffer> buf = GPU->bufs[GPU->draw_buf];
             cairo_stroke(buf->cairoContext);
         }
         
-//#endif
+#endif
     }
 }

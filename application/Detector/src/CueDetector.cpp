@@ -3,7 +3,7 @@
 #include <include/Cue/CueProcessing.hpp>
 #include <iostream>
 #include "opencv2/highgui.hpp"
-
+#define DEBUG
 namespace Detector
 {
 CueDetector::CueDetector(std::shared_ptr<Acquisition> cap) : IDetector(cap)

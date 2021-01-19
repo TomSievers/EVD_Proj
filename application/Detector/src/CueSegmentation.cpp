@@ -2,7 +2,7 @@
 #include <include/Cue/CueProcessing.hpp>
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
-
+#define DEBUG
 #define CUE_TIP_H_MIN 0 // old: 15
 #define CUE_TIP_S_MIN 0 // old 23
 #define CUE_TIP_V_MIN 50 // old 90
@@ -45,8 +45,10 @@ namespace Detector
 
     void CueSegmentation::openImage(cv::Mat& image)
     {
-        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9,9));
+        cv::dilate(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7,7)));
+        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(11,11));
         cv::morphologyEx(image, image, cv::MORPH_OPEN, element);
+        cv::erode(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7,7)));
     }
 
     std::vector<std::vector<cv::Point>> CueSegmentation::findCueContours(const cv::Mat& image)
