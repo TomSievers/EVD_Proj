@@ -1,11 +1,13 @@
-#!/bin/python3
+#!/usr/bin/python3
 import cv2 as cv
 import numpy as np
+
+cap = cv.VideoCapture(0)
 
 def nothing(x):
     pass
 
-img = cv.imread("../../Photos_pool_table/testFrame1.png")
+#img = cv.imread("../../Photos_pool_table/testFrame1.png")
 
 
 cv.namedWindow('image')
@@ -20,8 +22,9 @@ cv.createTrackbar('Vmax', 'image', 0, 255, nothing)
 
 
 while(1):
+    ret, img = cap.read()
     img_HSV = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-    
+
     # get slider positions
     h_min = cv.getTrackbarPos('Hmin', 'image')
     s_min = cv.getTrackbarPos('Smin', 'image')

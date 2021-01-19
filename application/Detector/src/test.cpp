@@ -23,13 +23,17 @@ int main(int argc, char const *argv[])
     std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
     std::shared_ptr<Detector::IDetector> changeDetect = std::make_shared<Detector::ChangeDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
+    //auto cues = cueDetect->getObjects();
+    while(true)
+    {
+        auto cues = cueDetect->getObjects();
+        if(cv::waitKey(1) == 27)
+        {
+            break;
+        }
+    }    
 
-    cv::waitKey(0);
-    auto cues = cueDetect->getObjects();
-
-    
-
-    std::shared_ptr<Detector::Boundary> bound;
+    /*std::shared_ptr<Detector::Boundary> bound;
     std::shared_ptr<Detector::CueObject> cue;
 
     bound = std::static_pointer_cast<Detector::Boundary>(bounds.at(0));
@@ -99,7 +103,7 @@ int main(int argc, char const *argv[])
             cap->getCapture().stop();
             break;
         }
-    }
+    }*/
 
     return 0;
 }

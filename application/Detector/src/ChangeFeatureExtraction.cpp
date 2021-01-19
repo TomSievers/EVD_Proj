@@ -30,7 +30,7 @@ namespace Detector
             cv::Mat difference = img != previousFrame;
             cv::erode(difference, difference, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3)));
 #ifdef DEBUG
-            cv::imshow("Difference", difference);
+            //cv::imshow("Difference", difference);
 #endif
             
             changeObjectPtr->nonZero = cv::countNonZero(difference);
