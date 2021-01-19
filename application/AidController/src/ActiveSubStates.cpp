@@ -90,6 +90,8 @@ void Detecting::onDo(Controller& con)
             }
             cv::waitKey(1);
         }
+        std::vector<cv::Point> traj;
+        con.getVisualizer()->update(traj, Visualizer::CueBall());
         changeDet->clearRoi();
         con.scheduleEvent(Event::MOVING);
     }
