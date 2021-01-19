@@ -47,7 +47,7 @@ namespace ImageCapture
         std::regex reg("[^:]+");
         char line[LINE_MAX] = "";
         std::string value;
-
+        file.clear();
         file.seekg(0);
         
         while(file.getline(line, LINE_MAX, '\n'))
@@ -70,7 +70,9 @@ namespace ImageCapture
                 }
             }
         }
+
         value.clear();
+        file.sync();
         return value;
     }
 } // namespace ImageCapture

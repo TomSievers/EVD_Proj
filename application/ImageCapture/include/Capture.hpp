@@ -59,7 +59,7 @@ namespace ImageCapture
         cv::VideoCapture cap;
         std::array<cv::Point2f, 4> targetROI;
 #ifdef __linux__
-        V4L2Settings settings[7] = {
+        V4L2Settings settings[8] = {
             {
                 "auto_exposure",
                 V4L2_CID_EXPOSURE_AUTO,
@@ -110,6 +110,11 @@ namespace ImageCapture
             {
                 "blue_balance",
                 V4L2_CID_BLUE_BALANCE,
+                {}
+            },
+            {
+                "saturation",
+                V4L2_CID_SATURATION,
                 {}
             }
         };
