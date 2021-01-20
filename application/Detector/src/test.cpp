@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("D:/EVD_Proj/Photos_pool_table/testFrame15.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>(0);
     cv::Mat img;
 
 

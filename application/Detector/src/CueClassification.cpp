@@ -24,7 +24,7 @@ namespace Detector
             (void) image;
             cueClassificationData cueData = *std::static_pointer_cast<cueClassificationData>(data);
             std::shared_ptr<CueObject> cue = std::make_shared<CueObject>();
-            std::vector<cv::Point> cornerPoints = *std::static_pointer_cast<std::vector<cv::Point>>(data);
+            std::vector<cv::Point> cornerPoints = cueData.cornerPoints;
             if(cornerPoints.size() == 4)
             {
                 cue->center = classifyCue(cornerPoints);

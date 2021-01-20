@@ -24,7 +24,6 @@ namespace Detector
 
             contours = {cornerPoints};
 
-            cv::drawContours(image, contours, -1, cv::Scalar(125));
             if(cornerPoints.size() == 4)
             {
                 return std::make_shared<std::vector<cv::Point>>(cornerPoints);
@@ -66,7 +65,7 @@ namespace Detector
                 int i = 0;
                 for(auto& c2 : cornerPoints)
                 {
-                    if(c2 != c && sqrt(pow(c2.x - c.x, 2) + pow(c2.y - c.y, 2)) < 10)
+                    if(c2 != c && sqrt(pow(c2.x - c.x, 2) + pow(c2.y - c.y, 2)) < 8)
                     {
                         cornerPoints.erase(cornerPoints.begin()+i);
                     }

@@ -45,10 +45,10 @@ namespace Detector
 
     void CueSegmentation::openImage(cv::Mat& image)
     {
-        cv::dilate(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7,7)));
+        cv::dilate(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3)));
         cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(11,11));
         cv::morphologyEx(image, image, cv::MORPH_OPEN, element);
-        cv::erode(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(7,7)));
+        cv::erode(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3)));
     }
 
     std::vector<std::vector<cv::Point>> CueSegmentation::findCueContours(const cv::Mat& image)
