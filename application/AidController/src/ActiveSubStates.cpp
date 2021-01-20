@@ -59,7 +59,6 @@ void Detecting::onDo(Controller& con)
             cv::Point(cueBall->point.x-(int)round(avgRadius), cueBall->point.y+(int)round(avgRadius))
         };
 
-        std::cout << cueBall->point.x << " " << cueBall->point.y << "\r" << std::endl;
         changeDet->setRoi(roi);
         while(!ballMoved)
         {
@@ -68,11 +67,13 @@ void Detecting::onDo(Controller& con)
             {
                 auto realCue = std::dynamic_pointer_cast<Detector::CueObject>(cue[0]);
                 std::array<cv::Point, 2> cuePoints = {realCue->endPoints[1], realCue->endPoints[0]};
-                std::cout << cuePoints.at(0).x << " " << cuePoints.at(0).y << "\r" << std::endl;
-                std::cout << cuePoints.at(1).x << " " << cuePoints.at(1).y << "\r" << std::endl;
-                std::cout << "----------------------" << "\r" << std::endl;
                 con.getTrajectoryCalc()->setCue(cuePoints);
                 auto traj = con.getTrajectoryCalc()->getTrajectory();
+                Visualizer::CueBall ball(cueBall->point);
+                ball.radius = avgRadius*2;
+                con.getVisualizer()->update(traj, ball);
+            } else {
+                std::vector<cv::Point> traj;
                 Visualizer::CueBall ball(cueBall->point);
                 ball.radius = avgRadius*2;
                 con.getVisualizer()->update(traj, ball);
@@ -89,6 +90,8 @@ void Detecting::onDo(Controller& con)
             }
             cv::waitKey(1);
         }
+        std::vector<cv::Point> traj;
+        con.getVisualizer()->update(traj, Visualizer::CueBall());
         changeDet->clearRoi();
         con.scheduleEvent(Event::MOVING);
     }
