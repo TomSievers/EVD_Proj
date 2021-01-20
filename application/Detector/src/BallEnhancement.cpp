@@ -16,7 +16,7 @@ namespace Detector
 
     std::shared_ptr<void> BallEnhancement::process(cv::Mat& img, std::shared_ptr<void> data)
     {
-        return std::make_shared<cv::Mat>(blurImage(img));
+        return std::make_shared<cv::Mat>((img));
     }
 
     cv::Mat BallEnhancement::blurImage(const cv::Mat& image)

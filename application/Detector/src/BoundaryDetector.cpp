@@ -34,7 +34,7 @@ namespace Detector
             auto data_ptr = processor.second->process(img, data);
 #ifdef DEBUG
             cv::namedWindow(names[i], cv::WINDOW_KEEPRATIO);
-            //cv::imshow(names[i], img);
+            cv::imshow(names[i], img);
             ++i;
 #endif
 

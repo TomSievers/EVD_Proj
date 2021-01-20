@@ -1,6 +1,7 @@
 #include <opencv2/highgui.hpp>
 #include <include/Boundary/BoundaryDetector.hpp>
 #include <include/Change/ChangeDetector.hpp>
+#include <include/Ball/BallDetector.hpp>
 #include <include/Cue/CueDetector.hpp>
 #include <include/Acquisition.hpp>
 #include <opencv2/highgui.hpp>
@@ -15,14 +16,49 @@ using namespace std::chrono_literals;
 int main(int argc, char const *argv[])
 {
     std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>(0);
-    cv::Mat img;
-
 
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
-    auto bounds = detect->getObjects();
-    std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
+    
+    while(true)
+    {
+        auto bounds = detect->getObjects();
+        /*cv::Mat frame = cap->getCapture().getFrame();
+
+        if(!frame.empty())
+        {
+            cv::imshow("frame", frame);
+        }*/
+        if(bounds.size() != 0)
+        {
+            break;
+        }
+        cv::waitKey(1);
+    }
+
+    std::this_thread::sleep_for(500ms);
+    
     std::shared_ptr<Detector::IDetector> changeDetect = std::make_shared<Detector::ChangeDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
+    std::shared_ptr<Detector::IDetector> ball = std::make_shared<Detector::BallDetector>(cap);
+
+    auto balls = ball->getObjects();
+
+    std::vector<cv::Point> realBalls;
+
+    double avgRadius = 0;
+
+    std::shared_ptr<Detector::BallObject> cueBall = nullptr;
+    for(std::size_t i = 0; i < balls.size(); ++i)
+    {
+        auto realBall = std::dynamic_pointer_cast<Detector::BallObject>(balls[i]);
+        realBalls.push_back(realBall->point);
+        
+        
+        avgRadius += realBall->radius;
+    }
+
+    avgRadius /= realBalls.size();
+    std::dynamic_pointer_cast<Detector::CueDetector>(cueDetect)->setBalls(realBalls, avgRadius);
     //auto cues = cueDetect->getObjects();
     while(true)
     {

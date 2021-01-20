@@ -2,7 +2,7 @@
 #include <include/Cue/CueProcessing.hpp>
 #include "opencv2/imgproc.hpp"
 #include <iostream>
-#define DEBUG
+
 namespace Detector
 {
     CueFeatureExtraction::CueFeatureExtraction()
@@ -53,10 +53,8 @@ namespace Detector
         }
         if(biggestContourId != -1)
         {
-            std::cout << approxPolyContours[biggestContourId].size() << std::endl;
             for(std::size_t i = 0; i < approxPolyContours[biggestContourId].size(); i++)
             {
-                std::cout << approxPolyContours[biggestContourId][i].x << " " << approxPolyContours[biggestContourId][i].y << std::endl;
                 cornerPoints.push_back(cv::Point(approxPolyContours[biggestContourId][i].x, approxPolyContours[biggestContourId][i].y));
             }
 

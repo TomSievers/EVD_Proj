@@ -1,7 +1,7 @@
 #include <include/IDetector.hpp>
 #include <include/Cue/CueProcessing.hpp>
 #include <opencv2/imgproc.hpp>
-#define DEBUG
+
 namespace Detector
 {
     CueEnhancement::CueEnhancement()

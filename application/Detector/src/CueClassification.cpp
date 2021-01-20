@@ -4,7 +4,7 @@
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <math.h>
-#define DEBUG
+
 namespace Detector
 {
     CueClassification::CueClassification()
@@ -36,7 +36,6 @@ namespace Detector
                 }
                 else return nullptr;
 
-                std::cout << "found cue at " << cue->center.x << " " << cue->center.y << std::endl;
                 return cue;
             }
         }
@@ -87,14 +86,11 @@ namespace Detector
         {
             distances.push_back(std::sqrt((std::pow((cornerPoints[i % (cornerPoints.size())].x - cornerPoints[(i+1) % (cornerPoints.size())].x),2)+std::pow((cornerPoints[i % (cornerPoints.size())].y - cornerPoints[(i + 1) % (cornerPoints.size())].y),2))));
             points.push_back(cv::Point((cornerPoints[i % (cornerPoints.size())].x + cornerPoints[(i+1) % (cornerPoints.size())].x)/2, (cornerPoints[i % (cornerPoints.size())].y + cornerPoints[(i+1) % (cornerPoints.size())].y)/2));
-            std::cout << distances[i] << std::endl;
         }
         sort(points, distances);
         for(uint8_t i = 0; i < cornerPoints.size(); i++)
         {
-            std::cout << distances[i] << std::endl;
         }
-        std::cout << "--------" << std::endl;
         return points;
     }
 
@@ -163,27 +159,9 @@ namespace Detector
         if(y < 0) y*=-1;
         
         //split the pixel of interest up into three different channels to threshold
-        cv::Mat hsv;
-        cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
-        cv::Mat threshold;
-        cv::inRange(hsv, cv::Scalar(160, 160, 150), cv::Scalar(180,255,255), threshold);
-        if(x >= 0 && x <= threshold.cols && y >= 0 && y <= threshold.rows)
-        {
-            uint8_t color = threshold.at<uint8_t>(cv::Point(x,y));
-            if(color == 0)
-            {
-                cv::Point temp = points[0];
-                points[0] = points[1];
-                points[1] = temp;
-    #ifdef DEBUG
-                std::cout << "SWAP POINTS" << std::endl;
-    #endif
-            }
-        }
         
         
 #ifdef DEBUG
-        std::cout << x << " " << y << std::endl;
         cv::circle(image, points[0], 5, cv::Scalar(0,255,0), cv::FILLED, cv::LINE_8);
         cv::circle(image, points[1], 5, cv::Scalar(0,0,255), cv::FILLED, cv::LINE_8);
         cv::imshow("front", image);

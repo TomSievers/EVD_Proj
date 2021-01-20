@@ -12,8 +12,8 @@ namespace Visualizer
         cv::Point center;
         double radius;
         int thickness;
-        CueBall(const cv::Point& center) : center(center), radius(10), thickness(4){};
-        CueBall() : center(cv::Point(-1, -1)), radius(10), thickness(4){};
+        CueBall(const cv::Point& center) : center(center), radius(10), thickness(8){};
+        CueBall() : center(cv::Point(-1, -1)), radius(10), thickness(8){};
         ~CueBall(){};
     };
 
@@ -31,8 +31,10 @@ namespace Visualizer
         cv::Point map(const cv::Point& pt)
         {
             cv::Point pt_new;
-            pt_new.x = (pt.x - inMin.x) * (outMax.x - outMin.x) / (inMax.x - inMin.x) + outMin.x;
-            pt_new.y = (pt.y - inMin.y) * (outMax.y - outMin.y) / (inMax.y - inMin.y) + outMin.y;
+            pt_new.x = round((double)(pt.x - inMin.x) * (double)(outMax.x - outMin.x) / (double)(inMax.x - inMin.x) + (double)outMin.x);
+            pt_new.y = round((double)(pt.y - inMin.y) * (double)(outMax.y - outMin.y) / (double)(inMax.y - inMin.y) + (double)outMin.y);
+            pt_new.x = outMax.x-pt_new.x;
+            pt_new.y = outMax.y-pt_new.y;
             return pt_new;
         };
 

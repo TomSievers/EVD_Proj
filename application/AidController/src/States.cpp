@@ -30,11 +30,11 @@ void Setup::onEntry(Controller& con)
     con.setDetector(CUE, std::make_shared<Detector::CueDetector>(con.getAcquisition()));
     con.setDetector(CHANGE, std::make_shared<Detector::ChangeDetector>(con.getAcquisition()));
     con.setTrajectoryCalc(std::make_shared<TrajectoryCalculator::TrajectoryCalculator>());
-/*#if defined(__linux__) && defined(HAVE_CAIRO) && !defined(DEBUG)
+#if defined(__linux__) && defined(HAVE_CAIRO) && !defined(DEBUG)
     con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(CAIRO_FORMAT_ARGB32, cv::Point(0, 0), cv::Point(1000, 500)));
-#else*/
-    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cv::Point(0, 0), cv::Point(1000, 500)));
-//#endif
+#else
+    con.setVisualizer(std::make_shared<Visualizer::ObjectVisualizer>(cv::Point(0, 0), cv::Point(1000-40, 500-40)));
+#endif
 
 }
 
