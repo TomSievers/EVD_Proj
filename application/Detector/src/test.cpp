@@ -14,14 +14,8 @@ using namespace std::chrono_literals;
 
 int main(int argc, char const *argv[])
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/play.h264");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>(0);
     cv::Mat img;
-    // skip first frames because a lot darker
-    for(auto i = 0; i < 30; ++i)
-    {
-        cap->process(img, nullptr);
-        std::this_thread::sleep_for(100ms);
-    }
 
 
     std::shared_ptr<Detector::IDetector> detect = std::make_shared<Detector::BoundaryDetector>(cap);
@@ -29,11 +23,17 @@ int main(int argc, char const *argv[])
     std::this_thread::sleep_for (std::chrono::milliseconds(1000));  
     std::shared_ptr<Detector::IDetector> changeDetect = std::make_shared<Detector::ChangeDetector>(cap);
     std::shared_ptr<Detector::IDetector> cueDetect = std::make_shared<Detector::CueDetector>(cap);
+    //auto cues = cueDetect->getObjects();
+    while(true)
+    {
+        auto cues = cueDetect->getObjects();
+        if(cv::waitKey(1) == 27)
+        {
+            break;
+        }
+    }    
 
-
-    auto cues = cueDetect->getObjects();
-
-    std::shared_ptr<Detector::Boundary> bound;
+    /*std::shared_ptr<Detector::Boundary> bound;
     std::shared_ptr<Detector::CueObject> cue;
 
     bound = std::static_pointer_cast<Detector::Boundary>(bounds.at(0));
@@ -103,7 +103,7 @@ int main(int argc, char const *argv[])
             cap->getCapture().stop();
             break;
         }
-    }
+    }*/
 
     return 0;
 }

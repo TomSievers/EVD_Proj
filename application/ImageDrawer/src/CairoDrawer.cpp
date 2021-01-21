@@ -40,6 +40,7 @@ namespace ImageDrawer
         std::cout << "\t red:" << vinfo.red.length << std::endl;
         std::cout << "\t green:" << vinfo.green.length << std::endl;
         std::cout << "\t blue" << vinfo.blue.length << std::endl;
+        std::cout << screenWidth << "x" << screenHeight << std::endl;
 #endif
 
         fbp = (unsigned char*) mmap (0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);

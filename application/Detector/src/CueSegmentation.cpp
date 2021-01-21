@@ -3,6 +3,13 @@
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
 
+#define CUE_TIP_H_MIN 0 // old: 15
+#define CUE_TIP_S_MIN 0 // old 23
+#define CUE_TIP_V_MIN 50 // old 90
+#define CUE_TIP_H_MAX 180 // old 37
+#define CUE_TIP_S_MAX 150 // old 155
+#define CUE_TIP_V_MAX 255 // old 255
+
 namespace Detector
 {
     CueSegmentation::CueSegmentation()
@@ -32,12 +39,13 @@ namespace Detector
     {
         cv::Mat hsvImage;
         cv::cvtColor(image, hsvImage, cv::COLOR_BGR2HSV);
-        cv::inRange(hsvImage, cv::Scalar(72, 58, 78), cv::Scalar(105, 255,255), image);
+        cv::inRange(hsvImage, cv::Scalar(CUE_TIP_H_MIN, CUE_TIP_S_MIN, CUE_TIP_V_MIN), cv::Scalar(CUE_TIP_H_MAX, CUE_TIP_S_MAX, CUE_TIP_V_MAX), image);
+
     }
 
     void CueSegmentation::openImage(cv::Mat& image)
     {
-        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(11,11));
+        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9,9));
         cv::morphologyEx(image, image, cv::MORPH_OPEN, element);
     }
 

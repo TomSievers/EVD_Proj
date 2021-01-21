@@ -52,10 +52,9 @@ namespace Detector
             }
 
 #ifdef DEBUG
-            if(!img.empty())
+            if(!EnhancedImage.empty())
             {
-                cv::imshow("window", img);
-                cv::waitKey(0);
+                //cv::imshow("window", EnhancedImage);
             }
 #endif
         }
@@ -75,7 +74,6 @@ namespace Detector
                 cv::circle(EnhancedImage, ballObjectPtr->at(i)->point, ballObjectPtr->at(i)->radius, cv::Scalar(0, 0, 255), -1);
         }
         cv::imshow("results", EnhancedImage);
-        cv::waitKey(0);
 #endif
 
         return objects;

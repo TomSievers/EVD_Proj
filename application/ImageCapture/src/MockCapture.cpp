@@ -5,6 +5,7 @@
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
 
+
 namespace ImageCapture
 {
     MockCapture::MockCapture(const std::string& imgPath) : img(cv::imread(imgPath)), cap(imgPath)

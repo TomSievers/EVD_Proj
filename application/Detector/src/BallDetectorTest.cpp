@@ -4,10 +4,13 @@
 #include <memory>
 #include <iostream>
 #include <chrono>
+#include <opencv2/highgui.hpp>
+
+using namespace std::chrono_literals;
 
 int main(int argc, char** argv)
 {
-    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/setup3_3.jpg");
+    std::shared_ptr<Detector::Acquisition> cap =  std::make_shared<Detector::Acquisition>("../../Photos_pool_table/balls1.h264");
     std::unique_ptr<Detector::IDetector> boundaryDetector = std::make_unique<Detector::BoundaryDetector>(cap);
     std::unique_ptr<Detector::IDetector> ballDetector = std::make_unique<Detector::BallDetector>(cap);
 

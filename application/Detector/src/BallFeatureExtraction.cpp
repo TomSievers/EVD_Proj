@@ -2,11 +2,11 @@
 
 #include <opencv2/highgui.hpp>
 
-#define BALL_WHITE_H_MIN 9 // old: 15
-#define BALL_WHITE_S_MIN 13 // old 23
-#define BALL_WHITE_V_MIN 103 // old 90
-#define BALL_WHITE_H_MAX 118 // old 37
-#define BALL_WHITE_S_MAX 85 // old 155
+#define BALL_WHITE_H_MIN 0 // old: 15
+#define BALL_WHITE_S_MIN 0 // old 23
+#define BALL_WHITE_V_MIN 50 // old 90
+#define BALL_WHITE_H_MAX 180 // old 37
+#define BALL_WHITE_S_MAX 150 // old 155
 #define BALL_WHITE_V_MAX 255 // old 255
 
 namespace Detector
@@ -100,9 +100,8 @@ namespace Detector
             cv::Mat bitwised_xor_image;
             cv::bitwise_xor(image, imageWhitePartsClosed, bitwised_xor_image);
 
-            cv::imshow("enhanced image", *enhancementImg);
-            cv::imshow("image white parts", bitwised_xor_image);
-            cv::waitKey(0);
+            //cv::imshow("enhanced image", *enhancementImg);
+            //cv::imshow("image white parts", bitwised_xor_image);
 #endif
         }
     }

@@ -34,6 +34,8 @@ namespace Detector
                     determineFront(cue->endPoints, cueData.image, cue->line);
                 }
                 else return nullptr;
+
+                std::cout << "found cue at " << cue->center.x << " " << cue->center.y << std::endl;
                 return cue;
             }
         }
@@ -56,19 +58,12 @@ namespace Detector
         std::vector<cv::Point> points;
         for(uint8_t i = 0; i < cornerPoints.size(); i++)
         {
-            if(i == 3)
+            std::cout << i % (cornerPoints.size()) << " " << (i+1) % (cornerPoints.size()) << std::endl;
+            if(std::sqrt((std::pow((cornerPoints[i % (cornerPoints.size())].x - cornerPoints[(i+1) % (cornerPoints.size())].x),2)+std::pow((cornerPoints[i % (cornerPoints.size())].y - cornerPoints[(i + 1) % (cornerPoints.size())].y),2))) < 30)
             {
-                if(std::sqrt((std::pow((cornerPoints[i].x - cornerPoints[0].x),2)+std::pow((cornerPoints[i].y - cornerPoints[0].y),2))) < 13)
-                {
-                    points.push_back(cv::Point((cornerPoints[i].x + cornerPoints[0].x)/2, (cornerPoints[i].y + cornerPoints[0].y)/2));
-                }
-            }else
-            {
-                if(std::sqrt(std::pow((cornerPoints[i].x - cornerPoints[i+1].x),2)+std::pow((cornerPoints[i].y - cornerPoints[i+1].y),2)) < 13)
-                {
-                    points.push_back(cv::Point((cornerPoints[i].x + cornerPoints[i+1].x)/2, (cornerPoints[i].y + cornerPoints[i+1].y)/2));
-                }
+                points.push_back(cv::Point((cornerPoints[i % (cornerPoints.size())].x + cornerPoints[(i+1) % (cornerPoints.size())].x)/2, (cornerPoints[i % (cornerPoints.size())].y + cornerPoints[(i+1) % (cornerPoints.size())].y)/2));
             }
+            
         }
         return points;
     }
@@ -138,35 +133,30 @@ namespace Detector
         if(y < 0) y*=-1;
         
         //split the pixel of interest up into three different channels to threshold
-        cv::Vec3b color = image.at<cv::Vec3b>(cv::Point(x,y));
-        int blue = color[0], green = color[1], red = color[2];
-
-#ifdef DEBUG
-        std::cout << "Red:" << red << std::endl;
-        std::cout << "Green:" << green << std::endl;
-        std::cout << "Blue:" << blue << std::endl;
-#endif
-
-        //check if the all values are within a certain threshold
-        //if not, the point is the backside of the cue. So the points in the array have to be swapped
-        if(blue >= 80 && blue <= 165 && 
-        green >=40 && green <= 200 && 
-        red >= 0 && red <= 80)
+        cv::Mat hsv;
+        cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
+        cv::Mat threshold;
+        cv::inRange(hsv, cv::Scalar(160, 160, 150), cv::Scalar(180,255,255), threshold);
+        if(x >= 0 && x <= threshold.cols && y >= 0 && y <= threshold.rows)
         {
-        } 
-        else
-        {
-#ifdef DEBUG
-            std::cout << "SWAP POINTS" << std::endl;
-#endif
-            cv::Point temp = points[0];
-            points[0] = points[1];
-            points[1] = temp;
+            uint8_t color = threshold.at<uint8_t>(cv::Point(x,y));
+            if(color == 0)
+            {
+                cv::Point temp = points[0];
+                points[0] = points[1];
+                points[1] = temp;
+    #ifdef DEBUG
+                std::cout << "SWAP POINTS" << std::endl;
+    #endif
+            }
         }
         
+        
 #ifdef DEBUG
-        cv::circle(image, cv::Point(x, y), 3, cv::Scalar(255,0,0), cv::FILLED, cv::LINE_8);
-        cv::imshow("checked pixel", image);
+        std::cout << x << " " << y << std::endl;
+        cv::circle(image, points[0], 5, cv::Scalar(0,255,0), cv::FILLED, cv::LINE_8);
+        cv::circle(image, points[1], 5, cv::Scalar(0,0,255), cv::FILLED, cv::LINE_8);
+        cv::imshow("front", image);
 #endif
 
     }
