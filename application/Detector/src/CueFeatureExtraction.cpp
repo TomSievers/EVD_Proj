@@ -24,7 +24,6 @@ namespace Detector
 
             contours = {cornerPoints};
 
-            cv::drawContours(image, contours, -1, cv::Scalar(125));
             if(cornerPoints.size() == 4)
             {
                 return std::make_shared<std::vector<cv::Point>>(cornerPoints);
@@ -41,7 +40,7 @@ namespace Detector
         for(std::size_t i = 0; i < contours.size(); i++)
         {
             double epsilon = cv::arcLength(contours[i], true);
-            cv::approxPolyDP(contours[i], approxPolyContours[i], epsilon*0.005, true);
+            cv::approxPolyDP(contours[i], approxPolyContours[i], epsilon*0.006, true);
         }
         int16_t biggestContourId = -1;
         for(uint8_t i = 0; i < approxPolyContours.size(); i++)
@@ -64,7 +63,7 @@ namespace Detector
                 int i = 0;
                 for(auto& c2 : cornerPoints)
                 {
-                    if(c2 != c && sqrt(pow(c2.x - c.x, 2) + pow(c2.y - c.y, 2)) < 10)
+                    if(c2 != c && sqrt(pow(c2.x - c.x, 2) + pow(c2.y - c.y, 2)) < 8)
                     {
                         cornerPoints.erase(cornerPoints.begin()+i);
                     }
@@ -90,11 +89,6 @@ namespace Detector
                 }
                 prevAngle = angle;
 
-                std::cout << pa.x << " " << pa.y << std::endl;
-                std::cout << pb.x << " " << pb.y << std::endl;
-                std::cout << pc.x << " " << pc.y << std::endl;
-                std::cout << angle << std::endl;
-                std::cout << "------------------" << std::endl;
 
             }
             

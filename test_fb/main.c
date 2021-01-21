@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     size = vinfo.yres * finfo.line_length;
     fbp = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     
-    uint32_t color = rgbaToInt(0, 0, 0, 0);
+    uint32_t color = rgbaToInt(255, 255, 255, 255);
     for (uint32_t y = 0; y < vinfo.yres; ++y) 
     {
         for(uint32_t x = 0; x < vinfo.xres; ++x)

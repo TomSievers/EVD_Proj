@@ -15,7 +15,6 @@ namespace Detector
             std::shared_ptr<void> process(cv::Mat& img, std::shared_ptr<void> data);
         
         private:
-            void classifyBalls(std::vector<std::shared_ptr<BallObject>>& ballObjects);
     };
 }
 

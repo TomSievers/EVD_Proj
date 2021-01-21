@@ -100,8 +100,8 @@ namespace Detector
             cv::Mat bitwised_xor_image;
             cv::bitwise_xor(image, imageWhitePartsClosed, bitwised_xor_image);
 
-            //cv::imshow("enhanced image", *enhancementImg);
-            //cv::imshow("image white parts", bitwised_xor_image);
+            cv::imshow("enhanced image", *enhancementImg);
+            cv::imshow("image white parts", bitwised_xor_image);
 #endif
         }
     }

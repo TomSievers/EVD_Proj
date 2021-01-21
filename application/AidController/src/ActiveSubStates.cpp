@@ -2,6 +2,7 @@
 #include <include/Controller.hpp>
 #include <opencv2/core.hpp>
 #include <Detector/include/Change/ChangeDetector.hpp>
+#include <Detector/include/Cue/CueDetector.hpp>
 #include <opencv2/highgui.hpp>
 #include <vector>
 #include <iostream>
@@ -49,7 +50,7 @@ void Detecting::onDo(Controller& con)
         avgRadius /= static_cast<double>(trajBalls.size());
         trajBalls.insert(trajBalls.begin(), cueBall->point);
         con.getTrajectoryCalc()->setBalls(trajBalls);
-        con.getTrajectoryCalc()->setBallRadius(static_cast<uint16_t>(avgRadius));
+        con.getTrajectoryCalc()->setBallRadius(static_cast<uint16_t>(avgRadius*1.2));
         bool ballMoved = false;
         auto changeDet = std::dynamic_pointer_cast<Detector::ChangeDetector>(con.getDetector(CHANGE));
         std::array<cv::Point2i, 4> roi = {
@@ -58,7 +59,7 @@ void Detecting::onDo(Controller& con)
             cv::Point(cueBall->point.x+(int)round(avgRadius), cueBall->point.y+(int)round(avgRadius)),
             cv::Point(cueBall->point.x-(int)round(avgRadius), cueBall->point.y+(int)round(avgRadius))
         };
-
+        std::static_pointer_cast<Detector::CueDetector>(con.getDetector(CUE))->setBalls(trajBalls, avgRadius);
         changeDet->setRoi(roi);
         while(!ballMoved)
         {
@@ -66,7 +67,18 @@ void Detecting::onDo(Controller& con)
             if(!cue.empty())
             {
                 auto realCue = std::dynamic_pointer_cast<Detector::CueObject>(cue[0]);
-                std::array<cv::Point, 2> cuePoints = {realCue->endPoints[1], realCue->endPoints[0]};
+                int frontIndex = -1;
+                double dist = 1200;
+                for(std::size_t i = 0; i < realCue->endPoints.size(); ++i)
+                {
+                    double dist2 = sqrt(pow((double)(realCue->endPoints[i].x - cueBall->point.x), 2) +  pow((double)(realCue->endPoints[i].y - cueBall->point.y), 2));
+                    if(sqrt(pow((double)(realCue->endPoints[i].x - cueBall->point.x), 2) +  pow((double)(realCue->endPoints[i].y - cueBall->point.y), 2)) < dist)
+                    {
+                        frontIndex = i;
+                        dist = dist2;
+                    }
+                }
+                std::array<cv::Point, 2> cuePoints = {realCue->endPoints[(frontIndex+1)%realCue->endPoints.size()], realCue->endPoints[frontIndex]};
                 con.getTrajectoryCalc()->setCue(cuePoints);
                 auto traj = con.getTrajectoryCalc()->getTrajectory();
                 Visualizer::CueBall ball(cueBall->point);

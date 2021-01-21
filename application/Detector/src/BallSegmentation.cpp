@@ -6,12 +6,12 @@
 #include <opencv2/highgui.hpp>
 
 // defines for the pool table color
-#define BACKGROUND_MIN_H 105
-#define BACKGROUND_MIN_S 240
-#define BACKGROUND_MIN_V 85
-#define BACKGROUND_MAX_H 115
+#define BACKGROUND_MIN_H 100
+#define BACKGROUND_MIN_S 230
+#define BACKGROUND_MIN_V 90
+#define BACKGROUND_MAX_H 114
 #define BACKGROUND_MAX_S 255
-#define BACKGROUND_MAX_V 195
+#define BACKGROUND_MAX_V 255
 
 // defines for the Hough circle transform
 #define HOUGH_DP 2.4f
@@ -19,7 +19,7 @@
 #define HOUGH_PARAM1 50
 #define HOUGH_PARAM2 35
 #define HOUGH_MINRADIUS 0
-#define HOUGH_MAXRADIUS 20
+#define HOUGH_MAXRADIUS 22
 
 namespace Detector
 {

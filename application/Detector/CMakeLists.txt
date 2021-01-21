@@ -40,6 +40,8 @@ set(SRC
     src/ChangeSegmentation.cpp
 )
 
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DDEBUG")
+
 add_executable(${PROJECT_NAME}_test src/test.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SRC})

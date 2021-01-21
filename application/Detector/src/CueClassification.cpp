@@ -4,6 +4,7 @@
 #include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <math.h>
+
 namespace Detector
 {
     CueClassification::CueClassification()
@@ -23,19 +24,18 @@ namespace Detector
             (void) image;
             cueClassificationData cueData = *std::static_pointer_cast<cueClassificationData>(data);
             std::shared_ptr<CueObject> cue = std::make_shared<CueObject>();
-            std::vector<cv::Point> cornerPoints = *std::static_pointer_cast<std::vector<cv::Point>>(data);
+            std::vector<cv::Point> cornerPoints = cueData.cornerPoints;
             if(cornerPoints.size() == 4)
             {
                 cue->center = classifyCue(cornerPoints);
                 cue->endPoints = determineEndPoints(cornerPoints);
-                if(cue->endPoints.size() == 2)
+                if(cue->endPoints.size() >= 2)
                 {
                     cue->line = calculateLine(cue->endPoints);
                     determineFront(cue->endPoints, cueData.image, cue->line);
                 }
                 else return nullptr;
 
-                std::cout << "found cue at " << cue->center.x << " " << cue->center.y << std::endl;
                 return cue;
             }
         }
@@ -53,17 +53,43 @@ namespace Detector
         return cv::Point((int)(totalX/cornerPoints.size()), (int)(totalY/cornerPoints.size()));
     }
 
+    void swap(cv::Point* pointA, cv::Point* pointB, float* distanceA, float* distanceB)
+    {   
+        cv::Point temp = *pointA;
+        *pointA = *pointB;
+        *pointB = temp;
+
+        float tmp = *distanceA;
+        *distanceA = *distanceB;
+        *distanceB = tmp;
+    }
+
+    void sort(std::vector<cv::Point>& points, std::vector<float>& distances)
+    {
+        for(uint8_t i = 0; i < points.size(); ++i)
+        {
+            for(uint8_t j = 0; j < points.size() -1; ++j)
+            {
+                if(distances.at(j) > distances.at(j + 1))
+                {
+                    swap(&points.at(j), &points.at(j + 1), &distances.at(j), &distances.at(j + 1));
+                }
+            }
+        }
+    }
+
     std::vector<cv::Point> CueClassification::determineEndPoints(const std::vector<cv::Point> & cornerPoints)
     {
         std::vector<cv::Point> points;
+        std::vector<float> distances;
         for(uint8_t i = 0; i < cornerPoints.size(); i++)
         {
-            std::cout << i % (cornerPoints.size()) << " " << (i+1) % (cornerPoints.size()) << std::endl;
-            if(std::sqrt((std::pow((cornerPoints[i % (cornerPoints.size())].x - cornerPoints[(i+1) % (cornerPoints.size())].x),2)+std::pow((cornerPoints[i % (cornerPoints.size())].y - cornerPoints[(i + 1) % (cornerPoints.size())].y),2))) < 30)
-            {
-                points.push_back(cv::Point((cornerPoints[i % (cornerPoints.size())].x + cornerPoints[(i+1) % (cornerPoints.size())].x)/2, (cornerPoints[i % (cornerPoints.size())].y + cornerPoints[(i+1) % (cornerPoints.size())].y)/2));
-            }
-            
+            distances.push_back(std::sqrt((std::pow((cornerPoints[i % (cornerPoints.size())].x - cornerPoints[(i+1) % (cornerPoints.size())].x),2)+std::pow((cornerPoints[i % (cornerPoints.size())].y - cornerPoints[(i + 1) % (cornerPoints.size())].y),2))));
+            points.push_back(cv::Point((cornerPoints[i % (cornerPoints.size())].x + cornerPoints[(i+1) % (cornerPoints.size())].x)/2, (cornerPoints[i % (cornerPoints.size())].y + cornerPoints[(i+1) % (cornerPoints.size())].y)/2));
+        }
+        sort(points, distances);
+        for(uint8_t i = 0; i < cornerPoints.size(); i++)
+        {
         }
         return points;
     }
@@ -86,7 +112,7 @@ namespace Detector
             */
             if(std::sqrt(std::pow(points[0].x - points[1].x,2)) > std::sqrt(std::pow(points[0].y - points[1].y,2)))
             {
-                x = points[0].x-5;
+                x = points[0].x-7;
                 y = (int)(line.a * x / line.b - (line.c / line.b));
             }
             else
@@ -96,10 +122,10 @@ namespace Detector
                 */
                 if(points[0].y < points[1].y)
                 {
-                    y = points[0].y - 5;
+                    y = points[0].y - 7;
                 } else
                 {
-                    y = points[0].y + 5;
+                    y = points[0].y + 7;
                 }
                 x = (int)(line.b * y / line.a - (line.c / line.a));
             }
@@ -110,7 +136,7 @@ namespace Detector
             */
             if(std::sqrt(std::pow(points[0].x - points[1].x,2)) > std::sqrt(std::pow(points[0].y - points[1].y,2)))
             {
-                x = points[0].x-5;
+                x = points[0].x-7;
                 y = (int)(line.a * x / line.b + (line.c / line.b));
             }
             else
@@ -120,10 +146,10 @@ namespace Detector
                 */
                 if(points[0].y < points[1].y)
                 {
-                    y = points[0].y - 5;
+                    y = points[0].y - 7;
                 } else
                 {
-                    y = points[0].y + 5;
+                    y = points[0].y + 7;
                 }
                 x = (int)(line.b * y / line.a + (line.c / line.a));
             }
@@ -133,27 +159,9 @@ namespace Detector
         if(y < 0) y*=-1;
         
         //split the pixel of interest up into three different channels to threshold
-        cv::Mat hsv;
-        cv::cvtColor(image, hsv, cv::COLOR_BGR2HSV);
-        cv::Mat threshold;
-        cv::inRange(hsv, cv::Scalar(160, 160, 150), cv::Scalar(180,255,255), threshold);
-        if(x >= 0 && x <= threshold.cols && y >= 0 && y <= threshold.rows)
-        {
-            uint8_t color = threshold.at<uint8_t>(cv::Point(x,y));
-            if(color == 0)
-            {
-                cv::Point temp = points[0];
-                points[0] = points[1];
-                points[1] = temp;
-    #ifdef DEBUG
-                std::cout << "SWAP POINTS" << std::endl;
-    #endif
-            }
-        }
         
         
 #ifdef DEBUG
-        std::cout << x << " " << y << std::endl;
         cv::circle(image, points[0], 5, cv::Scalar(0,255,0), cv::FILLED, cv::LINE_8);
         cv::circle(image, points[1], 5, cv::Scalar(0,0,255), cv::FILLED, cv::LINE_8);
         cv::imshow("front", image);

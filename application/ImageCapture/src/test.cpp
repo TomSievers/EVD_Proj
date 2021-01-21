@@ -7,7 +7,7 @@ int main(int argc, char const *argv[])
 {
     ImageCapture::Capture cap(0);
 
-    std::array<cv::Point2f, 4> roi = {cv::Point2f(10, 100), cv::Point2f(200, 100), cv::Point2f(200, 200), cv::Point2f(10, 200)};
+    /*std::array<cv::Point2f, 4> roi = {cv::Point2f(10, 100), cv::Point2f(200, 100), cv::Point2f(200, 200), cv::Point2f(10, 200)};
     int i = 0;
     while(true)
     {
@@ -27,12 +27,12 @@ int main(int argc, char const *argv[])
             cap.setROI(roi, 400, 200);
         }
         
-    }
+    }*/
 
-    /*int hue_min = 160;
-    int sat_min = 200;
-    int val_min = 200;
-    int hue_max = 180;
+    int hue_min = 100;
+    int sat_min = 240;
+    int val_min = 90;
+    int hue_max = 117;
     int sat_max = 255;
     int val_max = 255;
 
@@ -76,7 +76,7 @@ int main(int argc, char const *argv[])
                 break;
             }
         }
-    }*/
+    }
 
     /*int hue_min = 100;
     int hue_max = 255;

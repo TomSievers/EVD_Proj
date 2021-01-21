@@ -1,7 +1,8 @@
 #include <include/IDetector.hpp>
+#include <include/Cue/CueDetector.hpp>
 #include <include/Cue/CueProcessing.hpp>
-#include "opencv2/imgproc.hpp"
-#include "opencv2/highgui.hpp"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 
 #define CUE_TIP_H_MIN 0 // old: 15
 #define CUE_TIP_S_MIN 0 // old 23
@@ -24,14 +25,41 @@ namespace Detector
 
     std::shared_ptr<void> CueSegmentation::process(cv::Mat& image, std::shared_ptr<void> data)
     {
-        (void)data;
         thresholdImage(image);
+        
+        if(data != nullptr)
+        {
+            auto balls = *std::static_pointer_cast<Balls>(data);
+            for(auto ball : balls.pos)
+            {
+                for(int x = (int)round((double)ball.x- balls.radius); x < (int)round((double)ball.x + balls.radius); ++x)
+                {
+                    for(int y = (int)round((double)ball.y - balls.radius); y < (int)round((double)ball.y + balls.radius); ++y)
+                    {
+                        if(sqrt(pow((double)(x - ball.x), 2) +  pow((double)(y - ball.y), 2)) <= balls.radius)
+                        {
+                            if(x >= 0 &&
+                                y >= 0 &&
+                                x < image.cols && 
+                                y < image.rows)
+                            image.at<uint8_t>(y, x) = 0;
+                        }
+                    }
+                }
+            }
+            
+            //cv::imshow("iamge___", image);
+            cv::waitKey(1);
+            
+        }
         openImage(image);
+
         std::vector<std::vector<cv::Point>> contours = findCueContours(image);
         if(!contours.empty())
         {
             return std::make_shared<std::vector<std::vector<cv::Point>>>(contours);
         }
+        
         return nullptr;
     }
 
@@ -45,8 +73,10 @@ namespace Detector
 
     void CueSegmentation::openImage(cv::Mat& image)
     {
-        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(9,9));
+        cv::dilate(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3)));
+        cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(11,11));
         cv::morphologyEx(image, image, cv::MORPH_OPEN, element);
+        cv::erode(image, image, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3)));
     }
 
     std::vector<std::vector<cv::Point>> CueSegmentation::findCueContours(const cv::Mat& image)

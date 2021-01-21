@@ -1,13 +1,12 @@
 #include <include/Boundary/BoundarySegmentation.hpp>
 #include <opencv2/imgproc.hpp>
 
-
-#define BACKGROUND_MIN_H 80
+#define BACKGROUND_MIN_H 100
 #define BACKGROUND_MIN_S 240
-#define BACKGROUND_MIN_V 85
-#define BACKGROUND_MAX_H 120
+#define BACKGROUND_MIN_V 90
+#define BACKGROUND_MAX_H 117
 #define BACKGROUND_MAX_S 255
-#define BACKGROUND_MAX_V 195
+#define BACKGROUND_MAX_V 255
 
 
 namespace Detector

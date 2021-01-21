@@ -6,6 +6,15 @@
 
 namespace Detector
 {
+    struct Balls
+    {
+        std::vector<cv::Point> pos;
+        double radius;
+        Balls() : radius(0){}
+        Balls(std::vector<cv::Point> pos, double radius) : pos(pos), radius(radius){}
+        ~Balls(){};
+    };
+
     class CueDetector : public IDetector
     {
     public:
@@ -23,7 +32,9 @@ namespace Detector
 		 * @return std::vector<std::shared_ptr<Object>> 
 		 */
         std::vector<std::shared_ptr<Object>> getObjects();
+        void setBalls(std::vector<cv::Point> balls, double radius);
     private:
+        Balls balls;
         cv::Mat img;
     };
 } //namespace Detector

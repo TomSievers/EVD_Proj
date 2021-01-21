@@ -54,7 +54,7 @@ namespace Detector
 #ifdef DEBUG
             if(!EnhancedImage.empty())
             {
-                //cv::imshow("window", EnhancedImage);
+                cv::imshow("window", EnhancedImage);
             }
 #endif
         }
